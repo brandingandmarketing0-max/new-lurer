@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 const getReadableReferrer = (ref: string) => {
   if (!ref) return "Direct or unknown";
@@ -16,7 +16,6 @@ const getReadableReferrer = (ref: string) => {
 
 export const useAnalytics = (pageName: string) => {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     const trackVisit = async () => {
@@ -24,7 +23,7 @@ export const useAnalytics = (pageName: string) => {
       const referrer = getReadableReferrer(rawRef);
       const timestamp = new Date().toISOString();
       const pathnameStr = pathname || "";
-      const searchParamsStr = searchParams?.toString() || "";
+      const searchParamsStr = ""; // Simplified - we don't need search params for basic analytics
 
       try {
         await fetch("/api/store-referrer", {
@@ -45,7 +44,7 @@ export const useAnalytics = (pageName: string) => {
 
     // Track the visit
     trackVisit();
-  }, [pageName, pathname, searchParams]);
+  }, [pageName, pathname]);
 
   return null;
 }; 
