@@ -47,10 +47,21 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-black p-4 overflow-x-hidden">
-      {/* Debug Info - Remove this later */}
-      <div className="fixed top-4 left-4 bg-white p-4 rounded shadow-lg z-50 text-sm">
-        <p><strong>Raw Referrer:</strong> {rawReferrer || "None"}</p>
-        <p><strong>Processed:</strong> {referrer}</p>
+      {/* Debug Info - Same as test-analytics page */}
+      <div style={{ padding: 32, fontSize: 20, background: 'white', margin: '20px', borderRadius: '8px' }}>
+        <h2>Analytics Test Page (Brooke)</h2>
+        <p>
+          <strong>Raw Referrer:</strong> {rawReferrer || "None"}
+        </p>
+        <p>
+          <strong>Processed Referrer:</strong> {referrer}
+        </p>
+        <p>
+          <strong>Page:</strong> brooke
+        </p>
+        <p>
+          <strong>Timestamp:</strong> {new Date().toLocaleString()}
+        </p>
       </div>
       
       <div className="flex min-h-screen items-center justify-center px-2">
