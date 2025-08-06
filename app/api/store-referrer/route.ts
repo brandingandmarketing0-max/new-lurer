@@ -28,15 +28,46 @@ export async function POST(req: NextRequest) {
     // Get user agent
     const userAgent = req.headers.get("user-agent") || "unknown";
     
-    // Create readable referrer
+    // Create readable referrer with enhanced mobile/desktop detection
     const getReadableReferrer = (ref: string) => {
       if (!ref) return "Direct or unknown";
-      if (ref.includes("instagram.com")) return "Instagram";
-      if (ref.includes("twitter.com") || ref.includes("x.com")) return "Twitter/X";
-      if (ref.includes("facebook.com")) return "Facebook";
-      if (ref.includes("tiktok.com")) return "TikTok";
-      if (ref.includes("linkedin.com")) return "LinkedIn";
-      if (ref.includes("whatsapp.com") || ref.includes("wa.me")) return "WhatsApp";
+      
+      // Instagram - catches both mobile and desktop
+      if (ref.includes("instagram.com") || ref.includes("m.instagram.com")) return "Instagram";
+      
+      // Twitter/X - catches both mobile and desktop
+      if (ref.includes("twitter.com") || ref.includes("x.com") || ref.includes("mobile.twitter.com")) return "Twitter/X";
+      
+      // Facebook - catches both mobile and desktop
+      if (ref.includes("facebook.com") || ref.includes("m.facebook.com") || ref.includes("fb.com")) return "Facebook";
+      
+      // TikTok - catches both mobile and desktop
+      if (ref.includes("tiktok.com") || ref.includes("vm.tiktok.com")) return "TikTok";
+      
+      // LinkedIn - catches both mobile and desktop
+      if (ref.includes("linkedin.com") || ref.includes("m.linkedin.com")) return "LinkedIn";
+      
+      // WhatsApp - catches both mobile and desktop
+      if (ref.includes("whatsapp.com") || ref.includes("wa.me") || ref.includes("web.whatsapp.com")) return "WhatsApp";
+      
+      // Snapchat
+      if (ref.includes("snapchat.com")) return "Snapchat";
+      
+      // YouTube
+      if (ref.includes("youtube.com") || ref.includes("youtu.be") || ref.includes("m.youtube.com")) return "YouTube";
+      
+      // Reddit
+      if (ref.includes("reddit.com") || ref.includes("m.reddit.com")) return "Reddit";
+      
+      // Pinterest
+      if (ref.includes("pinterest.com") || ref.includes("m.pinterest.com")) return "Pinterest";
+      
+      // Telegram
+      if (ref.includes("t.me") || ref.includes("telegram.org")) return "Telegram";
+      
+      // Discord
+      if (ref.includes("discord.com") || ref.includes("discord.gg")) return "Discord";
+      
       return ref;
     };
 

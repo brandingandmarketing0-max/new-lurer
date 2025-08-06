@@ -47,23 +47,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-black p-4 overflow-x-hidden">
-      {/* Debug Info - Same as test-analytics page */}
-      <div style={{ padding: 32, fontSize: 20, background: 'white', margin: '20px', borderRadius: '8px' }}>
-        <h2>Analytics Test Page (Brooke)</h2>
-        <p>
-          <strong>Raw Referrer:</strong> {rawReferrer || "None"}
-        </p>
-        <p>
-          <strong>Processed Referrer:</strong> {referrer}
-        </p>
-        <p>
-          <strong>Page:</strong> brooke
-        </p>
-        <p>
-          <strong>Timestamp:</strong> {new Date().toLocaleString()}
-        </p>
-      </div>
-      
       <div className="flex min-h-screen items-center justify-center px-2">
         <div className="w-full max-w-md mx-auto">
           {/* Main Profile Card */}
@@ -176,15 +159,7 @@ export default function ProfilePage() {
             </Link>
           </div>
 
-          {/* Footer Info */}
-          <div className="mt-6 text-center">
-            <Link href="/brooke/analytics">
-              <Button variant="ghost" className="text-[#8B7355] hover:text-[#B6997B] hover:bg-[#B6997B]/10">
-                <BarChart3 className="h-4 w-4 mr-2" />
-                View Analytics
-              </Button>
-            </Link>
-          </div>
+          
         </div>
       </div>
     </div>

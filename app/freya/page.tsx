@@ -1,12 +1,49 @@
-﻿import Image from "next/image"
+﻿"use client";
+
+import React, { useEffect, useState } from "react";
+import Image from "next/image"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles } from "lucide-react"
+import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3 } from "lucide-react"
+
+const getReadableReferrer = (ref: string) => {
+  if (!ref) return "Direct or unknown";
+  if (ref.includes("instagram.com")) return "Instagram";
+  if (ref.includes("twitter.com") || ref.includes("x.com")) return "Twitter/X";
+  if (ref.includes("facebook.com")) return "Facebook";
+  if (ref.includes("tiktok.com")) return "TikTok";
+  if (ref.includes("linkedin.com")) return "LinkedIn";
+  if (ref.includes("whatsapp.com") || ref.includes("wa.me")) return "WhatsApp";
+  return ref;
+};
 
 export default function ProfilePage() {
+  const [referrer, setReferrer] = useState<string>("");
+  const [rawReferrer, setRawReferrer] = useState<string>("");
+
+  useEffect(() => {
+    const rawRef = document.referrer;
+    setRawReferrer(rawRef);
+    setReferrer(getReadableReferrer(rawRef));
+
+    // Send to Supabase analytics
+    fetch("/api/freya-analytics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        page: "freya",
+        referrer: rawRef,
+        timestamp: new Date().toISOString(),
+        pathname: "/freya",
+        searchParams: "",
+      }),
+    }).catch((error) => {
+      console.error("Failed to track Freya analytics:", error);
+    });
+  }, []);
   return (
     <div className="min-h-screen bg-black p-4 overflow-x-hidden">
       <div className="flex min-h-screen items-center justify-center px-2">
