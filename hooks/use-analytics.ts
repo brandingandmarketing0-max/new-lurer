@@ -25,8 +25,12 @@ export const useAnalytics = (pageName: string) => {
       const pathnameStr = pathname || "";
       const searchParamsStr = ""; // Simplified - we don't need search params for basic analytics
 
+      console.log(`[Analytics] Tracking visit for page: ${pageName}`);
+      console.log(`[Analytics] Raw referrer: ${rawRef}`);
+      console.log(`[Analytics] Processed referrer: ${referrer}`);
+
       try {
-        await fetch("/api/store-referrer", {
+        const response = await fetch("/api/store-referrer", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -37,6 +41,12 @@ export const useAnalytics = (pageName: string) => {
             searchParams: searchParamsStr,
           }),
         });
+        
+        if (response.ok) {
+          console.log(`[Analytics] Successfully tracked visit for ${pageName}`);
+        } else {
+          console.error(`[Analytics] Failed to track visit for ${pageName}:`, response.status);
+        }
       } catch (error) {
         console.error("Failed to track analytics:", error);
       }

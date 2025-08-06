@@ -18,6 +18,9 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { referrer, timestamp, page, pathname, searchParams } = body;
     
+    console.log(`[API] Received analytics request for page: ${page}`);
+    console.log(`[API] Raw referrer: ${referrer}`);
+    
     // Get IP address
     const forwarded = req.headers.get("x-forwarded-for");
     const ip = forwarded ? forwarded.split(",")[0] : "unknown";
@@ -37,10 +40,13 @@ export async function POST(req: NextRequest) {
       return ref;
     };
 
+    const readableReferrer = getReadableReferrer(referrer || "");
+    console.log(`[API] Processed referrer: ${readableReferrer}`);
+
     const analyticsData: AnalyticsData = {
       page: page || "unknown",
       referrer: referrer || "",
-      readableReferrer: getReadableReferrer(referrer || ""),
+      readableReferrer: readableReferrer,
       userAgent,
       ip,
       timestamp: timestamp || new Date().toISOString(),

@@ -38,5 +38,35 @@
     "timestamp": "2025-08-06T15:40:57.277Z",
     "pathname": "/test-analytics",
     "searchParams": ""
+  },
+  {
+    "page": "test-analytics",
+    "referrer": "",
+    "readableReferrer": "Direct or unknown",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+    "ip": "::1",
+    "timestamp": "2025-08-06T16:37:36.579Z",
+    "pathname": "/test-analytics",
+    "searchParams": ""
+  },
+  {
+    "page": "test-analytics",
+    "referrer": "",
+    "readableReferrer": "Direct or unknown",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Avast/138.0.0.0",
+    "ip": "::1",
+    "timestamp": "2025-08-06T16:37:44.326Z",
+    "pathname": "/test-analytics",
+    "searchParams": ""
+  },
+  {
+    "page": "test-analytics",
+    "referrer": "",
+    "readableReferrer": "Direct or unknown",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Avast/138.0.0.0",
+    "ip": "::1",
+    "timestamp": "2025-08-06T16:37:44.333Z",
+    "pathname": "/test-analytics",
+    "searchParams": ""
   }
 ]

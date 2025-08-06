@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import Image from "next/image"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -7,14 +8,51 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3 } from "lucide-react"
-import { useAnalytics } from "@/hooks/use-analytics"
+
+const getReadableReferrer = (ref: string) => {
+  if (!ref) return "Direct or unknown";
+  if (ref.includes("instagram.com")) return "Instagram";
+  if (ref.includes("twitter.com") || ref.includes("x.com")) return "Twitter/X";
+  if (ref.includes("facebook.com")) return "Facebook";
+  if (ref.includes("tiktok.com")) return "TikTok";
+  if (ref.includes("linkedin.com")) return "LinkedIn";
+  if (ref.includes("whatsapp.com") || ref.includes("wa.me")) return "WhatsApp";
+  return ref;
+};
 
 export default function ProfilePage() {
-  // Track analytics for this page
-  useAnalytics("brooke");
+  const [referrer, setReferrer] = useState<string>("");
+  const [rawReferrer, setRawReferrer] = useState<string>("");
+
+  useEffect(() => {
+    const rawRef = document.referrer;
+    setRawReferrer(rawRef);
+    setReferrer(getReadableReferrer(rawRef));
+
+    // Send to analytics
+    fetch("/api/store-referrer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        page: "brooke",
+        referrer: rawRef,
+        timestamp: new Date().toISOString(),
+        pathname: "/brooke",
+        searchParams: "",
+      }),
+    }).catch((error) => {
+      console.error("Failed to track analytics:", error);
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-black p-4 overflow-x-hidden">
+      {/* Debug Info - Remove this later */}
+      <div className="fixed top-4 left-4 bg-white p-4 rounded shadow-lg z-50 text-sm">
+        <p><strong>Raw Referrer:</strong> {rawReferrer || "None"}</p>
+        <p><strong>Processed:</strong> {referrer}</p>
+      </div>
+      
       <div className="flex min-h-screen items-center justify-center px-2">
         <div className="w-full max-w-md mx-auto">
           {/* Main Profile Card */}
