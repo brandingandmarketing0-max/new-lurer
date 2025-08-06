@@ -29,8 +29,8 @@ export default function ProfilePage() {
     setRawReferrer(rawRef);
     setReferrer(getReadableReferrer(rawRef));
 
-    // Send to analytics
-    fetch("/api/store-referrer", {
+    // Send to Supabase analytics
+    fetch("/api/brooke-analytics", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -41,7 +41,7 @@ export default function ProfilePage() {
         searchParams: "",
       }),
     }).catch((error) => {
-      console.error("Failed to track analytics:", error);
+      console.error("Failed to track Brooke analytics:", error);
     });
   }, []);
 
