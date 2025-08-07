@@ -200,7 +200,7 @@ export default function ProfilePage() {
           {/* Footer Info */}
           <div className="mt-6 text-center">
             <p className="text-gray-500 text-sm">
-              Join thousands Exclusive Content fans enjoying exclusive content
+               
             </p>
           </div>
         </div>
