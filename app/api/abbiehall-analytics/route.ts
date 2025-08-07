@@ -32,10 +32,11 @@ export async function POST(req: NextRequest) {
   try {
     // Parse the request body
     const body = await req.json();
-    const { referrer, timestamp, page, pathname, searchParams } = body;
+    const { referrer, timestamp, page, pathname, searchParams, click_type } = body;
     
     console.log(`[ABBIEHALL API] Received analytics request for page: ${page}`);
     console.log(`[ABBIEHALL API] Raw referrer: ${referrer}`);
+    console.log(`[ABBIEHALL API] Click type: ${click_type || 'page_visit'}`);
     
     // Get IP address
     const forwarded = req.headers.get("x-forwarded-for");
@@ -98,7 +99,8 @@ export async function POST(req: NextRequest) {
       ip_address: ip,
       timestamp: timestamp || new Date().toISOString(),
       pathname: pathname || "/abbiehall",
-      search_params: searchParams || ""
+      search_params: searchParams || "",
+      click_type: click_type || "page_visit"
     };
 
     // Save to Supabase

@@ -1,3 +1,15 @@
+# PowerShell script to create custom analytics pages for all models
+# This will replace the basic AnalyticsDashboard component with custom pages
+
+$models = @(
+    "amberr", "amyleigh", "amymaxwell", "b4byyeena", "babyscarlet", "babyyeena",
+    "chloeayling", "chloeelizabeth", "chloetami", "ellejean", "em", "freya",
+    "georgiaaa", "josh", "kaceymay", "kaci", "kayley", "keanna", "kxceyrose",
+    "laurdunne", "laylasoyoung", "liamm", "libby", "lou", "megann", "missbrown",
+    "morgan", "ollie", "poppy", "sel", "skye", "sxmmermae"
+)
+
+$template = @'
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -7,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft, RefreshCw, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
 
-interface ChloetamiAnalyticsData {
+interface {MODEL}AnalyticsData {
   id: number;
   page: string;
   referrer: string;
@@ -18,22 +30,21 @@ interface ChloetamiAnalyticsData {
   pathname: string;
   search_params: string;
   created_at: string;
-  click_type?: string; // Added for click tracking
 }
 
-export default function ChloetamiAnalyticsPage() {
-  const [analyticsData, setAnalyticsData] = useState<ChloetamiAnalyticsData[]>([]);
+export default function {MODEL}AnalyticsPage() {
+  const [analyticsData, setAnalyticsData] = useState<{MODEL}AnalyticsData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchChloetamiAnalytics();
+    fetch{MODEL}Analytics();
   }, []);
 
-  const fetchChloetamiAnalytics = async () => {
+  const fetch{MODEL}Analytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/chloetami-analytics');
+      const response = await fetch('/api/{MODEL}-analytics');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }
@@ -71,25 +82,13 @@ export default function ChloetamiAnalyticsPage() {
     return acc;
   }, {} as Record<string, number>);
 
-  // Calculate click tracking statistics
-  const clickStats = analyticsData.reduce((acc, item) => {
-    const clickType = item.click_type || 'page_visit';
-    acc[clickType] = (acc[clickType] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const pageVisits = clickStats.page_visit || 0;
-  const exclusiveContentClicks = clickStats.exclusive_content || 0;
-  const subscribeClicks = clickStats.subscribe_now || 0;
-  const viewAllContentClicks = clickStats.view_all_content || 0;
-
-if (loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-white p-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-gray-800 text-center py-20">
             <BarChart3 className="h-12 w-12 mx-auto mb-4 animate-spin text-[#B19272]" />
-            <h1 className="text-2xl font-bold">Loading Chloetami Analytics...</h1>
+            <h1 className="text-2xl font-bold">Loading {MODEL} Analytics...</h1>
           </div>
         </div>
       </div>
@@ -103,7 +102,7 @@ if (loading) {
           <div className="text-gray-800 text-center py-20">
             <h1 className="text-2xl font-bold mb-4">Error Loading Analytics</h1>
             <p className="text-red-600 mb-4">{error}</p>
-            <Button onClick={fetchChloetamiAnalytics} className="bg-[#B19272] hover:bg-[#9A7B5F]">Retry</Button>
+            <Button onClick={fetch{MODEL}Analytics} className="bg-[#B19272] hover:bg-[#9A7B5F]">Retry</Button>
           </div>
         </div>
       </div>
@@ -116,19 +115,19 @@ if (loading) {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Chloetami</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for {MODEL}</h1>
             <p className="text-gray-600">Track your page performance and visitor insights</p>
           </div>
           <div className="flex items-center gap-3">
             <Button 
-              onClick={fetchChloetamiAnalytics}
+              onClick={fetch{MODEL}Analytics}
               variant="outline" 
               className="border-[#B19272] text-[#B19272] hover:bg-[#B19272] hover:text-white"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
-            <Link href="/chloetami">
+            <Link href="/{MODEL}">
               <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Profile
@@ -150,7 +149,7 @@ if (loading) {
             </div>
             <div className="flex items-center gap-2 mb-4">
               <LinkIcon className="h-4 w-4 text-[#B19272]" />
-              <span className="text-[#B19272] font-medium">luxe.bio/chloetami</span>
+              <span className="text-[#B19272] font-medium">luxe.bio/{MODEL}</span>
             </div>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-4 w-4 text-gray-500" />
@@ -198,60 +197,8 @@ if (loading) {
             </CardContent>
           </Card>
         </div>
-        {/* Click Tracking */}
-        <Card className="mb-8 border-[#B19272]">
-          <CardHeader>
-            <CardTitle className="text-gray-900">Click Tracking</CardTitle>
-            <p className="text-gray-600">Track interactions with your content and buttons</p>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-[#B19272]">{pageVisits}</div>
-                <div className="text-sm text-gray-600">Page Visits</div>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-[#B19272]">{exclusiveContentClicks}</div>
-                <div className="text-sm text-gray-600">Exclusive Content Clicks</div>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-[#B19272]">{subscribeClicks}</div>
-                <div className="text-sm text-gray-600">Subscribe Clicks</div>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-2xl font-bold text-[#B19272]">{viewAllContentClicks}</div>
-                <div className="text-sm text-gray-600">View All Content Clicks</div>
-              </div>
-            </div>
-            
-            {/* Conversion Rates */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">Conversion Rates</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="text-xl font-bold text-[#B19272]">
-                    {pageVisits > 0 ? ((exclusiveContentClicks / pageVisits) * 100).toFixed(1) : 0}%
-                  </div>
-                  <div className="text-sm text-gray-600">Exclusive Content CTR</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xl font-bold text-[#B19272]">
-                    {pageVisits > 0 ? ((subscribeClicks / pageVisits) * 100).toFixed(1) : 0}%
-                  </div>
-                  <div className="text-sm text-gray-600">Subscribe CTR</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xl font-bold text-[#B19272]">
-                    {pageVisits > 0 ? ((viewAllContentClicks / pageVisits) * 100).toFixed(1) : 0}%
-                  </div>
-                  <div className="text-sm text-gray-600">View All CTR</div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
-
+        {/* Visits by Referrer Chart */}
         <Card className="border-[#B19272]">
           <CardHeader>
             <CardTitle className="text-gray-900">Visits by Referrer</CardTitle>
@@ -301,3 +248,30 @@ if (loading) {
     </div>
   );
 }
+'@
+
+foreach ($model in $models) {
+    $analyticsPath = "app/$model/analytics/page.tsx"
+    
+    if (Test-Path $analyticsPath) {
+        Write-Host "Creating custom analytics page for $model..."
+        
+        # Replace placeholders in template
+        $customPage = $template -replace '{MODEL}', $model
+        
+        # Write the custom page
+        Set-Content -Path $analyticsPath -Value $customPage -Encoding UTF8
+        
+        Write-Host "✅ Created custom analytics page for $model"
+    } else {
+        Write-Host "❌ Analytics directory not found for $model"
+    }
+}
+
+Write-Host "`n🎉 All custom analytics pages have been created!"
+Write-Host "The pages now feature:"
+Write-Host "- White background"
+Write-Host "- #B19272 color scheme"
+Write-Host "- Visits by Referrer chart"
+Write-Host "- Page details and metrics"
+Write-Host "- No pie charts (as requested)" 

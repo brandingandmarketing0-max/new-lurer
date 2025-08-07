@@ -81,10 +81,10 @@ const MasterAnalyticsDashboard = () => {
         setAnalyticsData(data);
         
         // Calculate per-page analytics
-        const pages = [...new Set(data.map((item: AnalyticsData) => item.page))];
+        const pages = [...new Set(data.map((item: AnalyticsData) => item.page))] as string[];
         const pageStats: PageAnalytics[] = [];
         
-        pages.forEach(page => {
+        pages.forEach((page: string) => {
           const pageData = data.filter((item: AnalyticsData) => item.page === page);
           const uniqueIPs = new Set(pageData.map((item: AnalyticsData) => item.ip));
           
@@ -102,13 +102,13 @@ const MasterAnalyticsDashboard = () => {
            });
           
           const topReferrer = Object.entries(referrerCounts)
-            .sort((a, b) => b[1] - a[1])[0] || ["N/A", 0];
+            .sort((a: [string, number], b: [string, number]) => b[1] - a[1])[0] || ["N/A", 0];
           
           const topDevice = Object.entries(deviceCounts)
-            .sort((a, b) => b[1] - a[1])[0] || ["N/A", 0];
+            .sort((a: [string, number], b: [string, number]) => b[1] - a[1])[0] || ["N/A", 0];
           
           const lastVisit = pageData
-            .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]?.timestamp || "N/A";
+            .sort((a: AnalyticsData, b: AnalyticsData) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]?.timestamp || "N/A";
           
           pageStats.push({
             page,
@@ -296,4 +296,4 @@ const MasterAnalyticsDashboard = () => {
   );
 };
 
-export default MasterAnalyticsDashboard; 
+export default MasterAnalyticsDashboard;

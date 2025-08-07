@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft } from "lucide-react";
+import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft, RefreshCw, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
 
 interface BrookeAnalyticsData {
@@ -18,6 +18,7 @@ interface BrookeAnalyticsData {
   pathname: string;
   search_params: string;
   created_at: string;
+  click_type?: string; // Added for click tracking
 }
 
 export default function BrookeAnalyticsPage() {
@@ -58,12 +59,36 @@ export default function BrookeAnalyticsPage() {
     .sort(([,a], [,b]) => b - a)
     .slice(0, 5);
 
+  const getDeviceType = (userAgent: string) => {
+    if (userAgent.includes("Mobile")) return "Mobile";
+    if (userAgent.includes("Tablet")) return "Tablet";
+    return "Desktop";
+  };
+
+  const deviceStats = analyticsData.reduce((acc, item) => {
+    const device = getDeviceType(item.user_agent);
+    acc[device] = (acc[device] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Calculate click tracking statistics
+  const clickStats = analyticsData.reduce((acc, item) => {
+    const clickType = item.click_type || 'page_visit';
+    acc[clickType] = (acc[clickType] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const pageVisits = clickStats.page_visit || 0;
+  const exclusiveContentClicks = clickStats.exclusive_content || 0;
+  const subscribeClicks = clickStats.subscribe_now || 0;
+  const viewAllContentClicks = clickStats.view_all_content || 0;
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-black p-4">
+      <div className="min-h-screen bg-white p-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-white text-center py-20">
-            <BarChart3 className="h-12 w-12 mx-auto mb-4 animate-spin" />
+          <div className="text-gray-800 text-center py-20">
+            <BarChart3 className="h-12 w-12 mx-auto mb-4 animate-spin text-[#B19272]" />
             <h1 className="text-2xl font-bold">Loading Brooke Analytics...</h1>
           </div>
         </div>
@@ -73,12 +98,12 @@ export default function BrookeAnalyticsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-black p-4">
+      <div className="min-h-screen bg-white p-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-white text-center py-20">
+          <div className="text-gray-800 text-center py-20">
             <h1 className="text-2xl font-bold mb-4">Error Loading Analytics</h1>
-            <p className="text-red-400 mb-4">{error}</p>
-            <Button onClick={fetchBrookeAnalytics}>Retry</Button>
+            <p className="text-red-600 mb-4">{error}</p>
+            <Button onClick={fetchBrookeAnalytics} className="bg-[#B19272] hover:bg-[#9A7B5F]">Retry</Button>
           </div>
         </div>
       </div>
@@ -86,124 +111,194 @@ export default function BrookeAnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black p-4">
+    <div className="min-h-screen bg-white p-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Brooke Analytics Dashboard</h1>
-            <p className="text-gray-400">Track your page performance and visitor insights</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Brooke</h1>
+            <p className="text-gray-600">Track your page performance and visitor insights</p>
           </div>
-          <Link href="/brooke">
-            <Button variant="outline" className="text-white border-gray-600">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Profile
+          <div className="flex items-center gap-3">
+            <Button 
+              onClick={fetchBrookeAnalytics}
+              variant="outline" 
+              className="border-[#B19272] text-[#B19272] hover:bg-[#B19272] hover:text-white"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
             </Button>
-          </Link>
+            <Link href="/brooke">
+              <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Profile
+              </Button>
+            </Link>
+          </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-gray-900 border-gray-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Total Visits</p>
-                  <p className="text-3xl font-bold text-white">{totalVisits}</p>
-                </div>
-                <Eye className="h-8 w-8 text-blue-400" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-900 border-gray-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Unique Visitors</p>
-                  <p className="text-3xl font-bold text-white">{uniqueIPs}</p>
-                </div>
-                <Users className="h-8 w-8 text-green-400" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-900 border-gray-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-400 text-sm">Latest Visit</p>
-                  <p className="text-lg font-semibold text-white">
-                    {analyticsData.length > 0 
-                      ? new Date(analyticsData[0].timestamp).toLocaleDateString()
-                      : 'No visits'
-                    }
-                  </p>
-                </div>
-                <Clock className="h-8 w-8 text-purple-400" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Top Referrers */}
-        <Card className="bg-gray-900 border-gray-700 mb-8">
+        {/* Link Overview Card */}
+        <Card className="mb-6 border-[#B19272]">
           <CardHeader>
-            <CardTitle className="text-white flex items-center">
-              <Globe className="h-5 w-5 mr-2" />
-              Top Traffic Sources
-            </CardTitle>
+            <CardTitle className="text-gray-900">Link Overview</CardTitle>
+            <p className="text-gray-600">Link details and visitor metrics</p>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {topReferrers.map(([referrer, count]) => (
-                <div key={referrer} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
-                  <div className="flex items-center">
-                    <Badge variant="secondary" className="mr-3">
-                      {referrer}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-white font-semibold mr-2">{count}</span>
-                    <span className="text-gray-400 text-sm">visits</span>
-                  </div>
+            <div className="flex items-center gap-2 mb-4">
+              <Badge className="bg-green-100 text-green-800 border-green-200">Active</Badge>
+              <Badge className="bg-gray-100 text-gray-800 border-gray-200">Redirect</Badge>
+            </div>
+            <div className="flex items-center gap-2 mb-4">
+              <LinkIcon className="h-4 w-4 text-[#B19272]" />
+              <span className="text-[#B19272] font-medium">luxe.bio/brooke</span>
+            </div>
+            <div className="flex items-center gap-2 mb-4">
+              <Eye className="h-4 w-4 text-gray-500" />
+              <span className="text-gray-700">{totalVisits} All-Time Visitors</span>
+            </div>
+            <div className="text-sm text-gray-500">Created on Aug 05, 2025</div>
+          </CardContent>
+        </Card>
+
+        {/* Key Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="border-[#B19272]">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Total period visitors</p>
+                  <p className="text-3xl font-bold text-gray-900">{totalVisits}</p>
                 </div>
-              ))}
+                <Users className="h-8 w-8 text-[#B19272]" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-[#B19272]">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Unique visitors</p>
+                  <p className="text-3xl font-bold text-gray-900">{uniqueIPs}</p>
+                </div>
+                <TrendingUp className="h-8 w-8 text-[#B19272]" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-[#B19272]">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Mobile visitors</p>
+                  <p className="text-3xl font-bold text-gray-900">{deviceStats.Mobile || 0}</p>
+                </div>
+                <Globe className="h-8 w-8 text-[#B19272]" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Click Tracking */}
+        <Card className="mb-8 border-[#B19272]">
+          <CardHeader>
+            <CardTitle className="text-gray-900">Click Tracking</CardTitle>
+            <p className="text-gray-600">Track interactions with your content and buttons</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="text-2xl font-bold text-[#B19272]">{pageVisits}</div>
+                <div className="text-sm text-gray-600">Page Visits</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="text-2xl font-bold text-[#B19272]">{exclusiveContentClicks}</div>
+                <div className="text-sm text-gray-600">Exclusive Content Clicks</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="text-2xl font-bold text-[#B19272]">{subscribeClicks}</div>
+                <div className="text-sm text-gray-600">Subscribe Clicks</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="text-2xl font-bold text-[#B19272]">{viewAllContentClicks}</div>
+                <div className="text-sm text-gray-600">View All Content Clicks</div>
+              </div>
+            </div>
+            
+            {/* Conversion Rates */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Conversion Rates</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#B19272]">
+                    {pageVisits > 0 ? ((exclusiveContentClicks / pageVisits) * 100).toFixed(1) : 0}%
+                  </div>
+                  <div className="text-sm text-gray-600">Exclusive Content CTR</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#B19272]">
+                    {pageVisits > 0 ? ((subscribeClicks / pageVisits) * 100).toFixed(1) : 0}%
+                  </div>
+                  <div className="text-sm text-gray-600">Subscribe CTR</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#B19272]">
+                    {pageVisits > 0 ? ((viewAllContentClicks / pageVisits) * 100).toFixed(1) : 0}%
+                  </div>
+                  <div className="text-sm text-gray-600">View All CTR</div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Recent Activity */}
-        <Card className="bg-gray-900 border-gray-700">
+        {/* Visits by Referrer Chart */}
+        <Card className="border-[#B19272]">
           <CardHeader>
-            <CardTitle className="text-white">Recent Activity</CardTitle>
+            <CardTitle className="text-gray-900">Visits by Referrer</CardTitle>
+            <p className="text-gray-600">Distribution of visits from different referring domains</p>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {analyticsData.slice(0, 10).map((item) => (
-                <div key={item.id} className="p-4 bg-gray-800 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-white font-medium">
-                        Visit from {item.readable_referrer}
-                      </p>
-                      <p className="text-gray-400 text-sm">
-                        {new Date(item.timestamp).toLocaleString()}
-                      </p>
-                      <p className="text-gray-500 text-xs">
-                        IP: {item.ip_address}
-                      </p>
+            {topReferrers.length > 0 ? (
+              <div className="space-y-4">
+                {topReferrers.map(([referrer, count], index) => (
+                  <div key={referrer} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="h-4 w-4 rounded"
+                        style={{ backgroundColor: index === 0 ? '#B19272' : '#E5E7EB' }}
+                      />
+                      <span className="text-gray-700 font-medium">{referrer}</span>
                     </div>
-                    <Badge variant="outline" className="text-gray-300">
-                      {item.pathname}
-                    </Badge>
+                    <div className="flex items-center gap-4">
+                      <div className="w-32 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="h-2 rounded-full"
+                          style={{ 
+                            width: `${(count / Math.max(...topReferrers.map(([,c]) => c))) * 100}%`,
+                            backgroundColor: index === 0 ? '#B19272' : '#9CA3AF'
+                          }}
+                        />
+                      </div>
+                      <span className="text-gray-900 font-semibold min-w-[3rem] text-right">{count}</span>
+                    </div>
                   </div>
+                ))}
+                <div className="pt-4 border-t border-gray-200">
+                  <p className="text-sm text-gray-600">
+                    {totalVisits} total visits � Showing click distribution across all referral sources
+                  </p>
                 </div>
-              ))}
-            </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <BarChart3 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-500">No referrer data available yet</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
     </div>
   );
-} 
+}

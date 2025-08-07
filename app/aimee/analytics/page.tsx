@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +17,7 @@ interface AimeeAnalyticsData {
   timestamp: string;
   pathname: string;
   search_params: string;
+  click_type?: string; // Added for click tracking
   created_at: string;
 }
 
@@ -70,6 +71,18 @@ export default function AimeeAnalyticsPage() {
     return acc;
   }, {} as Record<string, number>);
 
+  // Calculate click tracking statistics
+  const clickStats = analyticsData.reduce((acc, item) => {
+    const clickType = item.click_type || 'page_visit';
+    acc[clickType] = (acc[clickType] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const pageVisits = clickStats.page_visit || 0;
+  const exclusiveContentClicks = clickStats.exclusive_content || 0;
+  const subscribeClicks = clickStats.subscribe_now || 0;
+  const viewAllContentClicks = clickStats.view_all_content || 0;
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white p-4">
@@ -103,7 +116,7 @@ export default function AimeeAnalyticsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for aimee</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Aimee</h1>
             <p className="text-gray-600">Track your page performance and visitor insights</p>
           </div>
           <div className="flex items-center gap-3">
@@ -186,6 +199,59 @@ export default function AimeeAnalyticsPage() {
           </Card>
         </div>
 
+        {/* Click Tracking */}
+        <Card className="mb-8 border-[#B19272]">
+          <CardHeader>
+            <CardTitle className="text-gray-900">Click Tracking</CardTitle>
+            <p className="text-gray-600">Track interactions with your content and buttons</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="text-2xl font-bold text-[#B19272]">{pageVisits}</div>
+                <div className="text-sm text-gray-600">Page Visits</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="text-2xl font-bold text-[#B19272]">{exclusiveContentClicks}</div>
+                <div className="text-sm text-gray-600">Exclusive Content Clicks</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="text-2xl font-bold text-[#B19272]">{subscribeClicks}</div>
+                <div className="text-sm text-gray-600">Subscribe Clicks</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="text-2xl font-bold text-[#B19272]">{viewAllContentClicks}</div>
+                <div className="text-sm text-gray-600">View All Content Clicks</div>
+              </div>
+            </div>
+            
+            {/* Conversion Rates */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Conversion Rates</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#B19272]">
+                    {pageVisits > 0 ? ((exclusiveContentClicks / pageVisits) * 100).toFixed(1) : 0}%
+                  </div>
+                  <div className="text-sm text-gray-600">Exclusive Content CTR</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#B19272]">
+                    {pageVisits > 0 ? ((subscribeClicks / pageVisits) * 100).toFixed(1) : 0}%
+                  </div>
+                  <div className="text-sm text-gray-600">Subscribe CTR</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#B19272]">
+                    {pageVisits > 0 ? ((viewAllContentClicks / pageVisits) * 100).toFixed(1) : 0}%
+                  </div>
+                  <div className="text-sm text-gray-600">View All CTR</div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Visits by Referrer Chart */}
         <Card className="border-[#B19272]">
           <CardHeader>
@@ -220,7 +286,7 @@ export default function AimeeAnalyticsPage() {
                 ))}
                 <div className="pt-4 border-t border-gray-200">
                   <p className="text-sm text-gray-600">
-                    {totalVisits} total visits • Showing click distribution across all referral sources
+                    {totalVisits} total visits – Showing click distribution across all referral sources
                   </p>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image"
@@ -39,11 +39,44 @@ export default function ProfilePage() {
         timestamp: new Date().toISOString(),
         pathname: "/brooke",
         searchParams: "",
+        click_type: "page_visit"
       }),
     }).catch((error) => {
       console.error("Failed to track Brooke analytics:", error);
     });
   }, []);
+
+  // Click tracking functions
+  const trackClick = async (clickType: string) => {
+    try {
+      await fetch("/api/brooke-analytics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          page: "brooke",
+          referrer: rawReferrer,
+          timestamp: new Date().toISOString(),
+          pathname: "/brooke",
+          searchParams: "",
+          click_type: clickType
+        }),
+      });
+    } catch (error) {
+      console.error(`Failed to track ${clickType} click:`, error);
+    }
+  };
+
+  const handleExclusiveContentClick = () => {
+    trackClick("exclusive_content");
+  };
+
+  const handleSubscribeClick = () => {
+    trackClick("subscribe_now");
+  };
+
+  const handleViewAllContentClick = () => {
+    trackClick("view_all_content");
+  };
 
   return (
     <div className="min-h-screen bg-black p-4 overflow-x-hidden">
@@ -109,54 +142,60 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          {/* Content Preview Card - Now Clickable */}
-          <Link href="https://onlyfans.com/brooke_xox" target="_blank" rel="noopener noreferrer">
-            <Card className="mt-6 relative overflow-hidden border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 backdrop-blur-sm">
-              <CardContent className="p-0">
-                <div className="relative group">
-                  <Image
-                    src="/images/brooke2.png"
-                    alt="Exclusive Content Preview"
-                    width={400}
-                    height={300}
-                    className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-black/30"></div>
-                  
-                  {/* Content Badge */}
-                  <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                    <Badge className="bg-[#B6997B]/80 text-white border-0">
-                      <span className="flex items-center gap-1">
-                        <Star className="h-3 w-3" />
-                        Exclusive Content
-                      </span>
-                    </Badge>
-                  </div>
+          {/* Content Preview Card - Now Clickable with Tracking */}
+          <div onClick={handleExclusiveContentClick}>
+            <Link href="https://onlyfans.com/brooke_xox" target="_blank" rel="noopener noreferrer">
+              <Card className="mt-6 relative overflow-hidden border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 backdrop-blur-sm">
+                <CardContent className="p-0">
+                  <div className="relative group">
+                    <Image
+                      src="/images/brooke2.png"
+                      alt="Exclusive Content Preview"
+                      width={400}
+                      height={300}
+                      className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-black/30"></div>
+                    
+                    {/* Content Badge */}
+                    <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                      <Badge className="bg-[#B6997B]/80 text-white border-0">
+                        <span className="flex items-center gap-1">
+                          <Star className="h-3 w-3" />
+                          Exclusive Content
+                        </span>
+                      </Badge>
+                    </div>
 
-                  {/* Lock Icon */}
-                  <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/40 backdrop-blur-sm text-[#8B7355] border border-[#B6997B]/50">
-                    <Lock className="h-4 w-4" />
+                    {/* Lock Icon */}
+                    <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/40 backdrop-blur-sm text-[#8B7355] border border-[#B6997B]/50">
+                      <Lock className="h-4 w-4" />
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
 
           {/* Action Buttons */}
           <div className="mt-6 space-y-4">
-            <Link href="https://onlyfans.com/brooke_xox" target="_blank" rel="noopener noreferrer">
-              <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
-                <Heart className="h-5 w-5 mr-2" />
-                Subscribe Now
-              </Button>
-            </Link>
-            <Link href="https://onlyfans.com/brooke_xox" target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" className="w-full border-[#B6997B]/50 text-[#8B7355] hover:bg-[#B6997B]/20 backdrop-blur-sm">
-                View All Content
-              </Button>
-            </Link>
+            <div onClick={handleSubscribeClick}>
+              <Link href="https://onlyfans.com/brooke_xox" target="_blank" rel="noopener noreferrer">
+                <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
+                  <Heart className="h-5 w-5 mr-2" />
+                  Subscribe Now
+                </Button>
+              </Link>
+            </div>
+            <div onClick={handleViewAllContentClick}>
+              <Link href="https://onlyfans.com/brooke_xox" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="w-full border-[#B6997B]/50 text-[#8B7355] hover:bg-[#B6997B]/20 backdrop-blur-sm">
+                  View All Content
+                </Button>
+              </Link>
+            </div>
           </div>
 
           

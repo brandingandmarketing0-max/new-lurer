@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { supabase, BrookeAnalyticsData } from "@/lib/supabase";
 
 export async function GET() {
@@ -32,10 +32,11 @@ export async function POST(req: NextRequest) {
   try {
     // Parse the request body
     const body = await req.json();
-    const { referrer, timestamp, page, pathname, searchParams } = body;
+    const { referrer, timestamp, page, pathname, searchParams, click_type } = body;
     
     console.log(`[CHLOETAMI API] Received analytics request for page: ${page}`);
     console.log(`[CHLOETAMI API] Raw referrer: ${referrer}`);
+    console.log(`[CHLOETAMI API] Click type: ${click_type || 'page_visit'}`);
     
     // Get IP address
     const forwarded = req.headers.get("x-forwarded-for");
@@ -98,7 +99,8 @@ export async function POST(req: NextRequest) {
       ip_address: ip,
       timestamp: timestamp || new Date().toISOString(),
       pathname: pathname || "/chloetami",
-      search_params: searchParams || ""
+      search_params: searchParams || "",
+      click_type: click_type || "page_visit"
     };
 
     // Save to Supabase

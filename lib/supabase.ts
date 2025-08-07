@@ -30,5 +30,6 @@ export interface BrookeAnalyticsData {
   timestamp: string
   pathname: string
   search_params: string
+  click_type?: string
   created_at?: string
 } 

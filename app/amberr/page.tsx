@@ -39,11 +39,44 @@ export default function ProfilePage() {
         timestamp: new Date().toISOString(),
         pathname: "/amberr",
         searchParams: "",
+        click_type: "page_visit"
       }),
     }).catch((error) => {
       console.error("Failed to track Amberr analytics:", error);
     });
   }, []);
+
+  // Click tracking functions
+  const trackClick = async (clickType: string) => {
+    try {
+      await fetch("/api/amberr-analytics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          page: "amberr",
+          referrer: rawReferrer,
+          timestamp: new Date().toISOString(),
+          pathname: "/amberr",
+          searchParams: "",
+          click_type: clickType
+        }),
+      });
+    } catch (error) {
+      console.error(`Failed to track ${clickType} click:`, error);
+    }
+  };
+
+  const handleExclusiveContentClick = () => {
+    trackClick("exclusive_content");
+  };
+
+  const handleSubscribeClick = () => {
+    trackClick("subscribe_now");
+  };
+
+  const handleViewAllContentClick = () => {
+    trackClick("view_all_content");
+  };
   return (
     <div className="min-h-screen bg-black p-4 overflow-x-hidden">
       <div className="flex min-h-screen items-center justify-center px-2">
@@ -108,8 +141,9 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          {/* Content Preview Card - Now Clickable */}
-          <Link href="https://onlyfans.com/sassylilangelxxx" target="_blank" rel="noopener noreferrer">
+          {/* Content Preview Card - Now Clickable with Tracking */}
+          <div onClick={handleExclusiveContentClick}>
+            <Link href="https://onlyfans.com/sassylilangelxxx" target="_blank" rel="noopener noreferrer">
             <Card className="mt-6 relative overflow-hidden border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-lg backdrop-blur-sm cursor-pointer hover:shadow-xl transition-shadow duration-300">
               <CardContent className="p-0">
                 <div className="relative group">
@@ -141,21 +175,26 @@ export default function ProfilePage() {
                 </div>
               </CardContent>
             </Card>
-          </Link>
+            </Link>
+          </div>
 
           {/* Action Buttons */}
           <div className="mt-6 space-y-4">
-            <Link href="https://onlyfans.com/sassylilangelxxx" target="_blank" rel="noopener noreferrer">
-              <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
-                <Heart className="h-5 w-5 mr-2" />
-                Subscribe Now
-              </Button>
-            </Link>
-            <Link href="https://onlyfans.com/sassylilangelxxx" target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" className="w-full border-gray-300 text-[#8B7355] hover:bg-gray-50">
-                View All Content
-              </Button>
-            </Link>
+            <div onClick={handleSubscribeClick}>
+              <Link href="https://onlyfans.com/sassylilangelxxx" target="_blank" rel="noopener noreferrer">
+                <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
+                  <Heart className="h-5 w-5 mr-2" />
+                  Subscribe Now
+                </Button>
+              </Link>
+            </div>
+            <div onClick={handleViewAllContentClick}>
+              <Link href="https://onlyfans.com/sassylilangelxxx" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="w-full border-gray-300 text-[#8B7355] hover:bg-gray-50">
+                  View All Content
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Footer Info */}
