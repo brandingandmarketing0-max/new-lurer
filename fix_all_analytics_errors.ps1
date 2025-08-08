@@ -125,8 +125,8 @@ foreach ($file in $analyticsFiles) {
     # Fix 10: Fix analytics title
     $content = $content -replace "Analytics for $profileName", "Analytics for $($profileName.Substring(0,1).ToUpper() + $profileName.Substring(1))"
     
-    # Fix 11: Fix luxe.bio link
-    $content = $content -replace "luxe\.bio/$profileName", "luxe.bio/$profileName"
+    # Fix 11: Fix  lure.bio link
+    $content = $content -replace "luxe\.bio/$profileName", " lure.bio/$profileName"
     
     # Fix 12: Fix back to profile link
     $content = $content -replace 'href="/$profileName"', "href='/$profileName'"
@@ -155,6 +155,6 @@ Write-Host "7. Inconsistent fetch function naming" -ForegroundColor White
 Write-Host "8. API endpoint references" -ForegroundColor White
 Write-Host "9. Loading text inconsistencies" -ForegroundColor White
 Write-Host "10. Analytics title inconsistencies" -ForegroundColor White
-Write-Host "11. luxe.bio link references" -ForegroundColor White
+Write-Host "11.  lure.bio link references" -ForegroundColor White
 Write-Host "12. Back to profile link references" -ForegroundColor White
 Write-Host "13. Extra closing braces causing syntax errors" -ForegroundColor White 

@@ -75,7 +75,7 @@ export default function DeepLinksPage() {
 
             return {
               name: modelName,
-              url: `luxe.bio/${modelName}`,
+              url: ` lure.bio/${modelName}`,
               totalVisitors,
               pageVisits,
               exclusiveContentClicks,
@@ -86,7 +86,7 @@ export default function DeepLinksPage() {
           } else {
             return {
               name: modelName,
-              url: `luxe.bio/${modelName}`,
+              url: ` lure.bio/${modelName}`,
               totalVisitors: 0,
               pageVisits: 0,
               exclusiveContentClicks: 0,
@@ -98,7 +98,7 @@ export default function DeepLinksPage() {
         } catch (error) {
           return {
             name: modelName,
-            url: `luxe.bio/${modelName}`,
+            url: ` lure.bio/${modelName}`,
             totalVisitors: 0,
             pageVisits: 0,
             exclusiveContentClicks: 0,

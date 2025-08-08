@@ -150,7 +150,7 @@ export default function BabyyeenaAnalyticsPage() {
             </div>
             <div className="flex items-center gap-2 mb-4">
               <LinkIcon className="h-4 w-4 text-[#B19272]" />
-              <span className="text-[#B19272] font-medium">luxe.bio/babyyeena</span>
+              <span className="text-[#B19272] font-medium"> lure.bio/babyyeena</span>
             </div>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-4 w-4 text-gray-500" />
