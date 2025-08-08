@@ -149,7 +149,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src="/images/morgan2.png"
+                      src="/images/morgan1.png"
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}

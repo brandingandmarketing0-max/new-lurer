@@ -98,7 +98,7 @@ export default function ProfilePage() {
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-[#B6997B]/60 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
                   <Avatar className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg">
-                    <AvatarImage src="/images/aime1.png" alt="Aime" className="object-cover" />
+                    <AvatarImage src="/images/aime1.png" alt="Aimee" className="object-cover" />
                     <AvatarFallback className="bg-[#B6997B]/20 text-[#8B7355] text-2xl font-bold">
                       AI
                     </AvatarFallback>
@@ -119,7 +119,7 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                    Aime
+                    Aimee
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
                 </div>

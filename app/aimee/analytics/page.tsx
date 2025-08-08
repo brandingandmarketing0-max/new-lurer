@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft, RefreshCw, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 
 interface AimeeAnalyticsData {
   id: number;
@@ -111,8 +112,9 @@ export default function AimeeAnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white p-4">
-      <div className="max-w-6xl mx-auto">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-white p-4">
+        <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -300,5 +302,6 @@ export default function AimeeAnalyticsPage() {
         </Card>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
