@@ -48,8 +48,8 @@ export default function DeepLinksPage() {
     "babyscarlet", "babyyeena", "brooke", "chloeayling", "chloeelizabeth", 
     "chloetami", "ellejean", "em", "freya", "georgiaaa", "josh", "kaceymay", 
     "kaci", "kayley", "keanna", "kxceyrose", "laurdunne", "laylasoyoung", 
-    "liamm", "libby", "lou", "megann", "missbrown", "morgan", "ollie", 
-    "poppy", "sel", "skye", "sxmmermae"
+     "libby", "lou", "megann", "missbrown", "morgan", "ollie", 
+    "poppy", "rachel", "sel", "shania", "skye", "steff", "sxmmermae"
   ];
 
   useEffect(() => {
