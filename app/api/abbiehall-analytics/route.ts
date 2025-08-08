@@ -5,10 +5,24 @@ export async function GET() {
   try {
     console.log("[ABBIEHALL API] Fetching analytics data from Supabase");
     
+    // First, get the total count
+    const { count, error: countError } = await supabase
+      .from('abbiehall_analytics')
+      .select('*', { count: 'exact', head: true });
+
+    if (countError) {
+      console.error("[ABBIEHALL API] Count error:", countError);
+      return NextResponse.json({ success: false, error: countError.message }, { status: 500 });
+    }
+
+    console.log("[ABBIEHALL API] Total records in database:", count);
+
+    // Get all records for accurate analytics calculations
     const { data, error } = await supabase
       .from('abbiehall_analytics')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(100000); // Set a very high limit to get all records
 
     if (error) {
       console.error("[ABBIEHALL API] Supabase fetch error:", error);
@@ -19,7 +33,9 @@ export async function GET() {
 
     return NextResponse.json({ 
       success: true, 
-      data: data || [] 
+      data: data || [],
+      totalRecords: count,
+      fetchedRecords: data?.length || 0
     });
 
   } catch (error) {

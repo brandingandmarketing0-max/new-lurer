@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft, RefreshCw, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 
 interface SxmmermaeAnalyticsData {
   id: number;
@@ -22,6 +23,14 @@ interface SxmmermaeAnalyticsData {
 }
 
 export default function SxmmermaeAnalyticsPage() {
+  return (
+    <ProtectedRoute>
+      <SxmmermaeAnalyticsContent />
+    </ProtectedRoute>
+  );
+}
+
+function SxmmermaeAnalyticsContent() {
   const [analyticsData, setAnalyticsData] = useState<SxmmermaeAnalyticsData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

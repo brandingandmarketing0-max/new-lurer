@@ -44,7 +44,7 @@ export default function DeepLinksPage() {
   const { signOut, user } = useAuth();
 
   const modelNames = [
-    "abbiehall", "aimee", "amberr", "amyleigh", "amymaxwell", "b4byyeena", 
+    "abbiehall", "aimee", "alaska", "amberr", "amyleigh", "amymaxwell", "b4byyeena", 
     "babyscarlet", "babyyeena", "brooke", "chloeayling", "chloeelizabeth", 
     "chloetami", "ellejean", "em", "freya", "georgiaaa", "josh", "kaceymay", 
     "kaci", "kayley", "keanna", "kxceyrose", "laurdunne", "laylasoyoung", 

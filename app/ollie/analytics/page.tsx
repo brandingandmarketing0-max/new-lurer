@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft, RefreshCw, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 
 interface OllieAnalyticsData {
   id: number;
@@ -22,6 +23,14 @@ interface OllieAnalyticsData {
 }
 
 export default function OllieAnalyticsPage() {
+  return (
+    <ProtectedRoute>
+      <OllieAnalyticsContent />
+    </ProtectedRoute>
+  );
+}
+
+function OllieAnalyticsContent() {
   const [analyticsData, setAnalyticsData] = useState<OllieAnalyticsData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

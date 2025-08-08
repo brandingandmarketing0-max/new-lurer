@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft, RefreshCw, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 
 interface B4byyeenaAnalyticsData {
   id: number;
@@ -22,6 +23,14 @@ interface B4byyeenaAnalyticsData {
 }
 
 export default function B4byyeenaAnalyticsPage() {
+  return (
+    <ProtectedRoute>
+      <B4byyeenaAnalyticsContent />
+    </ProtectedRoute>
+  );
+}
+
+function B4byyeenaAnalyticsContent() {
   const [analyticsData, setAnalyticsData] = useState<B4byyeenaAnalyticsData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

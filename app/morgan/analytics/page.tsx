@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft, RefreshCw, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 
 interface MorganAnalyticsData {
   id: number;
@@ -22,6 +23,14 @@ interface MorganAnalyticsData {
 }
 
 export default function MorganAnalyticsPage() {
+  return (
+    <ProtectedRoute>
+      <MorganAnalyticsContent />
+    </ProtectedRoute>
+  );
+}
+
+function MorganAnalyticsContent() {
   const [analyticsData, setAnalyticsData] = useState<MorganAnalyticsData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

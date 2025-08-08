@@ -24,6 +24,8 @@ interface AimeeAnalyticsData {
 
 export default function AimeeAnalyticsPage() {
   const [analyticsData, setAnalyticsData] = useState<AimeeAnalyticsData[]>([]);
+  const [totalRecords, setTotalRecords] = useState<number>(0);
+  const [fetchedRecords, setFetchedRecords] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,8 +40,20 @@ export default function AimeeAnalyticsPage() {
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }
-      const data = await response.json();
-      setAnalyticsData(data.data || []);
+      const result = await response.json();
+      console.log("Aimee analytics response:", result);
+      
+      if (result.success && result.data) {
+        setAnalyticsData(result.data || []);
+        setTotalRecords(result.totalRecords || 0);
+        setFetchedRecords(result.fetchedRecords || 0);
+        console.log("Total records in database:", result.totalRecords);
+        console.log("Fetched records:", result.fetchedRecords);
+      } else {
+        setAnalyticsData([]);
+        setTotalRecords(0);
+        setFetchedRecords(0);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch data');
     } finally {
@@ -120,6 +134,11 @@ export default function AimeeAnalyticsPage() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Aimee</h1>
             <p className="text-gray-600">Track your page performance and visitor insights</p>
+            {totalRecords > 0 && (
+              <p className="text-sm text-gray-500">
+                Analyzing {fetchedRecords} of {totalRecords} total records
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <Button 
@@ -156,7 +175,7 @@ export default function AimeeAnalyticsPage() {
             </div>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-4 w-4 text-gray-500" />
-              <span className="text-gray-700">{totalVisits} All-Time Visitors</span>
+              <span className="text-gray-700">{totalRecords} All-Time Visitors</span>
             </div>
             <div className="text-sm text-gray-500">Created on Aug 05, 2025</div>
           </CardContent>
@@ -169,7 +188,7 @@ export default function AimeeAnalyticsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Total period visitors</p>
-                  <p className="text-3xl font-bold text-gray-900">{totalVisits}</p>
+                  <p className="text-3xl font-bold text-gray-900">{totalRecords}</p>
                 </div>
                 <Users className="h-8 w-8 text-[#B19272]" />
               </div>
@@ -288,7 +307,7 @@ export default function AimeeAnalyticsPage() {
                 ))}
                 <div className="pt-4 border-t border-gray-200">
                   <p className="text-sm text-gray-600">
-                    {totalVisits} total visits – Showing click distribution across all referral sources
+                    {totalRecords} total visits – Showing click distribution across all referral sources
                   </p>
                 </div>
               </div>

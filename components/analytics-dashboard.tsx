@@ -37,6 +37,8 @@ interface AnalyticsSummary {
   topReferrers: { referrer: string; count: number }[];
   deviceTypes: { type: string; count: number }[];
   recentVisits: AnalyticsData[];
+  totalRecords?: number;
+  fetchedRecords?: number;
 }
 
 const getReadableReferrer = (ref: string) => {
@@ -67,51 +69,73 @@ const AnalyticsDashboard = ({ pageName }: { pageName: string }) => {
     uniqueVisitors: 0,
     topReferrers: [],
     deviceTypes: [],
-    recentVisits: []
+    recentVisits: [],
+    totalRecords: 0,
+    fetchedRecords: 0
   });
   const [loading, setLoading] = useState(true);
 
   const loadAnalyticsData = async () => {
     try {
       setLoading(true);
-      // In a real app, you'd fetch from your database
-      // For now, we'll simulate with the JSON file data
-      const response = await fetch('/api/analytics');
+      // Fetch from the specific page analytics API route
+      const apiRoute = `/api/${pageName.toLowerCase()}-analytics`;
+      console.log("Fetching from API route:", apiRoute);
+      const response = await fetch(apiRoute);
       if (response.ok) {
-        const data = await response.json();
-        console.log("Analytics data received:", data);
-        const pageData = data.filter((item: AnalyticsData) => item.page === pageName);
-        console.log("Page data for", pageName, ":", pageData);
-        setAnalyticsData(pageData);
+        const result = await response.json();
+        console.log("Analytics data received:", result);
         
-        // Calculate summary
-        const uniqueIPs = new Set(pageData.map((item: AnalyticsData) => item.ip));
-        const referrerCounts: { [key: string]: number } = {};
-        const deviceCounts: { [key: string]: number } = {};
-        
-        pageData.forEach((item: AnalyticsData) => {
-          // Handle both new format (with readableReferrer) and old format
-          const readableRef = item.readableReferrer || getReadableReferrer(item.referrer);
-          referrerCounts[readableRef] = (referrerCounts[readableRef] || 0) + 1;
+        if (result.success && result.data) {
+          const pageData = result.data;
+          console.log("Page data for", pageName, ":", pageData);
+          console.log("Total records:", result.totalRecords);
+          console.log("Fetched records:", result.fetchedRecords);
+                    setAnalyticsData(pageData);
           
-          const deviceType = getDeviceType(item.userAgent);
-          deviceCounts[deviceType] = (deviceCounts[deviceType] || 0) + 1;
-        });
-        
-        setSummary({
-          totalVisitors: pageData.length,
-          uniqueVisitors: uniqueIPs.size,
-          topReferrers: Object.entries(referrerCounts)
-            .map(([referrer, count]) => ({ referrer, count }))
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 5),
-          deviceTypes: Object.entries(deviceCounts)
-            .map(([type, count]) => ({ type, count }))
-            .sort((a, b) => b.count - a.count),
-          recentVisits: pageData
-            .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-            .slice(0, 10)
-        });
+          // Calculate summary
+          const uniqueIPs = new Set(pageData.map((item: AnalyticsData) => item.ip));
+          const referrerCounts: { [key: string]: number } = {};
+          const deviceCounts: { [key: string]: number } = {};
+          
+          pageData.forEach((item: AnalyticsData) => {
+            // Handle both new format (with readableReferrer) and old format
+            const readableRef = item.readableReferrer || getReadableReferrer(item.referrer);
+            referrerCounts[readableRef] = (referrerCounts[readableRef] || 0) + 1;
+            
+            const deviceType = getDeviceType(item.userAgent);
+            deviceCounts[deviceType] = (deviceCounts[deviceType] || 0) + 1;
+          });
+          
+          setSummary({
+            totalVisitors: result.totalRecords || pageData.length, // Use total records from database, fallback to fetched count
+            uniqueVisitors: uniqueIPs.size,
+            topReferrers: Object.entries(referrerCounts)
+              .map(([referrer, count]) => ({ referrer, count }))
+              .sort((a, b) => b.count - a.count)
+              .slice(0, 5),
+            deviceTypes: Object.entries(deviceCounts)
+              .map(([type, count]) => ({ type, count }))
+              .sort((a, b) => b.count - a.count),
+            recentVisits: pageData
+              .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+              .slice(0, 10),
+            totalRecords: result.totalRecords,
+            fetchedRecords: result.fetchedRecords
+          });
+        } else {
+          console.error("API response indicates failure:", result);
+          setAnalyticsData([]);
+                      setSummary({
+              totalVisitors: 0,
+              uniqueVisitors: 0,
+              topReferrers: [],
+              deviceTypes: [],
+              recentVisits: [],
+              totalRecords: 0,
+              fetchedRecords: 0
+            });
+        }
       }
     } catch (error) {
       console.error("Error loading analytics:", error);
@@ -156,6 +180,11 @@ const AnalyticsDashboard = ({ pageName }: { pageName: string }) => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">{pageName} Analytics</h1>
           <p className="text-gray-600">Track your page performance and visitor insights</p>
+          {summary.totalRecords && summary.fetchedRecords && (
+            <p className="text-sm text-gray-500 mt-1">
+              Showing {summary.fetchedRecords} of {summary.totalRecords} total records
+            </p>
+          )}
         </div>
         <div className="flex gap-2">
           <Button onClick={loadAnalyticsData} variant="outline">

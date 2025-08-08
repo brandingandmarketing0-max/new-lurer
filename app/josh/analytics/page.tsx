@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft, RefreshCw, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 
 interface JoshAnalyticsData {
   id: number;
@@ -22,7 +23,17 @@ interface JoshAnalyticsData {
 }
 
 export default function JoshAnalyticsPage() {
+  return (
+    <ProtectedRoute>
+      <JoshAnalyticsContent />
+    </ProtectedRoute>
+  );
+}
+
+function JoshAnalyticsContent() {
   const [analyticsData, setAnalyticsData] = useState<JoshAnalyticsData[]>([]);
+  const [totalRecords, setTotalRecords] = useState<number>(0);
+  const [fetchedRecords, setFetchedRecords] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,8 +48,20 @@ export default function JoshAnalyticsPage() {
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }
-      const data = await response.json();
-      setAnalyticsData(data.data || []);
+      const result = await response.json();
+      console.log("Josh analytics response:", result);
+      
+      if (result.success && result.data) {
+        setAnalyticsData(result.data || []);
+        setTotalRecords(result.totalRecords || 0);
+        setFetchedRecords(result.fetchedRecords || 0);
+        console.log("Total records in database:", result.totalRecords);
+        console.log("Fetched records:", result.fetchedRecords);
+      } else {
+        setAnalyticsData([]);
+        setTotalRecords(0);
+        setFetchedRecords(0);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch data');
     } finally {
@@ -47,7 +70,7 @@ export default function JoshAnalyticsPage() {
   };
 
   // Calculate statistics
-  const totalVisits = analyticsData.length;
+  const totalVisits = analyticsData.length; // This will be the actual fetched count
   const uniqueIPs = new Set(analyticsData.map(item => item.ip_address)).size;
   const referrerStats = analyticsData.reduce((acc, item) => {
     const ref = item.readable_referrer;
@@ -118,6 +141,11 @@ if (loading) {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Josh</h1>
             <p className="text-gray-600">Track your page performance and visitor insights</p>
+            {totalRecords > 0 && (
+              <p className="text-sm text-gray-500">
+                Analyzing {fetchedRecords} of {totalRecords} total records
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <Button 
@@ -154,7 +182,7 @@ if (loading) {
             </div>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-4 w-4 text-gray-500" />
-              <span className="text-gray-700">{totalVisits} All-Time Visitors</span>
+              <span className="text-gray-700">{totalRecords} All-Time Visitors</span>
             </div>
             <div className="text-sm text-gray-500">Created on Aug 05, 2025</div>
           </CardContent>
@@ -167,7 +195,7 @@ if (loading) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Total period visitors</p>
-                  <p className="text-3xl font-bold text-gray-900">{totalVisits}</p>
+                  <p className="text-3xl font-bold text-gray-900">{totalRecords}</p>
                 </div>
                 <Users className="h-8 w-8 text-[#B19272]" />
               </div>
@@ -192,6 +220,9 @@ if (loading) {
                 <div>
                   <p className="text-sm text-gray-600">Mobile visitors</p>
                   <p className="text-3xl font-bold text-gray-900">{deviceStats.Mobile || 0}</p>
+                  <p className="text-xs text-gray-500">
+                    {totalRecords > 0 ? ((deviceStats.Mobile || 0) / totalRecords * 100).toFixed(1) : 0}% of total
+                  </p>
                 </div>
                 <Globe className="h-8 w-8 text-[#B19272]" />
               </div>

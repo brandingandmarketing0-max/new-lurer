@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft, RefreshCw, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 
 interface MissbrownAnalyticsData {
   id: number;
@@ -22,6 +23,14 @@ interface MissbrownAnalyticsData {
 }
 
 export default function MissbrownAnalyticsPage() {
+  return (
+    <ProtectedRoute>
+      <MissbrownAnalyticsContent />
+    </ProtectedRoute>
+  );
+}
+
+function MissbrownAnalyticsContent() {
   const [analyticsData, setAnalyticsData] = useState<MissbrownAnalyticsData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

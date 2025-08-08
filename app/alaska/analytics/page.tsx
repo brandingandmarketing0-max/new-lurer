@@ -8,7 +8,7 @@ import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft, RefreshCw, 
 import Link from "next/link";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 
-interface RachelAnalyticsData {
+interface AlaskaAnalyticsData {
   id: number;
   page: string;
   referrer: string;
@@ -18,31 +18,31 @@ interface RachelAnalyticsData {
   timestamp: string;
   pathname: string;
   search_params: string;
-  created_at: string;
   click_type?: string; // Added for click tracking
+  created_at: string;
 }
 
-export default function RachelAnalyticsPage() {
+export default function AlaskaAnalyticsPage() {
   return (
     <ProtectedRoute>
-      <RachelAnalyticsContent />
+      <AlaskaAnalyticsContent />
     </ProtectedRoute>
   );
 }
 
-function RachelAnalyticsContent() {
-  const [analyticsData, setAnalyticsData] = useState<RachelAnalyticsData[]>([]);
+function AlaskaAnalyticsContent() {
+  const [analyticsData, setAnalyticsData] = useState<AlaskaAnalyticsData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchRachelAnalytics();
+    fetchAlaskaAnalytics();
   }, []);
 
-  const fetchRachelAnalytics = async () => {
+  const fetchAlaskaAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/rachel-analytics');
+      const response = await fetch('/api/alaska-analytics');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }
@@ -92,13 +92,13 @@ function RachelAnalyticsContent() {
   const subscribeClicks = clickStats.subscribe_now || 0;
   const viewAllContentClicks = clickStats.view_all_content || 0;
 
-if (loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-white p-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-gray-800 text-center py-20">
             <BarChart3 className="h-12 w-12 mx-auto mb-4 animate-spin text-[#B19272]" />
-            <h1 className="text-2xl font-bold">Loading Rachel Analytics...</h1>
+            <h1 className="text-2xl font-bold">Loading Alaska Analytics...</h1>
           </div>
         </div>
       </div>
@@ -112,7 +112,7 @@ if (loading) {
           <div className="text-gray-800 text-center py-20">
             <h1 className="text-2xl font-bold mb-4">Error Loading Analytics</h1>
             <p className="text-red-600 mb-4">{error}</p>
-            <Button onClick={fetchRachelAnalytics} className="bg-[#B19272] hover:bg-[#9A7B5F]">Retry</Button>
+                            <Button onClick={fetchAlaskaAnalytics} className="bg-[#B19272] hover:bg-[#9A7B5F]">Retry</Button>
           </div>
         </div>
       </div>
@@ -125,19 +125,19 @@ if (loading) {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Rachel</h1>
+                         <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Alaska</h1>
             <p className="text-gray-600">Track your page performance and visitor insights</p>
           </div>
           <div className="flex items-center gap-3">
             <Button 
-              onClick={fetchRachelAnalytics}
+              onClick={fetchAlaskaAnalytics}
               variant="outline" 
               className="border-[#B19272] text-[#B19272] hover:bg-[#B19272] hover:text-white"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
-            <Link href="/rachel">
+            <Link href="/alaska">
               <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Profile
@@ -159,7 +159,7 @@ if (loading) {
             </div>
             <div className="flex items-center gap-2 mb-4">
               <LinkIcon className="h-4 w-4 text-[#B19272]" />
-              <span className="text-[#B19272] font-medium"> lure.bio/rachel</span>
+              <span className="text-[#B19272] font-medium"> lure.bio/alaska</span>
             </div>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-4 w-4 text-gray-500" />
@@ -207,6 +207,7 @@ if (loading) {
             </CardContent>
           </Card>
         </div>
+
         {/* Click Tracking */}
         <Card className="mb-8 border-[#B19272]">
           <CardHeader>
@@ -260,7 +261,7 @@ if (loading) {
           </CardContent>
         </Card>
 
-
+        {/* Visits by Referrer Chart */}
         <Card className="border-[#B19272]">
           <CardHeader>
             <CardTitle className="text-gray-900">Visits by Referrer</CardTitle>
