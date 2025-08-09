@@ -22,8 +22,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { useDropzone } from 'react-dropzone';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile, toBlobURL } from '@ffmpeg/util';
-import { FileVideo, Download, Loader2, Image, FileImage, Video, Settings, Home, LayoutDashboard, Bot, Eye, Shield, RotateCcw, Search, FileDown, LogOut, Menu, X, ChevronRight, ChevronLeft, Link as LinkIcon, BarChart3, Activity } from 'lucide-react';
+import { fetchFile } from '@ffmpeg/util';
+import { FileVideo, Download, Loader2, FileImage, Link as LinkIcon, BarChart3, Activity, Home, Video, Settings, LogOut } from 'lucide-react';
 
 interface VideoFile {
   file: File;
@@ -75,7 +75,6 @@ type ConverterType = 'video' | 'gif' | 'image';
 
 export default function VideoConverter() {
   const { signOut, user } = useAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeConverter, setActiveConverter] = useState<ConverterType>('video');
   const [videoFiles, setVideoFiles] = useState<VideoFile[]>([]);
   const [imageFiles, setImageFiles] = useState<ImageFile[]>([]);
@@ -461,7 +460,7 @@ export default function VideoConverter() {
     }
   };
 
-  // Convert image (auto-optimized: WEBP high quality, good compression)
+  // Convert image: optimize while preserving original format (png/jpg/webp)
   const convertImage = async (imageFile: ImageFile) => {
     console.log('Starting image conversion for:', imageFile.name);
     
@@ -497,9 +496,12 @@ export default function VideoConverter() {
       await ffmpeg.writeFile(imageFile.name, inputData);
       console.log('Image file written to FFmpeg');
 
-      // Get file extension and create output name
+      // Get file extension and create output name (preserve original format)
       const nameWithoutExt = imageFile.name.replace(/\.[^/.]+$/, '');
-      const outputExt = 'webp';
+      const originalExt = (imageFile.name.split('.').pop() || '').toLowerCase();
+      const normalizedExt = originalExt === 'jpeg' ? 'jpg' : originalExt;
+      const supportedExt = ['png', 'jpg', 'webp'];
+      const outputExt = supportedExt.includes(normalizedExt) ? normalizedExt : 'jpg';
       const outputName = `${nameWithoutExt}_converted.${outputExt}`;
       console.log('Output name:', outputName);
 
@@ -512,10 +514,16 @@ export default function VideoConverter() {
       );
 
       console.log('Executing FFmpeg command for image conversion...');
-      // Auto-optimized flags for WEBP: quality ~90 for high visual fidelity with compression
+      // Choose optimization flags per format
+      const flagsByExt: Record<string, string[]> = {
+        jpg: ['-q:v', '2'],               // High visual quality, good compression
+        png: ['-compression_level', '100'], // Max compression for PNG
+        webp: ['-qscale', '4'],           // High visual quality for WEBP
+      };
+      const qualityFlags = flagsByExt[outputExt] || [];
       await ffmpeg.exec([
         '-i', imageFile.name,
-        '-qscale', '4',
+        ...qualityFlags,
         outputName
       ]);
       console.log('FFmpeg command completed');
@@ -531,7 +539,7 @@ export default function VideoConverter() {
       console.log('Reading converted file...');
       // Read the converted file
       const data = await ffmpeg.readFile(outputName);
-      const mime = 'image/webp';
+      const mime = outputExt === 'png' ? 'image/png' : outputExt === 'webp' ? 'image/webp' : 'image/jpeg';
       const blob = new Blob([data], { type: mime });
       const url = URL.createObjectURL(blob);
       console.log('Converted file read, blob size:', blob.size);
@@ -1586,70 +1594,68 @@ export default function VideoConverter() {
           <SidebarInset>
             <div className="flex flex-col h-full w-full">
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                <div className="flex items-center gap-4">
-                  <SidebarTrigger />
-                  <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Converter</h1>
-                    <p className="text-gray-600">Convert videos, images and GIFs</p>
-                  </div>
+              <div className="relative flex items-center justify-center p-6 border-b border-gray-200">
+                <SidebarTrigger className="absolute left-6" />
+                <div className="text-center">
+                  <h1 className="text-3xl font-bold text-gray-900">Converter</h1>
+                  <p className="text-gray-600">Convert videos, images and GIFs</p>
                 </div>
               </div>
 
-              <div className="flex-1 p-6">
-                <div className="w-full max-w-5xl mx-auto">
-                {/* Horizontal Navigation Tabs */}
-                <div className="mb-8 flex justify-center">
-                  <div className="bg-gray-100 rounded-lg border border-gray-300 p-1 inline-flex">
-                    <button
-                      onClick={() => setActiveConverter('video')}
-                      className={`px-6 py-3 rounded-md font-medium transition-colors ${
-                        activeConverter === 'video'
-                          ? 'bg-blue-600 text-white shadow-sm'
-                          : 'text-gray-700 hover:text-gray-900 hover:bg-gray-200'
-                      }`}
-                    >
-                      Video Converter
-                    </button>
-                    <button
-                      onClick={() => setActiveConverter('image')}
-                      className={`px-6 py-3 rounded-md font-medium transition-colors ${
-                        activeConverter === 'image'
-                          ? 'bg-blue-600 text-white shadow-sm'
-                          : 'text-gray-700 hover:text-gray-900 hover:bg-gray-200'
-                      }`}
-                    >
-                      Image Converter
-                    </button>
-                    <button
-                      onClick={() => setActiveConverter('gif')}
-                      className={`px-6 py-3 rounded-md font-medium transition-colors ${
-                        activeConverter === 'gif'
-                          ? 'bg-blue-600 text-white shadow-sm'
-                          : 'text-gray-700 hover:text-gray-900 hover:bg-gray-200'
-                      }`}
-                    >
-                      GIF Converter
-                    </button>
+              <div className="flex-1 p-6 flex justify-center">
+                <div className="w-full max-w-5xl md:ml-[120px]">
+                  {/* Horizontal Navigation Tabs */}
+                  <div className="mb-8 flex justify-center">
+                    <div className="bg-gray-100 rounded-lg border border-gray-300 p-1 inline-flex">
+                      <button
+                        onClick={() => setActiveConverter('video')}
+                        className={`px-6 py-3 rounded-md font-medium transition-colors ${
+                          activeConverter === 'video'
+                            ? 'bg-[#B19272] text-white shadow-sm'
+                            : 'text-gray-700 hover:text-gray-900 hover:bg-gray-200'
+                        }`}
+                      >
+                        Video Converter
+                      </button>
+                      <button
+                        onClick={() => setActiveConverter('image')}
+                        className={`px-6 py-3 rounded-md font-medium transition-colors ${
+                          activeConverter === 'image'
+                            ? 'bg-[#B19272] text-white shadow-sm'
+                            : 'text-gray-700 hover:text-gray-900 hover:bg-gray-200'
+                        }`}
+                      >
+                        Image Converter
+                      </button>
+                      <button
+                        onClick={() => setActiveConverter('gif')}
+                        className={`px-6 py-3 rounded-md font-medium transition-colors ${
+                          activeConverter === 'gif'
+                            ? 'bg-[#B19272] text-white shadow-sm'
+                            : 'text-gray-700 hover:text-gray-900 hover:bg-gray-200'
+                        }`}
+                      >
+                        GIF Converter
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                {/* Header */}
-                <div className="text-center mb-8">
-                  <h1 className="text-4xl font-bold mb-4">
-                    {activeConverter === 'video' && 'Video Converter'}
-                    {activeConverter === 'gif' && 'GIF Converter'}
-                    {activeConverter === 'image' && 'Image Converter'}
-                  </h1>
-                  <p className="text-gray-600 text-lg">
-                    {activeConverter === 'video' && 'Converts video files to .mp4 for a smaller file size and better compatibility with different platforms and devices.'}
-                    {activeConverter === 'gif' && 'Convert videos to animated GIFs with custom quality and size settings.'}
-                    {activeConverter === 'image' && 'Convert and optimize images between different formats with advanced compression options.'}
-                  </p>
-                </div>
+                  {/* Sub-Header */}
+                  <div className="text-center mb-8">
+                    <h2 className="text-4xl font-bold mb-4">
+                      {activeConverter === 'video' && 'Video Converter'}
+                      {activeConverter === 'gif' && 'GIF Converter'}
+                      {activeConverter === 'image' && 'Image Converter'}
+                    </h2>
+                    <p className="text-gray-600 text-lg">
+                      {activeConverter === 'video' && 'Converts video files to .mp4 for a smaller file size and better compatibility with different platforms and devices.'}
+                      {activeConverter === 'gif' && 'Convert videos to animated GIFs with custom quality and size settings.'}
+                      {activeConverter === 'image' && 'Convert and optimize images between different formats with advanced compression options.'}
+                    </p>
+                  </div>
 
-                {/* Converter Content */}
-                {renderConverterContent()}
+                  {/* Converter Content */}
+                  {renderConverterContent()}
                 </div>
               </div>
             </div>
