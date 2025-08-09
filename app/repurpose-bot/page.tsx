@@ -88,21 +88,21 @@ export default function WatermarkUrlPage() {
     browserWatermarkOpacity: 0.8,
     browserWatermarkMargin: 15,
     browserWatermarkSize: 100,
-    // Enable/disable settings - default to enabled for all features
-    enablePosition: true,
-    enableOpacity: true,
-    enableMargin: true,
-    enableFps: true,
-    enableVideoBitrate: true,
-    enableAudioBitrate: true,
-    enableVolume: true,
-    enableRotation: true,
-    enableDimensions: true,
-    enableSpeed: true,
+    // Enable/disable settings - default to disabled for fastest processing
+    enablePosition: false,
+    enableOpacity: false,
+    enableMargin: false,
+    enableFps: false,
+    enableVideoBitrate: false,
+    enableAudioBitrate: false,
+    enableVolume: false,
+    enableRotation: false,
+    enableDimensions: false,
+    enableSpeed: false,
 
-    enableNoise: true,
-    enableWaveformShift: true,
-    enableBrowserWatermark: true
+    enableNoise: false,
+    enableWaveformShift: false,
+    enableBrowserWatermark: false
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
@@ -110,11 +110,16 @@ export default function WatermarkUrlPage() {
   const [ffmpeg, setFfmpeg] = useState<any>(null);
   const [isFfmpegLoaded, setIsFfmpegLoaded] = useState(false);
   const [outputUrl, setOutputUrl] = useState<string>('');
+  const [outputBlob, setOutputBlob] = useState<Blob | null>(null);
   const [error, setError] = useState<string>('');
   const [ffmpegCommand, setFfmpegCommand] = useState<string>('');
   const [isVideoUploading, setIsVideoUploading] = useState(false);
   const [selectedVideoName, setSelectedVideoName] = useState('');
   const [selectedWatermarkName, setSelectedWatermarkName] = useState('');
+  // Output directory and copies
+  const [outputDirHandle, setOutputDirHandle] = useState<FileSystemDirectoryHandle | null>(null);
+  const [outputDirName, setOutputDirName] = useState<string>('');
+  const [copyCount, setCopyCount] = useState<number>(1);
   // Removed output location selection per request
 
   // UploadThing hooks
@@ -220,6 +225,54 @@ export default function WatermarkUrlPage() {
       copyright: `© ${randomYear} ${randomCity} Media`,
       description: `Video recorded in ${randomCity}, ${randomState}`
     };
+  };
+
+  // Save output copies using File System Access API when possible
+  const saveOutputCopies = async (blob: Blob) => {
+    const maxCopies = 100;
+    const copies = Math.min(Math.max(1, Number(copyCount || 1)), maxCopies);
+
+    // If no directory chosen or API not available, fall back to single download via anchor
+    const canPickDir = typeof (window as any).showDirectoryPicker === 'function';
+    // Request persistent storage to improve write reliability
+    try { await (navigator as any).storage?.persist?.(); } catch {}
+    if (!outputDirHandle || !canPickDir) {
+      // Trigger one download; multiple automatic downloads are blocked by browsers
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = selectedVideoName ? selectedVideoName.replace(/\.[^.]+$/, '') + '-output.mp4' : 'output.mp4';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      return;
+    }
+
+    // Verify permission
+    const verifyPermission = async (dirHandle: FileSystemDirectoryHandle) => {
+      const opts: any = { mode: 'readwrite' };
+      // @ts-ignore
+      const q = await dirHandle.queryPermission?.(opts);
+      if (q === 'granted') return true;
+      // @ts-ignore
+      const r = await dirHandle.requestPermission?.(opts);
+      return r === 'granted';
+    };
+
+    const hasPerm = await verifyPermission(outputDirHandle);
+    if (!hasPerm) throw new Error('Permission to write to the selected folder was denied.');
+
+    const baseName = (selectedVideoName || 'output').replace(/\.[^.]+$/, '');
+    const buffer = await blob.arrayBuffer();
+    for (let i = 1; i <= copies; i++) {
+      const fileName = `${baseName}-copy-${i}.mp4`;
+      const fileHandle = await outputDirHandle.getFileHandle(fileName, { create: true } as any);
+      const writable = await (fileHandle as any).createWritable({ keepExistingData: false });
+      await writable.write(buffer);
+      await writable.close();
+      // Yield to the event loop to keep UI responsive on many copies
+      await new Promise((res) => setTimeout(res, 0));
+    }
   };
 
   const handleOptionChange = (field: keyof WatermarkOptions, value: any) => {
@@ -350,19 +403,34 @@ export default function WatermarkUrlPage() {
     }
 
     // Build command to exactly match requested shape
+    const needsReencode = (
+      watermarkOptions.enableFps ||
+      watermarkOptions.enableVideoBitrate ||
+      watermarkOptions.enableAudioBitrate ||
+      (watermarkOptions.enableVolume && typeof watermarkOptions.volume === 'number') ||
+      watermarkOptions.addRandomMetadata
+    );
+
     let command = `-i input.mp4`;
-    if (watermarkOptions.enableFps) command += ` -r ${watermarkOptions.fps}`;
-    if (watermarkOptions.enableVideoBitrate) command += ` -b:v ${watermarkOptions.videoBitrate}k`;
-    if (watermarkOptions.enableAudioBitrate) command += ` -b:a ${watermarkOptions.audioBitrate}k`;
-    if (watermarkOptions.enableVolume && typeof watermarkOptions.volume === 'number') {
-      command += ` -filter:a "volume=${watermarkOptions.volume}"`;
+    if (!needsReencode) {
+      // Fast path: stream copy (no re-encode)
+      command += ` -c:v copy -c:a copy -movflags +faststart output.mp4`;
+    } else {
+      // Re-encode with ultrafast preset for speed
+      command += ` -preset ultrafast -tune fastdecode -movflags +faststart`;
+      if (watermarkOptions.enableFps) command += ` -r ${watermarkOptions.fps}`;
+      if (watermarkOptions.enableVideoBitrate) command += ` -b:v ${watermarkOptions.videoBitrate}k`;
+      if (watermarkOptions.enableAudioBitrate) command += ` -b:a ${watermarkOptions.audioBitrate}k`;
+      if (watermarkOptions.enableVolume && typeof watermarkOptions.volume === 'number') {
+        command += ` -filter:a "volume=${watermarkOptions.volume}"`;
+      }
+      // Add metadata if enabled
+      if (watermarkOptions.addRandomMetadata) {
+        const metadata = generateRandomUSMetadata();
+        command += ` -metadata title=\"Video from ${metadata.location}\" -metadata artist=\"${metadata.creator}\" -metadata date=\"${metadata.date}\" -metadata copyright=\"${metadata.copyright}\" -metadata description=\"${metadata.description}\" -metadata location=\"${metadata.location}\"`;
+      }
+      command += ` output.mp4`;
     }
-    // Add metadata if enabled
-    if (watermarkOptions.addRandomMetadata) {
-      const metadata = generateRandomUSMetadata();
-      command += ` -metadata title="Video from ${metadata.location}" -metadata artist="${metadata.creator}" -metadata date="${metadata.date}" -metadata copyright="${metadata.copyright}" -metadata description="${metadata.description}" -metadata location="${metadata.location}"`;
-    }
-    command += ` output.mp4`;
     
     // Add metadata if enabled
     if (watermarkOptions.addRandomMetadata) {
@@ -391,6 +459,18 @@ export default function WatermarkUrlPage() {
     if (!videoUrl) {
       setError('Please provide a video URL.');
       return;
+    }
+
+    // Try to get output directory immediately (within user gesture) if not selected
+    try {
+      const picker = (window as any).showDirectoryPicker;
+      if (!outputDirHandle && typeof picker === 'function') {
+        const handle: FileSystemDirectoryHandle = await picker();
+        setOutputDirHandle(handle);
+        setOutputDirName((handle as any).name || 'Selected folder');
+      }
+    } catch (_e) {
+      // Silent: fall back to single download later if no folder
     }
 
     // Test FFmpeg functionality first
@@ -504,9 +584,9 @@ export default function WatermarkUrlPage() {
       } catch (execError) {
         console.error('FFmpeg execution error:', execError);
         
-        // Try with a simplified command as fallback
+        // Try with a simplified command as fallback (prefer stream copy)
         console.log('Trying simplified FFmpeg command...');
-        const simpleCommand = `-i input.mp4 -map 0:v -map 0:a output.mp4`;
+        const simpleCommand = `-i input.mp4 -c:v copy -c:a copy -movflags +faststart output.mp4`;
         
         const simpleArgs = parseCommandArgs(simpleCommand);
         console.log('Trying simplified command:', simpleCommand);
@@ -519,9 +599,9 @@ export default function WatermarkUrlPage() {
         } catch (simpleExecError) {
           console.error('Simplified FFmpeg command also failed:', simpleExecError);
           
-          // Try the most basic command possible
+          // Try the most basic command possible (still stream copy)
           console.log('Trying ultra-simple FFmpeg command...');
-          const ultraSimpleCommand = `-i input.mp4 -map 0:v -map 0:a output.mp4`;
+          const ultraSimpleCommand = `-i input.mp4 -c copy -movflags +faststart output.mp4`;
           const ultraSimpleArgs = parseCommandArgs(ultraSimpleCommand);
           console.log('Ultra-simple command:', ultraSimpleCommand);
           
@@ -532,9 +612,9 @@ export default function WatermarkUrlPage() {
           } catch (ultraSimpleError) {
             console.error('Ultra-simple FFmpeg command also failed:', ultraSimpleError);
             
-            // Try the absolute simplest command - just copy the video
-            console.log('Trying absolute simplest command - just copy video...');
-            const copyCommand = `-i input.mp4 -t 5 output.mp4`;
+            // Try absolute simplest: raw copy
+            console.log('Trying absolute simplest command - raw stream copy...');
+            const copyCommand = `-i input.mp4 -c copy -movflags +faststart output.mp4`;
             const copyArgs = parseCommandArgs(copyCommand);
             console.log('Copy command:', copyCommand);
             
@@ -555,10 +635,11 @@ export default function WatermarkUrlPage() {
           throw new Error('Output file is empty');
         }
         
-        setProgress(95);
+        setProgress(92);
 
-        // Create blob URL
+        // Create blob URL and store blob for later download/copy
         const blob = new Blob([data], { type: 'video/mp4' });
+        setOutputBlob(blob);
         const url = URL.createObjectURL(blob);
 
         setProgress(100);
@@ -582,6 +663,7 @@ export default function WatermarkUrlPage() {
                 if (fileData && fileData.length > 0) {
                   console.log(`Using ${file.name} as output file`);
                   const blob = new Blob([fileData], { type: 'video/mp4' });
+                  try { await saveOutputCopies(blob); } catch (e) { console.warn('Saving copies failed or skipped:', e); }
                   const url = URL.createObjectURL(blob);
                   setProgress(100);
                   setOutputUrl(url);
@@ -603,6 +685,7 @@ export default function WatermarkUrlPage() {
                 if (fileData && fileData.length > 0) {
                   console.log(`Using ${file.name} as output file`);
                   const blob = new Blob([fileData], { type: 'video/mp4' });
+                  try { await saveOutputCopies(blob); } catch (e) { console.warn('Saving copies failed or skipped:', e); }
                   const url = URL.createObjectURL(blob);
                   setProgress(100);
                   setOutputUrl(url);
@@ -652,11 +735,29 @@ export default function WatermarkUrlPage() {
     navigator.clipboard.writeText(ffmpegCommand);
   };
 
-  const downloadVideo = () => {
+  const downloadVideo = async () => {
+    if (!outputBlob && outputUrl) {
+      // Fallback: fetch the blob from URL
+      try {
+        const resp = await fetch(outputUrl);
+        const b = await resp.blob();
+        setOutputBlob(b);
+      } catch {}
+    }
+
+    if (outputBlob) {
+      try {
+        await saveOutputCopies(outputBlob);
+        return;
+      } catch (e) {
+        console.warn('Saving to folder failed; falling back to browser download', e);
+      }
+    }
+
     if (outputUrl) {
       const a = document.createElement('a');
       a.href = outputUrl;
-      a.download = 'watermarked-video.mp4';
+      a.download = selectedVideoName ? selectedVideoName.replace(/\.[^.]+$/, '') + '-output.mp4' : 'output.mp4';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -809,10 +910,23 @@ export default function WatermarkUrlPage() {
                     onClick={() => {
                       const input = document.createElement('input');
                       input.type = 'file';
-                      input.accept = 'video/*';
+                      input.accept = 'video/mp4,video/quicktime,video/x-matroska,.mp4,.mov,.mkv';
                       input.onchange = async (e) => {
                         const file = (e.target as HTMLInputElement).files?.[0];
                         if (file) {
+                          // Client-side validation
+                          const allowedTypes = new Set(['video/mp4', 'video/quicktime', 'video/x-matroska']);
+                          const maxBytes = 1024 * 1024 * 1024; // 1GB
+                          const lowerName = file.name.toLowerCase();
+                          const extensionAllowed = lowerName.endsWith('.mp4') || lowerName.endsWith('.mov') || lowerName.endsWith('.mkv');
+                          if (!allowedTypes.has(file.type) && !extensionAllowed) {
+                            setError('Only MP4, MOV, and MKV files are allowed.');
+                            return;
+                          }
+                          if (file.size > maxBytes) {
+                            setError('File is too large. Maximum allowed size is 1 GB.');
+                            return;
+                          }
                           setSelectedVideoName(file.name);
                           setIsVideoUploading(true);
                           setError('');
@@ -848,6 +962,59 @@ export default function WatermarkUrlPage() {
                     Uploading video file...
                   </p>
                 )}
+              </div>
+
+              {/* Output Directory and Copies */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Output Folder (for saving processed copies):
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={outputDirName}
+                    readOnly
+                    placeholder="No folder selected"
+                    className="flex-1 px-3 py-2 border border-gray-300 bg-white text-gray-900 rounded-lg focus:ring-2 focus:ring-[#B19272] focus:border-[#B19272] placeholder-gray-400"
+                  />
+                  <button
+                    onClick={async () => {
+                      try {
+                        // File System Access API (Chromium-based browsers)
+                        const picker = (window as any).showDirectoryPicker;
+                        if (typeof picker !== 'function') {
+                          setError('Folder selection is not supported in this browser. Use a Chromium-based browser (Chrome/Edge).');
+                          return;
+                        }
+                        const handle: FileSystemDirectoryHandle = await picker();
+                        setOutputDirHandle(handle);
+                        setOutputDirName((handle as any).name || 'Selected folder');
+                        setError('');
+                      } catch (e) {
+                        if ((e as any)?.name !== 'AbortError') {
+                          setError('Failed to select folder.');
+                        }
+                      }
+                    }}
+                    className="flex items-center gap-2 bg-[#B19272] hover:bg-[#9A7B5F] text-white px-6 py-3 rounded transition-colors shadow-sm"
+                  >
+                    Choose Folder
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Number of copies (max 100):
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={copyCount}
+                  onChange={(e) => setCopyCount(Math.min(100, Math.max(1, Number(e.target.value || 1))))}
+                  className="w-44 px-3 py-2 border border-gray-300 bg-white text-gray-900 rounded-lg focus:ring-2 focus:ring-[#B19272] focus:border-[#B19272] placeholder-gray-400"
+                />
               </div>
 
               {/* Output Location Selection removed per request */}

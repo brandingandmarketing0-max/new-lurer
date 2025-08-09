@@ -26,7 +26,7 @@ export const ourFileRouter = {
 
   videoUploader: f({
     video: {
-      maxFileSize: "4MB",
+      maxFileSize: "1GB",
       maxFileCount: 1,
     },
   })
@@ -45,5 +45,6 @@ export const ourFileRouter = {
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
+
 
 
