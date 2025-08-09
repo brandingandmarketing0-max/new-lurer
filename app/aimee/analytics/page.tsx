@@ -61,10 +61,13 @@ export default function AimeeAnalyticsPage() {
     }
   };
 
+  // Treat only 'page_visit' rows as visitors to keep metrics consistent
+  const visitRows = analyticsData.filter(item => (item.click_type || 'page_visit') === 'page_visit');
+
   // Calculate statistics
-  const totalVisits = analyticsData.length;
-  const uniqueIPs = new Set(analyticsData.map(item => item.ip_address)).size;
-  const referrerStats = analyticsData.reduce((acc, item) => {
+  const totalVisits = visitRows.length;
+  const uniqueIPs = new Set(visitRows.map(item => item.ip_address)).size;
+  const referrerStats = visitRows.reduce((acc, item) => {
     const ref = item.readable_referrer;
     acc[ref] = (acc[ref] || 0) + 1;
     return acc;
@@ -75,12 +78,37 @@ export default function AimeeAnalyticsPage() {
     .slice(0, 5);
 
   const getDeviceType = (userAgent: string) => {
-    if (userAgent.includes("Mobile")) return "Mobile";
-    if (userAgent.includes("Tablet")) return "Tablet";
+    if (!userAgent) return "Unknown";
+    
+    const ua = userAgent.toLowerCase();
+    
+    // Mobile detection - more comprehensive
+    if (ua.includes("mobile") || 
+        ua.includes("android") || 
+        ua.includes("iphone") || 
+        ua.includes("ipad") || 
+        ua.includes("ipod") || 
+        ua.includes("blackberry") || 
+        ua.includes("windows phone") ||
+        ua.includes("opera mini") ||
+        ua.includes("mobile safari") ||
+        ua.includes("mobile chrome") ||
+        ua.includes("mobile firefox")) {
+      return "Mobile";
+    }
+    
+    // Tablet detection
+    if (ua.includes("tablet") || 
+        ua.includes("ipad") || 
+        (ua.includes("android") && !ua.includes("mobile")) ||
+        ua.includes("kindle")) {
+      return "Tablet";
+    }
+    
     return "Desktop";
   };
 
-  const deviceStats = analyticsData.reduce((acc, item) => {
+  const deviceStats = visitRows.reduce((acc, item) => {
     const device = getDeviceType(item.user_agent);
     acc[device] = (acc[device] || 0) + 1;
     return acc;
@@ -175,7 +203,7 @@ export default function AimeeAnalyticsPage() {
             </div>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-4 w-4 text-gray-500" />
-              <span className="text-gray-700">{totalRecords} All-Time Visitors</span>
+              <span className="text-gray-700">{totalVisits} All-Time Visitors</span>
             </div>
             <div className="text-sm text-gray-500">Created on Aug 05, 2025</div>
           </CardContent>
@@ -187,8 +215,8 @@ export default function AimeeAnalyticsPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total period visitors</p>
-                  <p className="text-3xl font-bold text-gray-900">{totalRecords}</p>
+                  <p className="text-sm text-gray-600">Total visitors</p>
+                  <p className="text-3xl font-bold text-gray-900">{totalVisits}</p>
                 </div>
                 <Users className="h-8 w-8 text-[#B19272]" />
               </div>
@@ -307,7 +335,7 @@ export default function AimeeAnalyticsPage() {
                 ))}
                 <div className="pt-4 border-t border-gray-200">
                   <p className="text-sm text-gray-600">
-                    {totalRecords} total visits – Showing click distribution across all referral sources
+                    {totalVisits} total visits – Showing click distribution across all referral sources
                   </p>
                 </div>
               </div>

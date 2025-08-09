@@ -5,24 +5,10 @@ export async function GET() {
   try {
     console.log("[CHLOEAYLING API] Fetching analytics data from Supabase");
     
-    // First, get the total count
-    const { count, error: countError } = await supabase
-      .from('chloeayling_analytics')
-      .select('*', { count: 'exact', head: true });
-
-    if (countError) {
-      console.error("[CHLOEAYLING API] Count error:", countError);
-      return NextResponse.json({ success: false, error: countError.message }, { status: 500 });
-    }
-
-    console.log("[CHLOEAYLING API] Total records in database:", count);
-
-    // Get all records with increased limit
     const { data, error } = await supabase
       .from('chloeayling_analytics')
       .select('*')
-      .order('created_at', { ascending: false })
-      .limit(10000); // Increased limit to 10,000 records
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error("[CHLOEAYLING API] Supabase fetch error:", error);
@@ -33,9 +19,7 @@ export async function GET() {
 
     return NextResponse.json({ 
       success: true, 
-      data: data || [],
-      totalRecords: count,
-      fetchedRecords: data?.length || 0
+      data: data || [] 
     });
 
   } catch (error) {

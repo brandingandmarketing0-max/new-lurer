@@ -22,7 +22,7 @@ export async function GET() {
       .from('josh_analytics')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(100000); // Set a very high limit to get all records
+      .limit(100000); // ensure we fetch beyond the default 1k postgrest limit
 
     if (error) {
       console.error("[JOSH API] Supabase fetch error:", error);

@@ -69,10 +69,13 @@ function JoshAnalyticsContent() {
     }
   };
 
+  // Treat only 'page_visit' rows as visitors to keep metrics consistent
+  const visitRows = analyticsData.filter(item => (item.click_type || 'page_visit') === 'page_visit');
+
   // Calculate statistics
-  const totalVisits = analyticsData.length; // This will be the actual fetched count
-  const uniqueIPs = new Set(analyticsData.map(item => item.ip_address)).size;
-  const referrerStats = analyticsData.reduce((acc, item) => {
+  const totalVisits = visitRows.length; // fetched page_visit count in the period
+  const uniqueIPs = new Set(visitRows.map(item => item.ip_address)).size;
+  const referrerStats = visitRows.reduce((acc, item) => {
     const ref = item.readable_referrer;
     acc[ref] = (acc[ref] || 0) + 1;
     return acc;
@@ -83,12 +86,37 @@ function JoshAnalyticsContent() {
     .slice(0, 5);
 
   const getDeviceType = (userAgent: string) => {
-    if (userAgent.includes("Mobile")) return "Mobile";
-    if (userAgent.includes("Tablet")) return "Tablet";
+    if (!userAgent) return "Unknown";
+    
+    const ua = userAgent.toLowerCase();
+    
+    // Mobile detection - more comprehensive
+    if (ua.includes("mobile") || 
+        ua.includes("android") || 
+        ua.includes("iphone") || 
+        ua.includes("ipad") || 
+        ua.includes("ipod") || 
+        ua.includes("blackberry") || 
+        ua.includes("windows phone") ||
+        ua.includes("opera mini") ||
+        ua.includes("mobile safari") ||
+        ua.includes("mobile chrome") ||
+        ua.includes("mobile firefox")) {
+      return "Mobile";
+    }
+    
+    // Tablet detection
+    if (ua.includes("tablet") || 
+        ua.includes("ipad") || 
+        (ua.includes("android") && !ua.includes("mobile")) ||
+        ua.includes("kindle")) {
+      return "Tablet";
+    }
+    
     return "Desktop";
   };
 
-  const deviceStats = analyticsData.reduce((acc, item) => {
+  const deviceStats = visitRows.reduce((acc, item) => {
     const device = getDeviceType(item.user_agent);
     acc[device] = (acc[device] || 0) + 1;
     return acc;
@@ -102,6 +130,9 @@ function JoshAnalyticsContent() {
   }, {} as Record<string, number>);
 
   const pageVisits = clickStats.page_visit || 0;
+  const totalClickEvents = Object.entries(clickStats)
+    .filter(([type]) => type !== 'page_visit')
+    .reduce((sum, [, count]) => sum + count, 0);
   const exclusiveContentClicks = clickStats.exclusive_content || 0;
   const subscribeClicks = clickStats.subscribe_now || 0;
   const viewAllContentClicks = clickStats.view_all_content || 0;
@@ -143,7 +174,7 @@ if (loading) {
             <p className="text-gray-600">Track your page performance and visitor insights</p>
             {totalRecords > 0 && (
               <p className="text-sm text-gray-500">
-                Analyzing {fetchedRecords} of {totalRecords} total records
+                Analyzing {fetchedRecords} of {totalRecords} total rows • Visits: {pageVisits} • Clicks: {totalClickEvents}
               </p>
             )}
           </div>
@@ -182,7 +213,7 @@ if (loading) {
             </div>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-4 w-4 text-gray-500" />
-              <span className="text-gray-700">{totalRecords} All-Time Visitors</span>
+              <span className="text-gray-700">{totalVisits} All-Time Visitors</span>
             </div>
             <div className="text-sm text-gray-500">Created on Aug 05, 2025</div>
           </CardContent>
@@ -194,8 +225,8 @@ if (loading) {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total period visitors</p>
-                  <p className="text-3xl font-bold text-gray-900">{totalRecords}</p>
+                  <p className="text-sm text-gray-600">Total visitors</p>
+                  <p className="text-3xl font-bold text-gray-900">{totalVisits}</p>
                 </div>
                 <Users className="h-8 w-8 text-[#B19272]" />
               </div>
@@ -221,7 +252,7 @@ if (loading) {
                   <p className="text-sm text-gray-600">Mobile visitors</p>
                   <p className="text-3xl font-bold text-gray-900">{deviceStats.Mobile || 0}</p>
                   <p className="text-xs text-gray-500">
-                    {totalRecords > 0 ? ((deviceStats.Mobile || 0) / totalRecords * 100).toFixed(1) : 0}% of total
+                    {totalVisits > 0 ? (((deviceStats.Mobile || 0) / totalVisits) * 100).toFixed(1) : 0}% of total
                   </p>
                 </div>
                 <Globe className="h-8 w-8 text-[#B19272]" />

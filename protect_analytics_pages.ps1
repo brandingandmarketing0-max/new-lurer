@@ -48,3 +48,6 @@ foreach ($page in $analyticsPages) {
 Write-Host "`nProtection script completed!"
 Write-Host "All analytics pages now require authentication to access."
 
+
+
+

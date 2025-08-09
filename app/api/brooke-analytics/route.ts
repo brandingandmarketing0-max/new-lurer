@@ -17,12 +17,11 @@ export async function GET() {
 
     console.log("[BROOKE API] Total records in database:", count);
 
-    // Get all records with increased limit
+    // Get all records
     const { data, error } = await supabase
       .from('brooke_analytics')
       .select('*')
-      .order('created_at', { ascending: false })
-      .limit(10000); // Increased limit to 10,000 records
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error("[BROOKE API] Supabase fetch error:", error);

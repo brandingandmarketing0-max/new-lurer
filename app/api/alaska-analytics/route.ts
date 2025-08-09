@@ -21,8 +21,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from('alaska_analytics')
       .select('*')
-      .order('created_at', { ascending: false })
-      .limit(100000); // Set a very high limit to get all records
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error("[ALASKA API] Supabase fetch error:", error);

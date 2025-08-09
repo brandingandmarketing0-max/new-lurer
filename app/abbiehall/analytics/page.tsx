@@ -69,10 +69,13 @@ function AbbiehallAnalyticsContent() {
     }
   };
 
+  // Treat only 'page_visit' rows as visitors to keep metrics consistent
+  const visitRows = analyticsData.filter(item => (item.click_type || 'page_visit') === 'page_visit');
+
   // Calculate statistics
-  const totalVisits = analyticsData.length;
-  const uniqueIPs = new Set(analyticsData.map(item => item.ip_address)).size;
-  const referrerStats = analyticsData.reduce((acc, item) => {
+  const totalVisits = visitRows.length;
+  const uniqueIPs = new Set(visitRows.map(item => item.ip_address)).size;
+  const referrerStats = visitRows.reduce((acc, item) => {
     const ref = item.readable_referrer;
     acc[ref] = (acc[ref] || 0) + 1;
     return acc;
@@ -88,7 +91,7 @@ function AbbiehallAnalyticsContent() {
     return "Desktop";
   };
 
-  const deviceStats = analyticsData.reduce((acc, item) => {
+  const deviceStats = visitRows.reduce((acc, item) => {
     const device = getDeviceType(item.user_agent);
     acc[device] = (acc[device] || 0) + 1;
     return acc;
@@ -182,7 +185,7 @@ function AbbiehallAnalyticsContent() {
             </div>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-4 w-4 text-gray-500" />
-              <span className="text-gray-700">{totalRecords} All-Time Visitors</span>
+              <span className="text-gray-700">{totalVisits} All-Time Visitors</span>
             </div>
             <div className="text-sm text-gray-500">Created on Aug 05, 2025</div>
           </CardContent>
@@ -194,8 +197,8 @@ function AbbiehallAnalyticsContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total period visitors</p>
-                  <p className="text-3xl font-bold text-gray-900">{totalRecords}</p>
+                  <p className="text-sm text-gray-600">Total visitors</p>
+                  <p className="text-3xl font-bold text-gray-900">{totalVisits}</p>
                 </div>
                 <Users className="h-8 w-8 text-[#B19272]" />
               </div>

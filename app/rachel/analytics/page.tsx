@@ -55,10 +55,13 @@ function RachelAnalyticsContent() {
     }
   };
 
+  // Treat only 'page_visit' rows as visitors to keep metrics consistent
+  const visitRows = analyticsData.filter(item => (item.click_type || 'page_visit') === 'page_visit');
+
   // Calculate statistics
-  const totalVisits = analyticsData.length;
-  const uniqueIPs = new Set(analyticsData.map(item => item.ip_address)).size;
-  const referrerStats = analyticsData.reduce((acc, item) => {
+  const totalVisits = visitRows.length;
+  const uniqueIPs = new Set(visitRows.map(item => item.ip_address)).size;
+  const referrerStats = visitRows.reduce((acc, item) => {
     const ref = item.readable_referrer;
     acc[ref] = (acc[ref] || 0) + 1;
     return acc;
@@ -74,7 +77,7 @@ function RachelAnalyticsContent() {
     return "Desktop";
   };
 
-  const deviceStats = analyticsData.reduce((acc, item) => {
+  const deviceStats = visitRows.reduce((acc, item) => {
     const device = getDeviceType(item.user_agent);
     acc[device] = (acc[device] || 0) + 1;
     return acc;
