@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image"
@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3 } from "lucide-react"
+import { Lock, Heart, Star, Crown, Sparkles } from "lucide-react"
 
 const getReadableReferrer = (ref: string) => {
   if (!ref) return "Direct or unknown";
@@ -30,7 +30,7 @@ export default function ProfilePage() {
     setReferrer(getReadableReferrer(rawRef));
 
     // Throttle page_visit analytics per browser to once every 30 minutes
-    const key = "analytics:josh:lastVisitTs";
+    const key = "analytics:brookex:lastVisitTs";
     const now = Date.now();
     try {
       const last = Number(localStorage.getItem(key) || 0);
@@ -41,24 +41,21 @@ export default function ProfilePage() {
 
     const send = () => {
       try {
-        // Only send when page is visible to avoid prefetch/pre-render noise
         if (document.visibilityState !== 'visible') return;
-
         const payload = {
-          page: "josh",
+          page: "brookex",
           referrer: rawRef,
           timestamp: new Date().toISOString(),
-          pathname: "/josh",
+          pathname: "/brookex",
           searchParams: "",
           click_type: "page_visit"
         };
-
         const body = JSON.stringify(payload);
         if (navigator.sendBeacon) {
           const blob = new Blob([body], { type: 'application/json' });
-          navigator.sendBeacon('/api/josh-analytics', blob);
+          navigator.sendBeacon('/api/brookex-analytics', blob);
         } else {
-          fetch("/api/josh-analytics", {
+          fetch("/api/brookex-analytics", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body,
@@ -67,11 +64,10 @@ export default function ProfilePage() {
         }
         try { localStorage.setItem(key, String(now)); } catch {}
       } catch (error) {
-        console.error("Failed to track Josh analytics:", error);
+        console.error("Failed to track Brookex analytics:", error);
       }
     };
 
-    // Delay briefly and require visibility to reduce bot noise
     const timeout = setTimeout(send, 3000);
     const onVisible = () => {
       if (document.visibilityState === 'visible') {
@@ -88,14 +84,14 @@ export default function ProfilePage() {
   // Click tracking functions
   const trackClick = async (clickType: string) => {
     try {
-      await fetch("/api/josh-analytics", {
+      await fetch("/api/brookex-analytics", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          page: "josh",
+          page: "brookex",
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/josh",
+          pathname: "/brookex",
           searchParams: "",
           click_type: clickType
         }),
@@ -138,9 +134,9 @@ export default function ProfilePage() {
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-[#B6997B]/60 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
                   <Avatar className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg">
-                    <AvatarImage src="/images/josh1.png" alt="Summermae" className="object-cover" />
+                    <AvatarImage src="/brookex1.png" alt="Brookex" className="object-cover" />
                     <AvatarFallback className="bg-[#B6997B]/20 text-[#8B7355] text-2xl font-bold">
-                      SM
+                      BX
                     </AvatarFallback>
                   </Avatar>
                   
@@ -159,8 +155,8 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                    josh
-                    <Sparkles className="h-5 w-5 text-[#8B7355]" />
+                    brookex
+                    <Sparkles className="h-5 w-5 text-[#B6997B]" />
                   </h1>
                 </div>
 
@@ -183,12 +179,12 @@ export default function ProfilePage() {
 
           {/* Content Preview Card - Now Clickable with Tracking */}
           <div onClick={handleExclusiveContentClick}>
-            <Link href="https://onlyfans.com/joshstoney/c11" target="_blank" rel="noopener noreferrer">
-              <Card className="mt-6 relative overflow-hidden border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-lg backdrop-blur-sm cursor-pointer hover:shadow-xl transition-shadow duration-300">
+            <Link href="https://onlyfans.com/bb18xo" target="_blank" rel="noopener noreferrer">
+              <Card className="mt-6 relative overflow-hidden border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 backdrop-blur-sm">
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src="/images/josh2.png"
+                      src="/brookex2.png"
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
@@ -221,7 +217,7 @@ export default function ProfilePage() {
           {/* Action Buttons */}
           <div className="mt-6 space-y-4">
             <div onClick={handleSubscribeClick}>
-              <Link href="https://onlyfans.com/joshstoney/c11" target="_blank" rel="noopener noreferrer">
+              <Link href="https://onlyfans.com/bb18xo" target="_blank" rel="noopener noreferrer">
                 <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
                   <Heart className="h-5 w-5 mr-2" />
                   Subscribe Now
@@ -229,24 +225,18 @@ export default function ProfilePage() {
               </Link>
             </div>
             <div onClick={handleViewAllContentClick}>
-              <Link href="https://onlyfans.com/joshstoney/c11" target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="w-full border-gray-300 text-[#8B7355] hover:bg-gray-50">
+              <Link href="https://onlyfans.com/bb18xo" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="w-full border-[#B6997B]/50 text-[#8B7355] hover:bg-[#B6997B]/20 backdrop-blur-sm">
                   View All Content
                 </Button>
               </Link>
             </div>
           </div>
 
-          {/* Footer Info */}
-          <div className="mt-6 text-center">
-            <p className="text-gray-500 text-sm">
-               
-            </p>
-          </div>
         </div>
       </div>
     </div>
   )
-} 
+}
 
 

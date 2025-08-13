@@ -17,24 +17,43 @@ export async function GET() {
 
     console.log("[BROOKE API] Total records in database:", count);
 
-    // Get all records
-    const { data, error } = await supabase
-      .from('brooke_analytics')
-      .select('*')
-      .order('created_at', { ascending: false });
+    // Fetch all records in pages of 1000
+    const pageSize = 1000;
+    const allRows: any[] = [];
+    const total = typeof count === 'number' ? count : pageSize; 
+    const totalPages = Math.ceil(total / pageSize) || 1;
 
-    if (error) {
-      console.error("[BROOKE API] Supabase fetch error:", error);
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    for (let page = 0; page < totalPages; page++) {
+      const start = page * pageSize;
+      const end = start + pageSize - 1;
+      const { data: chunk, error: chunkError } = await supabase
+        .from('brooke_analytics')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(start, end);
+      if (chunkError) {
+        console.error("[BROOKE API] Supabase fetch error (page", page, "):", chunkError);
+        return NextResponse.json({ success: false, error: chunkError.message }, { status: 500 });
+      }
+      if (chunk && chunk.length > 0) {
+        allRows.push(...chunk);
+      }
+      if (!chunk || chunk.length < pageSize) {
+        break;
+      }
     }
 
-    console.log("[BROOKE API] Successfully fetched data:", data?.length, "records");
+    console.log("[BROOKE API] Successfully fetched data:", allRows.length, "records");
 
     return NextResponse.json({ 
       success: true, 
-      data: data || [],
+      data: allRows,
       totalRecords: count,
-      fetchedRecords: data?.length || 0
+      fetchedRecords: allRows.length
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
+      }
     });
 
   } catch (error) {
@@ -55,10 +74,35 @@ export async function POST(req: NextRequest) {
     
     // Get IP address
     const forwarded = req.headers.get("x-forwarded-for");
-    const ip = forwarded ? forwarded.split(",")[0] : "unknown";
+    const ip = forwarded ? forwarded.split(",")[0]?.trim() : "unknown";
     
     // Get user agent
     const userAgent = req.headers.get("user-agent") || "unknown";
+
+    // Basic bot filtering
+    const ua = userAgent.toLowerCase();
+    const isBot = (
+      ua.includes("bot") ||
+      ua.includes("crawler") ||
+      ua.includes("spider") ||
+      ua.includes("preview") ||
+      ua.includes("monitor") ||
+      ua.includes("headless") ||
+      ua.includes("uptime") ||
+      ua.includes("insights") ||
+      ua.includes("curl/") ||
+      ua.includes("python-requests")
+    );
+    if (isBot) {
+      return NextResponse.json({ success: true, ignored: true, reason: 'bot' }, { status: 200 });
+    }
+
+    // Drop prefetch
+    const purpose = req.headers.get('purpose') || '';
+    const secPurpose = req.headers.get('sec-fetch-purpose') || '';
+    if (purpose === 'prefetch' || secPurpose === 'prefetch') {
+      return NextResponse.json({ success: true, ignored: true, reason: 'prefetch' }, { status: 200 });
+    }
     
     // Create readable referrer with enhanced mobile/desktop detection
     const getReadableReferrer = (ref: string) => {

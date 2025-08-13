@@ -29,21 +29,56 @@ export default function ProfilePage() {
     setRawReferrer(rawRef);
     setReferrer(getReadableReferrer(rawRef));
 
-    // Send to Supabase analytics
-    fetch("/api/brooke-analytics", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        page: "brooke",
-        referrer: rawRef,
-        timestamp: new Date().toISOString(),
-        pathname: "/brooke",
-        searchParams: "",
-        click_type: "page_visit"
-      }),
-    }).catch((error) => {
-      console.error("Failed to track Brooke analytics:", error);
-    });
+    // Throttle page_visit analytics per browser to once every 30 minutes
+    const key = "analytics:brooke:lastVisitTs";
+    const now = Date.now();
+    try {
+      const last = Number(localStorage.getItem(key) || 0);
+      if (last && now - last < 30 * 60 * 1000) {
+        return; // too soon, skip
+      }
+    } catch {}
+
+    const send = () => {
+      try {
+        if (document.visibilityState !== 'visible') return;
+        const payload = {
+          page: "brooke",
+          referrer: rawRef,
+          timestamp: new Date().toISOString(),
+          pathname: "/brooke",
+          searchParams: "",
+          click_type: "page_visit"
+        };
+        const body = JSON.stringify(payload);
+        if (navigator.sendBeacon) {
+          const blob = new Blob([body], { type: 'application/json' });
+          navigator.sendBeacon('/api/brooke-analytics', blob);
+        } else {
+          fetch("/api/brooke-analytics", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body,
+            keepalive: true
+          }).catch(() => {});
+        }
+        try { localStorage.setItem(key, String(now)); } catch {}
+      } catch (error) {
+        console.error("Failed to track Brooke analytics:", error);
+      }
+    };
+
+    const timeout = setTimeout(send, 3000);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        send();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible, { once: true });
+    return () => {
+      clearTimeout(timeout);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, []);
 
   // Click tracking functions

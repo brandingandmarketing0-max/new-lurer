@@ -66,7 +66,7 @@ export default function DeepLinksPage() {
 
   const modelNames = [
     "abbiehall", "aimee", "alaska", "amberr", "amyleigh", "amymaxwell", "b4byyeena", 
-    "babyscarlet", "babyyeena", "brooke", "chloeayling", "chloeelizabeth", 
+    "babyscarlet", "babyyeena", "brooke", "brookex", "chloeayling", "chloeelizabeth", 
     "chloetami", "ellejean", "em", "freya", "georgiaaa", "josh", "kaceymay", 
     "kaci", "kayley", "keanna", "kxceyrose", "laurdunne", "laylasoyoung", 
      "libby", "lou", "megann", "missbrown", "morgan", "ollie", 
