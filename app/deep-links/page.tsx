@@ -135,7 +135,7 @@ export default function DeepLinksPage() {
       const results = await Promise.all(modelDataPromises);
       setModels(results);
     } catch (error) {
-      console.error("Error fetching model data:", error);
+
     } finally {
       setLoading(false);
     }

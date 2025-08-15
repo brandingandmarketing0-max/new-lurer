@@ -29,15 +29,7 @@ export default function ProfilePage() {
     setRawReferrer(rawRef);
     setReferrer(getReadableReferrer(rawRef));
 
-    // Throttle page_visit analytics per browser to once every 30 minutes
-    const key = "analytics:brookex:lastVisitTs";
-    const now = Date.now();
-    try {
-      const last = Number(localStorage.getItem(key) || 0);
-      if (last && now - last < 30 * 60 * 1000) {
-        return; // too soon, skip
-      }
-    } catch {}
+    // Send analytics to Supabase with sendBeacon
 
     const send = () => {
       try {
@@ -62,7 +54,7 @@ export default function ProfilePage() {
             keepalive: true
           }).catch(() => {});
         }
-        try { localStorage.setItem(key, String(now)); } catch {}
+
       } catch (error) {
         console.error("Failed to track Brookex analytics:", error);
       }

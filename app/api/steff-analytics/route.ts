@@ -3,7 +3,7 @@ import { supabase, BrookeAnalyticsData } from "@/lib/supabase";
 
 export async function GET() {
   try {
-    console.log("[STEFF API] Fetching analytics data from Supabase");
+    //console.log("[STEFF API] Fetching analytics data from Supabase");
     
     const { data, error } = await supabase
       .from('steff_analytics')
@@ -11,11 +11,11 @@ export async function GET() {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error("[STEFF API] Supabase fetch error:", error);
+      //console.error("[STEFF API] Supabase fetch error:", error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    console.log("[STEFF API] Successfully fetched data:", data?.length, "records");
+    //console.log("[STEFF API] Successfully fetched data:", data?.length, "records");
 
     return NextResponse.json({ 
       success: true, 
@@ -23,7 +23,7 @@ export async function GET() {
     });
 
   } catch (error) {
-    console.error("[STEFF API] Error fetching analytics:", error);
+    //console.error("[STEFF API] Error fetching analytics:", error);
     return NextResponse.json({ success: false, error: "Failed to fetch analytics" }, { status: 500 });
   }
 }
@@ -34,9 +34,9 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { referrer, timestamp, page, pathname, searchParams, click_type } = body;
     
-    console.log(`[STEFF API] Received analytics request for page: ${page}`);
-    console.log(`[STEFF API] Raw referrer: ${referrer}`);
-    console.log(`[STEFF API] Click type: ${click_type || 'page_visit'}`);
+    //console.log(`[STEFF API] Received analytics request for page: ${page}`);
+    //console.log(`[STEFF API] Raw referrer: ${referrer}`);
+    //console.log(`[STEFF API] Click type: ${click_type || 'page_visit'}`);
     
     // Get IP address
     const forwarded = req.headers.get("x-forwarded-for");
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
     };
 
     const readableReferrer = getReadableReferrer(referrer || "");
-    console.log(`[STEFF API] Processed referrer: ${readableReferrer}`);
+    //console.log(`[STEFF API] Processed referrer: ${readableReferrer}`);
 
     const analyticsData: BrookeAnalyticsData = {
       page: page || "steff",
@@ -110,11 +110,11 @@ export async function POST(req: NextRequest) {
       .select();
 
     if (error) {
-      console.error("[STEFF API] Supabase error:", error);
+      //console.error("[STEFF API] Supabase error:", error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    console.log("[STEFF API] Successfully saved to Supabase:", data);
+    //console.log("[STEFF API] Successfully saved to Supabase:", data);
 
     return NextResponse.json({ 
       success: true, 
@@ -123,10 +123,12 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error("[STEFF API] Error storing analytics:", error);
+    //console.error("[STEFF API] Error storing analytics:", error);
     return NextResponse.json({ success: false, error: "Failed to store analytics" }, { status: 500 });
   }
 }
+
+
 
 
 

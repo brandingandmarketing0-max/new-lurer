@@ -3,7 +3,7 @@ import { supabase, BrookeAnalyticsData } from "@/lib/supabase";
 
 export async function GET() {
   try {
-    console.log("[GEORGIAAA API] Fetching analytics data from Supabase");
+    //console.log("[GEORGIAAA API] Fetching analytics data from Supabase");
     
     // First, get the total count
     const { count, error: countError } = await supabase
@@ -11,35 +11,49 @@ export async function GET() {
       .select('*', { count: 'exact', head: true });
 
     if (countError) {
-      console.error("[GEORGIAAA API] Count error:", countError);
+      //console.error("[GEORGIAAA API] Count error:", countError);
       return NextResponse.json({ success: false, error: countError.message }, { status: 500 });
     }
 
-    console.log("[GEORGIAAA API] Total records in database:", count);
+    //console.log("[GEORGIAAA API] Total records in database:", count);
 
-    // Get all records with increased limit
-    const { data, error } = await supabase
-      .from('georgiaaa_analytics')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(10000); // Increased limit to 10,000 records
+    // Fetch all records in pages of 1000
+    const pageSize = 1000;
+    const allRows: any[] = [];
+    const total = typeof count === 'number' ? count : pageSize; 
+    const totalPages = Math.ceil(total / pageSize) || 1;
 
-    if (error) {
-      console.error("[GEORGIAAA API] Supabase fetch error:", error);
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    for (let page = 0; page < totalPages; page++) {
+      const start = page * pageSize;
+      const end = start + pageSize - 1;
+      const { data: chunk, error: chunkError } = await supabase
+        .from('georgiaaa_analytics')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(start, end);
+      if (chunkError) {
+        //console.error("[GEORGIAAA API] Supabase fetch error (page", page, "):", chunkError);
+        return NextResponse.json({ success: false, error: chunkError.message }, { status: 500 });
+      }
+      if (chunk && chunk.length > 0) allRows.push(...chunk);
+      if (!chunk || chunk.length < pageSize) break;
     }
 
-    console.log("[GEORGIAAA API] Successfully fetched data:", data?.length, "records");
+    //console.log("[GEORGIAAA API] Successfully fetched data:", allRows.length, "records");
 
     return NextResponse.json({ 
       success: true, 
-      data: data || [],
+      data: allRows,
       totalRecords: count,
-      fetchedRecords: data?.length || 0
+      fetchedRecords: allRows.length
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
+      }
     });
 
   } catch (error) {
-    console.error("[GEORGIAAA API] Error fetching analytics:", error);
+    //console.error("[GEORGIAAA API] Error fetching analytics:", error);
     return NextResponse.json({ success: false, error: "Failed to fetch analytics" }, { status: 500 });
   }
 }
@@ -50,9 +64,9 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { referrer, timestamp, page, pathname, searchParams, click_type } = body;
     
-    console.log(`[GEORGIAAA API] Received analytics request for page: ${page}`);
-    console.log(`[GEORGIAAA API] Raw referrer: ${referrer}`);
-    console.log(`[GEORGIAAA API] Click type: ${click_type || 'page_visit'}`);
+    //console.log(`[GEORGIAAA API] Received analytics request for page: ${page}`);
+    //console.log(`[GEORGIAAA API] Raw referrer: ${referrer}`);
+    //console.log(`[GEORGIAAA API] Click type: ${click_type || 'page_visit'}`);
     
     // Get IP address
     const forwarded = req.headers.get("x-forwarded-for");
@@ -105,7 +119,7 @@ export async function POST(req: NextRequest) {
     };
 
     const readableReferrer = getReadableReferrer(referrer || "");
-    console.log(`[GEORGIAAA API] Processed referrer: ${readableReferrer}`);
+    //console.log(`[GEORGIAAA API] Processed referrer: ${readableReferrer}`);
 
     const analyticsData: BrookeAnalyticsData = {
       page: page || "georgiaaa",
@@ -126,11 +140,11 @@ export async function POST(req: NextRequest) {
       .select();
 
     if (error) {
-      console.error("[GEORGIAAA API] Supabase error:", error);
+      //console.error("[GEORGIAAA API] Supabase error:", error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    console.log("[GEORGIAAA API] Successfully saved to Supabase:", data);
+    //console.log("[GEORGIAAA API] Successfully saved to Supabase:", data);
 
     return NextResponse.json({ 
       success: true, 
@@ -139,7 +153,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error("[GEORGIAAA API] Error storing analytics:", error);
+    //console.error("[GEORGIAAA API] Error storing analytics:", error);
     return NextResponse.json({ success: false, error: "Failed to store analytics" }, { status: 500 });
   }
 } 

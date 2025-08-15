@@ -29,21 +29,48 @@ export default function ProfilePage() {
     setRawReferrer(rawRef);
     setReferrer(getReadableReferrer(rawRef));
 
-    // Send to Supabase analytics
-    fetch("/api/ellejean-analytics", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        page: "ellejean",
-        referrer: rawRef,
-        timestamp: new Date().toISOString(),
-        pathname: "/ellejean",
-        searchParams: "",
-        click_type: "page_visit"
-      }),
-    }).catch((error) => {
-      console.error("Failed to track Ellejean analytics:", error);
-    });
+    // Send analytics to Supabase with sendBeacon
+
+    const send = () => {
+      try {
+        if (document.visibilityState !== 'visible') return;
+        const payload = {
+          page: "ellejean",
+          referrer: rawRef,
+          timestamp: new Date().toISOString(),
+          pathname: "/ellejean",
+          searchParams: "",
+          click_type: "page_visit"
+        };
+        const body = JSON.stringify(payload);
+        if (navigator.sendBeacon) {
+          const blob = new Blob([body], { type: 'application/json' });
+          navigator.sendBeacon('/api/ellejean-analytics', blob);
+        } else {
+          fetch("/api/ellejean-analytics", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body,
+            keepalive: true
+          }).catch(() => {});
+        }
+
+      } catch (error) {
+        console.error("Failed to track Ellejean analytics:", error);
+      }
+    };
+
+    const timeout = setTimeout(send, 3000);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        send();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible, { once: true });
+    return () => {
+      clearTimeout(timeout);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, []);
 
   // Click tracking functions

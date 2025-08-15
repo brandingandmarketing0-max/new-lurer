@@ -3,7 +3,7 @@ import { supabase, BrookeAnalyticsData } from "@/lib/supabase";
 
 export async function GET() {
   try {
-    console.log("[AIMEE API] Fetching analytics data from Supabase");
+    //console.log("[AIMEE API] Fetching analytics data from Supabase");
     
     // First, get the total count
     const { count, error: countError } = await supabase
@@ -11,35 +11,49 @@ export async function GET() {
       .select('*', { count: 'exact', head: true });
 
     if (countError) {
-      console.error("[AIMEE API] Count error:", countError);
+      //console.error("[AIMEE API] Count error:", countError);
       return NextResponse.json({ success: false, error: countError.message }, { status: 500 });
     }
 
-    console.log("[AIMEE API] Total records in database:", count);
+    //console.log("[AIMEE API] Total records in database:", count);
 
-    // Get all records for accurate analytics calculations
-    const { data, error } = await supabase
-      .from('aimee_analytics')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(100000); // Set a very high limit to get all records
+    // Fetch all records in pages of 1000
+    const pageSize = 1000;
+    const allRows: any[] = [];
+    const total = typeof count === 'number' ? count : pageSize; 
+    const totalPages = Math.ceil(total / pageSize) || 1;
 
-    if (error) {
-      console.error("[AIMEE API] Supabase fetch error:", error);
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    for (let page = 0; page < totalPages; page++) {
+      const start = page * pageSize;
+      const end = start + pageSize - 1;
+      const { data: chunk, error: chunkError } = await supabase
+        .from('aimee_analytics')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(start, end);
+      if (chunkError) {
+        //console.error("[AIMEE API] Supabase fetch error (page", page, "):", chunkError);
+        return NextResponse.json({ success: false, error: chunkError.message }, { status: 500 });
+      }
+      if (chunk && chunk.length > 0) allRows.push(...chunk);
+      if (!chunk || chunk.length < pageSize) break;
     }
 
-    console.log("[AIMEE API] Successfully fetched data:", data?.length, "records");
+    //console.log("[AIMEE API] Successfully fetched data:", allRows.length, "records");
 
     return NextResponse.json({ 
       success: true, 
-      data: data || [],
+      data: allRows,
       totalRecords: count,
-      fetchedRecords: data?.length || 0
+      fetchedRecords: allRows.length
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300'
+      }
     });
 
   } catch (error) {
-    console.error("[AIMEE API] Error fetching analytics:", error);
+    //console.error("[AIMEE API] Error fetching analytics:", error);
     return NextResponse.json({ success: false, error: "Failed to fetch analytics" }, { status: 500 });
   }
 }
@@ -50,16 +64,35 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { referrer, timestamp, page, pathname, searchParams, click_type } = body;
     
-    console.log(`[AIMEE API] Received analytics request for page: ${page}`);
-    console.log(`[AIMEE API] Raw referrer: ${referrer}`);
-    console.log(`[AIMEE API] Click type: ${click_type || 'page_visit'}`);
+    //console.log(`[AIMEE API] Received analytics request for page: ${page}`);
+    //console.log(`[AIMEE API] Raw referrer: ${referrer}`);
+    //console.log(`[AIMEE API] Click type: ${click_type || 'page_visit'}`);
     
     // Get IP address
     const forwarded = req.headers.get("x-forwarded-for");
-    const ip = forwarded ? forwarded.split(",")[0] : "unknown";
+    const ip = forwarded ? forwarded.split(",")[0]?.trim() : "unknown";
     
     // Get user agent
     const userAgent = req.headers.get("user-agent") || "unknown";
+
+    // Basic bot filtering
+    const ua = userAgent.toLowerCase();
+    const isBot = (
+      ua.includes("bot") || ua.includes("crawler") || ua.includes("spider") ||
+      ua.includes("preview") || ua.includes("monitor") || ua.includes("headless") ||
+      ua.includes("uptime") || ua.includes("insights") || ua.includes("curl/") ||
+      ua.includes("python-requests")
+    );
+    if (isBot) {
+      return NextResponse.json({ success: true, ignored: true, reason: 'bot' }, { status: 200 });
+    }
+
+    // Drop prefetch
+    const purpose = req.headers.get('purpose') || '';
+    const secPurpose = req.headers.get('sec-fetch-purpose') || '';
+    if (purpose === 'prefetch' || secPurpose === 'prefetch') {
+      return NextResponse.json({ success: true, ignored: true, reason: 'prefetch' }, { status: 200 });
+    }
     
     // Create readable referrer with enhanced mobile/desktop detection
     const getReadableReferrer = (ref: string) => {
@@ -105,7 +138,7 @@ export async function POST(req: NextRequest) {
     };
 
     const readableReferrer = getReadableReferrer(referrer || "");
-    console.log(`[AIMEE API] Processed referrer: ${readableReferrer}`);
+    //console.log(`[AIMEE API] Processed referrer: ${readableReferrer}`);
 
     const analyticsData: BrookeAnalyticsData = {
       page: page || "aimee",
@@ -126,11 +159,11 @@ export async function POST(req: NextRequest) {
       .select();
 
     if (error) {
-      console.error("[AIMEE API] Supabase error:", error);
+      //console.error("[AIMEE API] Supabase error:", error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    console.log("[AIMEE API] Successfully saved to Supabase:", data);
+    //console.log("[AIMEE API] Successfully saved to Supabase:", data);
 
     return NextResponse.json({ 
       success: true, 
@@ -139,7 +172,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error("[AIMEE API] Error storing analytics:", error);
+    //console.error("[AIMEE API] Error storing analytics:", error);
     return NextResponse.json({ success: false, error: "Failed to store analytics" }, { status: 500 });
   }
 } 

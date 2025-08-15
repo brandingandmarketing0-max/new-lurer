@@ -3,13 +3,13 @@ import { supabase, BrookeAnalyticsData } from "@/lib/supabase";
 
 export async function GET() {
   try {
-    console.log("[BROOKEX API] Fetching analytics data from Supabase");
+    //console.log("[BROOKEX API] Fetching analytics data from Supabase");
     const { count, error: countError } = await supabase
       .from('brookex_analytics')
       .select('*', { count: 'exact', head: true });
 
     if (countError) {
-      console.error("[BROOKEX API] Count error:", countError);
+      //console.error("[BROOKEX API] Count error:", countError);
       return NextResponse.json({ success: false, error: countError.message }, { status: 500 });
     }
 
@@ -27,7 +27,7 @@ export async function GET() {
         .order('created_at', { ascending: false })
         .range(start, end);
       if (chunkError) {
-        console.error("[BROOKEX API] Supabase fetch error (page", page, "):", chunkError);
+        //console.error("[BROOKEX API] Supabase fetch error (page", page, "):", chunkError);
         return NextResponse.json({ success: false, error: chunkError.message }, { status: 500 });
       }
       if (chunk && chunk.length > 0) allRows.push(...chunk);
@@ -45,7 +45,7 @@ export async function GET() {
       }
     });
   } catch (error) {
-    console.error("[BROOKEX API] Error fetching analytics:", error);
+    //console.error("[BROOKEX API] Error fetching analytics:", error);
     return NextResponse.json({ success: false, error: "Failed to fetch analytics" }, { status: 500 });
   }
 }
@@ -113,15 +113,17 @@ export async function POST(req: NextRequest) {
       .select();
 
     if (error) {
-      console.error("[BROOKEX API] Supabase error:", error);
+      //console.error("[BROOKEX API] Supabase error:", error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, data: analyticsData, supabaseData: data });
   } catch (error) {
-    console.error("[BROOKEX API] Error storing analytics:", error);
+    //console.error("[BROOKEX API] Error storing analytics:", error);
     return NextResponse.json({ success: false, error: "Failed to store analytics" }, { status: 500 });
   }
 }
+
+
 
 

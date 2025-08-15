@@ -3,7 +3,7 @@ import { supabase, BrookeAnalyticsData } from "@/lib/supabase";
 
 export async function GET() {
   try {
-    console.log("[LIBBY API] Fetching analytics data from Supabase");
+    //console.log("[LIBBY API] Fetching analytics data from Supabase");
     
     // First, get the total count
     const { count, error: countError } = await supabase
@@ -11,11 +11,11 @@ export async function GET() {
       .select('*', { count: 'exact', head: true });
 
     if (countError) {
-      console.error("[LIBBY API] Count error:", countError);
+      //console.error("[LIBBY API] Count error:", countError);
       return NextResponse.json({ success: false, error: countError.message }, { status: 500 });
     }
 
-    console.log("[LIBBY API] Total records in database:", count);
+    //console.log("[LIBBY API] Total records in database:", count);
 
     // Get all records with increased limit
     const { data, error } = await supabase
@@ -25,11 +25,11 @@ export async function GET() {
       .limit(10000); // Increased limit to 10,000 records
 
     if (error) {
-      console.error("[LIBBY API] Supabase fetch error:", error);
+      //console.error("[LIBBY API] Supabase fetch error:", error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    console.log("[LIBBY API] Successfully fetched data:", data?.length, "records");
+    //console.log("[LIBBY API] Successfully fetched data:", data?.length, "records");
 
     return NextResponse.json({ 
       success: true, 
@@ -39,7 +39,7 @@ export async function GET() {
     });
 
   } catch (error) {
-    console.error("[LIBBY API] Error fetching analytics:", error);
+    //console.error("[LIBBY API] Error fetching analytics:", error);
     return NextResponse.json({ success: false, error: "Failed to fetch analytics" }, { status: 500 });
   }
 }
@@ -50,9 +50,9 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { referrer, timestamp, page, pathname, searchParams, click_type } = body;
     
-    console.log(`[LIBBY API] Received analytics request for page: ${page}`);
-    console.log(`[LIBBY API] Raw referrer: ${referrer}`);
-    console.log(`[LIBBY API] Click type: ${click_type || 'page_visit'}`);
+    //console.log(`[LIBBY API] Received analytics request for page: ${page}`);
+    //console.log(`[LIBBY API] Raw referrer: ${referrer}`);
+    //console.log(`[LIBBY API] Click type: ${click_type || 'page_visit'}`);
     
     // Get IP address
     const forwarded = req.headers.get("x-forwarded-for");
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
     };
 
     const readableReferrer = getReadableReferrer(referrer || "");
-    console.log(`[LIBBY API] Processed referrer: ${readableReferrer}`);
+    //console.log(`[LIBBY API] Processed referrer: ${readableReferrer}`);
 
     const analyticsData: BrookeAnalyticsData = {
       page: page || "libby",
@@ -126,11 +126,11 @@ export async function POST(req: NextRequest) {
       .select();
 
     if (error) {
-      console.error("[LIBBY API] Supabase error:", error);
+      //console.error("[LIBBY API] Supabase error:", error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    console.log("[LIBBY API] Successfully saved to Supabase:", data);
+    //console.log("[LIBBY API] Successfully saved to Supabase:", data);
 
     return NextResponse.json({ 
       success: true, 
@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error("[LIBBY API] Error storing analytics:", error);
+    //console.error("[LIBBY API] Error storing analytics:", error);
     return NextResponse.json({ success: false, error: "Failed to store analytics" }, { status: 500 });
   }
 } 

@@ -3,7 +3,7 @@ import { supabase, BrookeAnalyticsData } from "@/lib/supabase";
 
 export async function GET() {
   try {
-    console.log("[BROOKE API] Fetching analytics data from Supabase");
+    //console.log("[BROOKE API] Fetching analytics data from Supabase");
     
     // First, get the total count
     const { count, error: countError } = await supabase
@@ -11,11 +11,11 @@ export async function GET() {
       .select('*', { count: 'exact', head: true });
 
     if (countError) {
-      console.error("[BROOKE API] Count error:", countError);
+      //console.error("[BROOKE API] Count error:", countError);
       return NextResponse.json({ success: false, error: countError.message }, { status: 500 });
     }
 
-    console.log("[BROOKE API] Total records in database:", count);
+    //console.log("[BROOKE API] Total records in database:", count);
 
     // Fetch all records in pages of 1000
     const pageSize = 1000;
@@ -32,7 +32,7 @@ export async function GET() {
         .order('created_at', { ascending: false })
         .range(start, end);
       if (chunkError) {
-        console.error("[BROOKE API] Supabase fetch error (page", page, "):", chunkError);
+        //console.error("[BROOKE API] Supabase fetch error (page", page, "):", chunkError);
         return NextResponse.json({ success: false, error: chunkError.message }, { status: 500 });
       }
       if (chunk && chunk.length > 0) {
@@ -43,7 +43,7 @@ export async function GET() {
       }
     }
 
-    console.log("[BROOKE API] Successfully fetched data:", allRows.length, "records");
+    //console.log("[BROOKE API] Successfully fetched data:", allRows.length, "records");
 
     return NextResponse.json({ 
       success: true, 
@@ -57,7 +57,7 @@ export async function GET() {
     });
 
   } catch (error) {
-    console.error("[BROOKE API] Error fetching analytics:", error);
+    //console.error("[BROOKE API] Error fetching analytics:", error);
     return NextResponse.json({ success: false, error: "Failed to fetch analytics" }, { status: 500 });
   }
 }
@@ -68,9 +68,9 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { referrer, timestamp, page, pathname, searchParams, click_type } = body;
     
-    console.log(`[BROOKE API] Received analytics request for page: ${page}`);
-    console.log(`[BROOKE API] Raw referrer: ${referrer}`);
-    console.log(`[BROOKE API] Click type: ${click_type || 'page_visit'}`);
+    //console.log(`[BROOKE API] Received analytics request for page: ${page}`);
+    //console.log(`[BROOKE API] Raw referrer: ${referrer}`);
+    //console.log(`[BROOKE API] Click type: ${click_type || 'page_visit'}`);
     
     // Get IP address
     const forwarded = req.headers.get("x-forwarded-for");
@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
     };
 
     const readableReferrer = getReadableReferrer(referrer || "");
-    console.log(`[BROOKE API] Processed referrer: ${readableReferrer}`);
+    //console.log(`[BROOKE API] Processed referrer: ${readableReferrer}`);
 
     const analyticsData: BrookeAnalyticsData = {
       page: page || "brooke",
@@ -169,11 +169,11 @@ export async function POST(req: NextRequest) {
       .select();
 
     if (error) {
-      console.error("[BROOKE API] Supabase error:", error);
+      //console.error("[BROOKE API] Supabase error:", error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    console.log("[BROOKE API] Successfully saved to Supabase:", data);
+    //console.log("[BROOKE API] Successfully saved to Supabase:", data);
 
     return NextResponse.json({ 
       success: true, 
@@ -182,7 +182,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error("[BROOKE API] Error storing analytics:", error);
+    //console.error("[BROOKE API] Error storing analytics:", error);
     return NextResponse.json({ success: false, error: "Failed to store analytics" }, { status: 500 });
   }
 } 
