@@ -3,33 +3,33 @@ import { supabase, BrookeAnalyticsData } from "@/lib/supabase";
 
 export async function GET() {
   try {
-    //console.log("[MISSSOPHIAISABELLA API] Fetching analytics data from Supabase");
+    //console.log("[MICHAELAJAYNEEX API] Fetching analytics data from Supabase");
     
     // First, get the total count
     const { count, error: countError } = await supabase
-      .from('misssophiaisabella_analytics')
+      .from('michaelajayneex_analytics')
       .select('*', { count: 'exact', head: true });
 
     if (countError) {
-      //console.error("[MISSSOPHIAISABELLA API] Count error:", countError);
+      //console.error("[MICHAELAJAYNEEX API] Count error:", countError);
       return NextResponse.json({ success: false, error: countError.message }, { status: 500 });
     }
 
-    //console.log("[MISSSOPHIAISABELLA API] Total records in database:", count);
+    //console.log("[MICHAELAJAYNEEX API] Total records in database:", count);
 
     // Get all records for accurate analytics calculations
     const { data, error } = await supabase
-      .from('misssophiaisabella_analytics')
+      .from('michaelajayneex_analytics')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(100000); // Set a very high limit to get all records
 
     if (error) {
-      //console.error("[MISSSOPHIAISABELLA API] Supabase fetch error:", error);
+      //console.error("[MICHAELAJAYNEEX API] Supabase fetch error:", error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    //console.log("[MISSSOPHIAISABELLA API] Successfully fetched data:", data?.length, "records");
+    //console.log("[MICHAELAJAYNEEX API] Successfully fetched data:", data?.length, "records");
 
     return NextResponse.json({ 
       success: true, 
@@ -39,7 +39,7 @@ export async function GET() {
     });
 
   } catch (error) {
-    //console.error("[MISSSOPHIAISABELLA API] Error fetching analytics:", error);
+    //console.error("[MICHAELAJAYNEEX API] Error fetching analytics:", error);
     return NextResponse.json({ success: false, error: "Failed to fetch analytics" }, { status: 500 });
   }
 }
@@ -50,10 +50,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { referrer, timestamp, page, pathname, searchParams, click_type } = body;
     
-    //console.log(`[MISSSOPHIAISABELLA API] Received analytics request for page: ${page}`);
-    //console.log(`[MISSSOPHIAISABELLA API] Raw referrer: ${referrer}`);
-    //console.log(`[MISSSOPHIAISABELLA API] Click type: ${click_type || 'page_visit'}`);
-    //console.log(`[MISSSOPHIAISABELLA API] Full payload:`, body);
+    //console.log(`[MICHAELAJAYNEEX API] Received analytics request for page: ${page}`);
+    //console.log(`[MICHAELAJAYNEEX API] Raw referrer: ${referrer}`);
+    //console.log(`[MICHAELAJAYNEEX API] Click type: ${click_type || 'page_visit'}`);
+    //console.log(`[MICHAELAJAYNEEX API] Full payload:`, body);
     
     // Get IP address
     const forwarded = req.headers.get("x-forwarded-for");
@@ -106,34 +106,34 @@ export async function POST(req: NextRequest) {
     };
 
     const readableReferrer = getReadableReferrer(referrer || "");
-    //console.log(`[MISSSOPHIAISABELLA API] Processed referrer: ${readableReferrer}`);
+    //console.log(`[MICHAELAJAYNEEX API] Processed referrer: ${readableReferrer}`);
 
     const analyticsData: BrookeAnalyticsData = {
-      page: page || "misssophiaisabella",
+      page: page || "michaelajayneex",
       referrer: referrer || "",
       readable_referrer: readableReferrer,
       user_agent: userAgent,
       ip_address: ip,
       timestamp: timestamp || new Date().toISOString(),
-      pathname: pathname || "/misssophiaisabella",
+      pathname: pathname || "/michaelajayneex",
       search_params: searchParams || "",
       click_type: click_type || "page_visit"
     };
 
-    //console.log("[MISSSOPHIAISABELLA API] Prepared analytics data:", analyticsData);
+    //console.log("[MICHAELAJAYNEEX API] Prepared analytics data:", analyticsData);
 
     // Save to Supabase
     const { data, error } = await supabase
-      .from('misssophiaisabella_analytics')
+      .from('michaelajayneex_analytics')
       .insert([analyticsData])
       .select();
 
     if (error) {
-      //console.error("[MISSSOPHIAISABELLA API] Supabase error:", error);
+      //console.error("[MICHAELAJAYNEEX API] Supabase error:", error);
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    //console.log("[MISSSOPHIAISABELLA API] Successfully saved to Supabase:", data);
+    //console.log("[MICHAELAJAYNEEX API] Successfully saved to Supabase:", data);
 
     return NextResponse.json({ 
       success: true, 
@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    //console.error("[MISSSOPHIAISABELLA API] Error storing analytics:", error);
+    //console.error("[MICHAELAJAYNEEX API] Error storing analytics:", error);
     return NextResponse.json({ success: false, error: "Failed to store analytics" }, { status: 500 });
   }
 } 

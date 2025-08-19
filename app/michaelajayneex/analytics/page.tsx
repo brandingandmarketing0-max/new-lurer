@@ -8,7 +8,7 @@ import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft, RefreshCw, 
 import Link from "next/link";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 
-interface MisssophiaisabellaAnalyticsData {
+interface MichaelajayneexAnalyticsData {
   id: number;
   page: string;
   referrer: string;
@@ -22,27 +22,27 @@ interface MisssophiaisabellaAnalyticsData {
   created_at: string;
 }
 
-export default function MisssophiaisabellaAnalyticsPage() {
+export default function MichaelajayneexAnalyticsPage() {
   return (
     <ProtectedRoute>
-      <MisssophiaisabellaAnalyticsContent />
+      <MichaelajayneexAnalyticsContent />
     </ProtectedRoute>
   );
 }
 
-function MisssophiaisabellaAnalyticsContent() {
-  const [analyticsData, setAnalyticsData] = useState<MisssophiaisabellaAnalyticsData[]>([]);
+function MichaelajayneexAnalyticsContent() {
+  const [analyticsData, setAnalyticsData] = useState<MichaelajayneexAnalyticsData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchMisssophiaisabellaAnalytics();
+    fetchMichaelajayneexAnalytics();
   }, []);
 
-  const fetchMisssophiaisabellaAnalytics = async () => {
+  const fetchMichaelajayneexAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/misssophiaisabella-analytics');
+      const response = await fetch('/api/michaelajayneex-analytics');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }
@@ -101,7 +101,7 @@ function MisssophiaisabellaAnalyticsContent() {
         <div className="max-w-6xl mx-auto">
           <div className="text-gray-800 text-center py-20">
             <BarChart3 className="h-12 w-12 mx-auto mb-4 animate-spin text-[#B19272]" />
-            <h1 className="text-2xl font-bold">Loading Miss Sophia Isabella Analytics...</h1>
+            <h1 className="text-2xl font-bold">Loading Michaela Jayne Analytics...</h1>
           </div>
         </div>
       </div>
@@ -115,7 +115,7 @@ function MisssophiaisabellaAnalyticsContent() {
           <div className="text-gray-800 text-center py-20">
             <h1 className="text-2xl font-bold mb-4">Error Loading Analytics</h1>
             <p className="text-red-600 mb-4">{error}</p>
-            <Button onClick={fetchMisssophiaisabellaAnalytics} className="bg-[#B19272] hover:bg-[#9A7B5F]">Retry</Button>
+            <Button onClick={fetchMichaelajayneexAnalytics} className="bg-[#B19272] hover:bg-[#9A7B5F]">Retry</Button>
           </div>
         </div>
       </div>
@@ -128,19 +128,19 @@ function MisssophiaisabellaAnalyticsContent() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Miss Sophia Isabella</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Michaela Jayne</h1>
             <p className="text-gray-600">Track your page performance and visitor insights</p>
           </div>
           <div className="flex items-center gap-3">
             <Button 
-              onClick={fetchMisssophiaisabellaAnalytics}
+              onClick={fetchMichaelajayneexAnalytics}
               variant="outline" 
               className="border-[#B19272] text-[#B19272] hover:bg-[#B19272] hover:text-white"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
-            <Link href="/misssophiaisabella">
+            <Link href="/michaelajayneex">
               <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Profile
@@ -162,7 +162,7 @@ function MisssophiaisabellaAnalyticsContent() {
             </div>
             <div className="flex items-center gap-2 mb-4">
               <LinkIcon className="h-4 w-4 text-[#B19272]" />
-              <span className="text-[#B19272] font-medium"> lure.bio/misssophiaisabella</span>
+              <span className="text-[#B19272] font-medium"> lure.bio/michaelajayneex</span>
             </div>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-4 w-4 text-gray-500" />
@@ -314,4 +314,3 @@ function MisssophiaisabellaAnalyticsContent() {
     </div>
   );
 }
-
