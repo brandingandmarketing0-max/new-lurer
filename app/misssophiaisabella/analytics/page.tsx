@@ -4,11 +4,11 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Eye, Users, TrendingUp, Globe, ArrowLeft, RefreshCw, Link as LinkIcon } from "lucide-react";
+import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft, RefreshCw, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 
-interface BrookexAnalyticsData {
+interface MisssophiaisabellaAnalyticsData {
   id: number;
   page: string;
   referrer: string;
@@ -18,46 +18,36 @@ interface BrookexAnalyticsData {
   timestamp: string;
   pathname: string;
   search_params: string;
+  click_type?: string; // Added for click tracking
   created_at: string;
-  click_type?: string;
 }
 
-export default function BrookexAnalyticsPage() {
+export default function MisssophiaisabellaAnalyticsPage() {
   return (
     <ProtectedRoute>
-      <BrookexAnalyticsContent />
+      <MisssophiaisabellaAnalyticsContent />
     </ProtectedRoute>
   );
 }
 
-function BrookexAnalyticsContent() {
-  const [analyticsData, setAnalyticsData] = useState<BrookexAnalyticsData[]>([]);
-  const [totalRecords, setTotalRecords] = useState<number>(0);
-  const [fetchedRecords, setFetchedRecords] = useState<number>(0);
+function MisssophiaisabellaAnalyticsContent() {
+  const [analyticsData, setAnalyticsData] = useState<MisssophiaisabellaAnalyticsData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchBrookexAnalytics();
+    fetchMisssophiaisabellaAnalytics();
   }, []);
 
-  const fetchBrookexAnalytics = async () => {
+  const fetchMisssophiaisabellaAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/brookex-analytics');
+      const response = await fetch('/api/misssophiaisabella-analytics');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }
-      const result = await response.json();
-      if (result.success && result.data) {
-        setAnalyticsData(result.data || []);
-        setTotalRecords(result.totalRecords || 0);
-        setFetchedRecords(result.fetchedRecords || 0);
-      } else {
-        setAnalyticsData([]);
-        setTotalRecords(0);
-        setFetchedRecords(0);
-      }
+      const data = await response.json();
+      setAnalyticsData(data.data || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch data');
     } finally {
@@ -65,7 +55,10 @@ function BrookexAnalyticsContent() {
     }
   };
 
+  // Treat only 'page_visit' rows as visitors to keep metrics consistent
   const visitRows = analyticsData.filter(item => (item.click_type || 'page_visit') === 'page_visit');
+
+  // Calculate statistics
   const totalVisits = visitRows.length;
   const uniqueIPs = new Set(visitRows.map(item => item.ip_address)).size;
   const referrerStats = visitRows.reduce((acc, item) => {
@@ -79,15 +72,8 @@ function BrookexAnalyticsContent() {
     .slice(0, 5);
 
   const getDeviceType = (userAgent: string) => {
-    if (!userAgent) return "Unknown";
-    const ua = userAgent.toLowerCase();
-    if (
-      ua.includes("mobile") || ua.includes("android") || ua.includes("iphone") ||
-      ua.includes("ipad") || ua.includes("ipod") || ua.includes("blackberry") ||
-      ua.includes("windows phone") || ua.includes("opera mini") ||
-      ua.includes("mobile safari") || ua.includes("mobile chrome") || ua.includes("mobile firefox")
-    ) return "Mobile";
-    if (ua.includes("tablet") || (ua.includes("android") && !ua.includes("mobile")) || ua.includes("kindle")) return "Tablet";
+    if (userAgent.includes("Mobile")) return "Mobile";
+    if (userAgent.includes("Tablet")) return "Tablet";
     return "Desktop";
   };
 
@@ -97,6 +83,7 @@ function BrookexAnalyticsContent() {
     return acc;
   }, {} as Record<string, number>);
 
+  // Calculate click tracking statistics
   const clickStats = analyticsData.reduce((acc, item) => {
     const clickType = item.click_type || 'page_visit';
     acc[clickType] = (acc[clickType] || 0) + 1;
@@ -114,7 +101,7 @@ function BrookexAnalyticsContent() {
         <div className="max-w-6xl mx-auto">
           <div className="text-gray-800 text-center py-20">
             <BarChart3 className="h-12 w-12 mx-auto mb-4 animate-spin text-[#B19272]" />
-            <h1 className="text-2xl font-bold">Loading Brookex Analytics...</h1>
+            <h1 className="text-2xl font-bold">Loading Miss Sophia Isabella Analytics...</h1>
           </div>
         </div>
       </div>
@@ -128,7 +115,7 @@ function BrookexAnalyticsContent() {
           <div className="text-gray-800 text-center py-20">
             <h1 className="text-2xl font-bold mb-4">Error Loading Analytics</h1>
             <p className="text-red-600 mb-4">{error}</p>
-            <Button onClick={fetchBrookexAnalytics} className="bg-[#B19272] hover:bg-[#9A7B5F]">Retry</Button>
+            <Button onClick={fetchMisssophiaisabellaAnalytics} className="bg-[#B19272] hover:bg-[#9A7B5F]">Retry</Button>
           </div>
         </div>
       </div>
@@ -141,24 +128,19 @@ function BrookexAnalyticsContent() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Brookex</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Miss Sophia Isabella</h1>
             <p className="text-gray-600">Track your page performance and visitor insights</p>
-            {totalRecords > 0 && (
-              <p className="text-sm text-gray-500">
-                Analyzing {fetchedRecords} of {totalRecords} total rows • Visits: {pageVisits} • Clicks: {exclusiveContentClicks + subscribeClicks + viewAllContentClicks}
-              </p>
-            )}
           </div>
           <div className="flex items-center gap-3">
             <Button 
-              onClick={fetchBrookexAnalytics}
+              onClick={fetchMisssophiaisabellaAnalytics}
               variant="outline" 
               className="border-[#B19272] text-[#B19272] hover:bg-[#B19272] hover:text-white"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
-            <Link href="/brookex">
+            <Link href="/misssophiaisabella">
               <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Profile
@@ -180,12 +162,13 @@ function BrookexAnalyticsContent() {
             </div>
             <div className="flex items-center gap-2 mb-4">
               <LinkIcon className="h-4 w-4 text-[#B19272]" />
-              <span className="text-[#B19272] font-medium"> lure.bio/brookex</span>
+              <span className="text-[#B19272] font-medium"> lure.bio/misssophiaisabella</span>
             </div>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-4 w-4 text-gray-500" />
               <span className="text-gray-700">{totalVisits} All-Time Visitors</span>
             </div>
+            <div className="text-sm text-gray-500">Created on Aug 19, 2025</div>
           </CardContent>
         </Card>
 
@@ -195,7 +178,7 @@ function BrookexAnalyticsContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total visitors</p>
+                  <p className="text-sm text-gray-600">Total period visitors</p>
                   <p className="text-3xl font-bold text-gray-900">{totalVisits}</p>
                 </div>
                 <Users className="h-8 w-8 text-[#B19272]" />
@@ -253,10 +236,35 @@ function BrookexAnalyticsContent() {
                 <div className="text-sm text-gray-600">View All Content Clicks</div>
               </div>
             </div>
+            
+            {/* Conversion Rates */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Conversion Rates</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#B19272]">
+                    {pageVisits > 0 ? ((exclusiveContentClicks / pageVisits) * 100).toFixed(1) : 0}%
+                  </div>
+                  <div className="text-sm text-gray-600">Exclusive Content CTR</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#B19272]">
+                    {pageVisits > 0 ? ((subscribeClicks / pageVisits) * 100).toFixed(1) : 0}%
+                  </div>
+                  <div className="text-sm text-gray-600">Subscribe CTR</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-[#B19272]">
+                    {pageVisits > 0 ? ((viewAllContentClicks / pageVisits) * 100).toFixed(1) : 0}%
+                  </div>
+                  <div className="text-sm text-gray-600">View All CTR</div>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        {/* Visits by Referrer */}
+        {/* Visits by Referrer Chart */}
         <Card className="border-[#B19272]">
           <CardHeader>
             <CardTitle className="text-gray-900">Visits by Referrer</CardTitle>
@@ -288,6 +296,11 @@ function BrookexAnalyticsContent() {
                     </div>
                   </div>
                 ))}
+                <div className="pt-4 border-t border-gray-200">
+                  <p className="text-sm text-gray-600">
+                    {totalVisits} total visits • Showing click distribution across all referral sources
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="text-center py-8">
@@ -301,8 +314,3 @@ function BrookexAnalyticsContent() {
     </div>
   );
 }
-
-
-
-
-
