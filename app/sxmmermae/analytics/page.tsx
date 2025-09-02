@@ -42,7 +42,7 @@ function SxmmermaeAnalyticsContent() {
   const fetchSxmmermaeAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/sxmmermae-analytics');
+      const response = await fetch('/api/track?page=sxmmermae');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

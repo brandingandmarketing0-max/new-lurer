@@ -42,7 +42,7 @@ function BabyscarletAnalyticsContent() {
   const fetchBabyscarletAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/babyscarlet-analytics');
+      const response = await fetch('/api/track?page=babyscarlet');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

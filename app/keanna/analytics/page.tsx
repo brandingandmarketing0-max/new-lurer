@@ -42,7 +42,7 @@ function KeannaAnalyticsContent() {
   const fetchKeannaAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/keanna-analytics');
+      const response = await fetch('/api/track?page=keanna');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

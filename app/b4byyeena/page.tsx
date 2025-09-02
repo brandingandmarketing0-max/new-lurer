@@ -44,9 +44,9 @@ export default function ProfilePage() {
         const body = JSON.stringify(payload);
         if (navigator.sendBeacon) {
           const blob = new Blob([body], { type: 'application/json' });
-          navigator.sendBeacon('/api/b4byyeena-analytics', blob);
+          navigator.sendBeacon('/api/track', blob);
         } else {
-          fetch("/api/b4byyeena-analytics", {
+          fetch("/api/track", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body,
@@ -74,7 +74,7 @@ export default function ProfilePage() {
   // Click tracking functions
   const trackClick = async (clickType: string) => {
     try {
-      await fetch("/api/b4byyeena-analytics", {
+      await fetch("/api/track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

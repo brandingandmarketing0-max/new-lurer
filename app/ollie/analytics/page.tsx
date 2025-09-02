@@ -42,7 +42,7 @@ function OllieAnalyticsContent() {
   const fetchOllieAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/ollie-analytics');
+      const response = await fetch('/api/track?page=ollie');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

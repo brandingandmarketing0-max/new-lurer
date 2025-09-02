@@ -42,7 +42,7 @@ function LiammAnalyticsContent() {
   const fetchLiammAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/liamm-analytics');
+      const response = await fetch('/api/track?page=liamm');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

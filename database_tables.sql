@@ -577,6 +577,23 @@ CREATE TABLE IF NOT EXISTS sxmmermae_analytics (
 CREATE INDEX IF NOT EXISTS idx_poppy_analytics_timestamp ON poppy_analytics(timestamp);
 CREATE INDEX IF NOT EXISTS idx_poppy_analytics_readable_referrer ON poppy_analytics(readable_referrer);
 
+-- 32. Rachel Analytics Table
+CREATE TABLE IF NOT EXISTS rachel_analytics (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    page VARCHAR(255) NOT NULL,
+    referrer TEXT,
+    readable_referrer VARCHAR(255),
+    user_agent TEXT,
+    ip_address VARCHAR(45),
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    pathname VARCHAR(255),
+    search_params TEXT,
+    click_type VARCHAR(50) DEFAULT 'page_visit',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_rachel_analytics_timestamp ON rachel_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_rachel_analytics_readable_referrer ON rachel_analytics(readable_referrer);
+
 CREATE INDEX IF NOT EXISTS idx_sel_analytics_timestamp ON sel_analytics(timestamp);
 CREATE INDEX IF NOT EXISTS idx_sel_analytics_readable_referrer ON sel_analytics(readable_referrer);
 
@@ -585,6 +602,24 @@ CREATE INDEX IF NOT EXISTS idx_skye_analytics_readable_referrer ON skye_analytic
 
 CREATE INDEX IF NOT EXISTS idx_sxmmermae_analytics_timestamp ON sxmmermae_analytics(timestamp);
 CREATE INDEX IF NOT EXISTS idx_sxmmermae_analytics_readable_referrer ON sxmmermae_analytics(readable_referrer); 
+
+-- Blondestud69 Analytics Table with Click Tracking
+CREATE TABLE IF NOT EXISTS blondestud69_analytics (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    page VARCHAR(255) NOT NULL,
+    referrer TEXT,
+    readable_referrer VARCHAR(255),
+    user_agent TEXT,
+    ip_address VARCHAR(45),
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    pathname VARCHAR(255),
+    search_params TEXT,
+    click_type VARCHAR(50) DEFAULT 'page_visit', -- Added for click tracking
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_blondestud69_analytics_timestamp ON blondestud69_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_blondestud69_analytics_readable_referrer ON blondestud69_analytics(readable_referrer);
+CREATE INDEX IF NOT EXISTS idx_blondestud69_analytics_click_type ON blondestud69_analytics(click_type); -- Added index for click tracking
 
 -- Brooke Analytics Table with Click Tracking
 CREATE TABLE IF NOT EXISTS brooke_analytics (
@@ -636,9 +671,11 @@ ALTER TABLE IF EXISTS missbrown_analytics ADD COLUMN IF NOT EXISTS click_type VA
 ALTER TABLE IF EXISTS morgan_analytics ADD COLUMN IF NOT EXISTS click_type VARCHAR(50) DEFAULT 'page_visit';
 ALTER TABLE IF EXISTS ollie_analytics ADD COLUMN IF NOT EXISTS click_type VARCHAR(50) DEFAULT 'page_visit';
 ALTER TABLE IF EXISTS poppy_analytics ADD COLUMN IF NOT EXISTS click_type VARCHAR(50) DEFAULT 'page_visit';
+ALTER TABLE IF EXISTS rachel_analytics ADD COLUMN IF NOT EXISTS click_type VARCHAR(50) DEFAULT 'page_visit';
 ALTER TABLE IF EXISTS sel_analytics ADD COLUMN IF NOT EXISTS click_type VARCHAR(50) DEFAULT 'page_visit';
 ALTER TABLE IF EXISTS skye_analytics ADD COLUMN IF NOT EXISTS click_type VARCHAR(50) DEFAULT 'page_visit';
 ALTER TABLE IF EXISTS sxmmermae_analytics ADD COLUMN IF NOT EXISTS click_type VARCHAR(50) DEFAULT 'page_visit';
+ALTER TABLE IF EXISTS blondestud69_analytics ADD COLUMN IF NOT EXISTS click_type VARCHAR(50) DEFAULT 'page_visit';
 
 -- Create indexes for click_type on all tables
 CREATE INDEX IF NOT EXISTS idx_abbiehall_analytics_click_type ON abbiehall_analytics(click_type);
@@ -672,6 +709,26 @@ CREATE INDEX IF NOT EXISTS idx_missbrown_analytics_click_type ON missbrown_analy
 CREATE INDEX IF NOT EXISTS idx_morgan_analytics_click_type ON morgan_analytics(click_type);
 CREATE INDEX IF NOT EXISTS idx_ollie_analytics_click_type ON ollie_analytics(click_type);
 CREATE INDEX IF NOT EXISTS idx_poppy_analytics_click_type ON poppy_analytics(click_type);
+CREATE INDEX IF NOT EXISTS idx_rachel_analytics_click_type ON rachel_analytics(click_type);
 CREATE INDEX IF NOT EXISTS idx_sel_analytics_click_type ON sel_analytics(click_type);
 CREATE INDEX IF NOT EXISTS idx_skye_analytics_click_type ON skye_analytics(click_type);
-CREATE INDEX IF NOT EXISTS idx_sxmmermae_analytics_click_type ON sxmmermae_analytics(click_type); 
+CREATE INDEX IF NOT EXISTS idx_sxmmermae_analytics_click_type ON sxmmermae_analytics(click_type);
+CREATE INDEX IF NOT EXISTS idx_blondestud69_analytics_click_type ON blondestud69_analytics(click_type); 
+
+-- Blondestud69 Analytics Table with Click Tracking
+CREATE TABLE IF NOT EXISTS blondestud69_analytics (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    page VARCHAR(255) NOT NULL,
+    referrer TEXT,
+    readable_referrer VARCHAR(255),
+    user_agent TEXT,
+    ip_address VARCHAR(45),
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    pathname VARCHAR(255),
+    search_params TEXT,
+    click_type VARCHAR(50) DEFAULT 'page_visit', -- Added for click tracking
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_blondestud69_analytics_timestamp ON blondestud69_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_blondestud69_analytics_readable_referrer ON blondestud69_analytics(readable_referrer);
+CREATE INDEX IF NOT EXISTS idx_blondestud69_analytics_click_type ON blondestud69_analytics(click_type); -- Added index for click tracking

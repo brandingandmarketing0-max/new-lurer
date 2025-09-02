@@ -45,9 +45,9 @@ export default function ProfilePage() {
         const body = JSON.stringify(payload);
         if (navigator.sendBeacon) {
           const blob = new Blob([body], { type: 'application/json' });
-          navigator.sendBeacon('/api/morgan-analytics', blob);
+          navigator.sendBeacon('/api/track', blob);
         } else {
-          fetch("/api/morgan-analytics", {
+          fetch("/api/track", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body,
@@ -76,7 +76,7 @@ export default function ProfilePage() {
   // Click tracking functions
   const trackClick = async (clickType: string) => {
     try {
-      await fetch("/api/morgan-analytics", {
+      await fetch("/api/track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

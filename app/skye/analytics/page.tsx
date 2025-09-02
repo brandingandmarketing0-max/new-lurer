@@ -42,7 +42,7 @@ function SkyeAnalyticsContent() {
   const fetchSkyeAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/skye-analytics');
+      const response = await fetch('/api/track?page=skye');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

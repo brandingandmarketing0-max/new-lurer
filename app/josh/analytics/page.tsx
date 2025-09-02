@@ -44,7 +44,7 @@ function JoshAnalyticsContent() {
   const fetchJoshAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/josh-analytics');
+      const response = await fetch('/api/track?page=josh');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

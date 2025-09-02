@@ -42,7 +42,7 @@ function KaceymayAnalyticsContent() {
   const fetchKaceymayAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/kaceymay-analytics');
+      const response = await fetch('/api/track?page=kaceymay');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

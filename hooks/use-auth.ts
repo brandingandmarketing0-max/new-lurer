@@ -9,9 +9,17 @@ export function useAuth() {
   useEffect(() => {
     // Get initial session
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      setLoading(false);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error getting session:', error);
+        }
+        setUser(session?.user ?? null);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error in getSession:', error);
+        setLoading(false);
+      }
     };
 
     getSession();
@@ -28,16 +36,34 @@ export function useAuth() {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { data, error };
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (data?.session) {
+        setUser(data.session.user);
+      }
+      
+      return { data, error };
+    } catch (error) {
+      console.error('Sign in error:', error);
+      return { data: null, error: error as Error };
+    }
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    return { error };
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (!error) {
+        setUser(null);
+      }
+      return { error };
+    } catch (error) {
+      console.error('Sign out error:', error);
+      return { error: error as Error };
+    }
   };
 
   return {
@@ -48,6 +74,11 @@ export function useAuth() {
     isAuthenticated: !!user,
   };
 }
+
+
+
+
+
 
 
 

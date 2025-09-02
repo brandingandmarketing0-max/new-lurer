@@ -42,7 +42,7 @@ function EmAnalyticsContent() {
   const fetchEmAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/em-analytics');
+      const response = await fetch('/api/track?page=em');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

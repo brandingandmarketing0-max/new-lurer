@@ -32,6 +32,8 @@ export default function AlaskaAnalyticsPage() {
 
 function AlaskaAnalyticsContent() {
   const [analyticsData, setAnalyticsData] = useState<AlaskaAnalyticsData[]>([]);
+  const [totalRecords, setTotalRecords] = useState<number>(0);
+  const [fetchedRecords, setFetchedRecords] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,12 +44,24 @@ function AlaskaAnalyticsContent() {
   const fetchAlaskaAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/alaska-analytics');
+      const response = await fetch('/api/track?page=alaska');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }
-      const data = await response.json();
-      setAnalyticsData(data.data || []);
+      const result = await response.json();
+      console.log("Alaska analytics response:", result);
+      
+      if (result.success && result.data) {
+        setAnalyticsData(result.data || []);
+        setTotalRecords(result.totalRecords || 0);
+        setFetchedRecords(result.fetchedRecords || 0);
+        console.log("Total records in database:", result.totalRecords);
+        console.log("Fetched records:", result.fetchedRecords);
+      } else {
+        setAnalyticsData([]);
+        setTotalRecords(0);
+        setFetchedRecords(0);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch data');
     } finally {

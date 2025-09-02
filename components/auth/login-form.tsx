@@ -28,8 +28,10 @@ export function LoginForm() {
       if (error) {
         setError(error.message);
       } else {
-        // Redirect to deep-links page after successful login
-        router.push("/deep-links");
+        // Small delay to ensure session is established
+        setTimeout(() => {
+          router.push("/deep-links");
+        }, 100);
       }
     } catch (err) {
       setError("An unexpected error occurred");
@@ -117,6 +119,11 @@ export function LoginForm() {
     </div>
   );
 }
+
+
+
+
+
 
 
 

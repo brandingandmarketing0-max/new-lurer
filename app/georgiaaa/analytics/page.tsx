@@ -42,7 +42,7 @@ function GeorgiaaaAnalyticsContent() {
   const fetchGeorgiaaaAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/georgiaaa-analytics');
+      const response = await fetch('/api/track?page=georgiaaa');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

@@ -42,7 +42,7 @@ function KayleyAnalyticsContent() {
   const fetchKayleyAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/kayley-analytics');
+      const response = await fetch('/api/track?page=kayley');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

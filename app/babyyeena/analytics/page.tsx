@@ -42,7 +42,7 @@ function BabyyeenaAnalyticsContent() {
   const fetchBabyyeenaAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/babyyeena-analytics');
+      const response = await fetch('/api/track?page=babyyeena');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

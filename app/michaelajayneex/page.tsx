@@ -45,9 +45,9 @@ export default function ProfilePage() {
         
         if (navigator.sendBeacon) {
           const blob = new Blob([body], { type: 'application/json' });
-          navigator.sendBeacon('/api/michaelajayneex-analytics', blob);
+          navigator.sendBeacon('/api/track', blob);
         } else {
-          fetch("/api/michaelajayneex-analytics", {
+          fetch("/api/track", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body,
@@ -84,7 +84,7 @@ export default function ProfilePage() {
         click_type: clickType
       };
       
-      await fetch("/api/michaelajayneex-analytics", {
+      await fetch("/api/track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -237,4 +237,9 @@ export default function ProfilePage() {
     </div>
   )
 } 
+
+
+
+
+
 

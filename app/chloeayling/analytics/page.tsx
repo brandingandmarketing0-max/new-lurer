@@ -42,7 +42,7 @@ function ChloeaylingAnalyticsContent() {
   const fetchChloeaylingAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/chloeayling-analytics');
+      const response = await fetch('/api/track?page=chloeayling');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

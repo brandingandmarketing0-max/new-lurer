@@ -62,16 +62,11 @@ export default function DeepLinksPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [cache, setCache] = useState<Map<string, any>>(new Map());
   const { signOut, user } = useAuth();
 
-  const modelNames = [
-    "abbiehall", "aimee", "alaska", "amberr", "amyleigh", "amymaxwell", "b4byyeena", 
-    "babyscarlet", "babyyeena", "brooke", "brookex", "chloeayling", "chloeelizabeth", 
-    "chloetami", "ellejean", "em", "freya", "georgiaaa", "josh", "kaceymay", 
-    "kaci", "kayley", "keanna", "kxceyrose", "laurdunne", "laylasoyoung", 
-     "libby", "lou", "megann", "michaelajayneex", "missbrown", "misssophiaisabella", "morgan", "ollie", 
-    "poppy", "rachel", "sel", "shania", "skye", "steff", "sxmmermae"
-  ];
+  // Model names are now handled by the API
 
   useEffect(() => {
     fetchAllModelData();
@@ -80,65 +75,96 @@ export default function DeepLinksPage() {
   const fetchAllModelData = async () => {
     try {
       setLoading(true);
-      const modelDataPromises = modelNames.map(async (modelName) => {
-        try {
-          const response = await fetch(`/api/${modelName}-analytics`);
-          if (response.ok) {
-            const data = await response.json();
-            const analyticsData = data.data || [];
-            
-            // Calculate different click types (treat undefined as page_visit for backward compatibility)
-            const pageVisits = analyticsData.filter((item: any) => (item.click_type || 'page_visit') === 'page_visit').length;
-            const exclusiveContentClicks = analyticsData.filter((item: any) => item.click_type === 'exclusive_content').length;
-            const subscribeClicks = analyticsData.filter((item: any) => item.click_type === 'subscribe_now').length;
-            const viewAllContentClicks = analyticsData.filter((item: any) => item.click_type === 'view_all_content').length;
-            
-            // Total visitors should count only page visits
-            const totalVisitors = pageVisits;
+      setLoadingProgress(0);
+      
+      // Check cache first
+      const cacheKey = 'all_analytics_data';
+      if (cache.has(cacheKey)) {
+        const cachedData = cache.get(cacheKey);
+        setModels(cachedData);
+        setLoading(false);
+        setLoadingProgress(100);
+        return;
+      }
 
-            return {
-              name: modelName,
-              url: ` lure.bio/${modelName}`,
-              totalVisitors,
-              pageVisits,
-              exclusiveContentClicks,
-              subscribeClicks,
-              viewAllContentClicks,
-              status: "active" as const
-            };
-          } else {
-            return {
-              name: modelName,
-              url: ` lure.bio/${modelName}`,
-              totalVisitors: 0,
-              pageVisits: 0,
-              exclusiveContentClicks: 0,
-              subscribeClicks: 0,
-              viewAllContentClicks: 0,
-              status: "active" as const
-            };
-          }
-        } catch (error) {
-          return {
-            name: modelName,
-            url: ` lure.bio/${modelName}`,
-            totalVisitors: 0,
-            pageVisits: 0,
-            exclusiveContentClicks: 0,
-            subscribeClicks: 0,
-            viewAllContentClicks: 0,
-            status: "active" as const
-          };
+      setLoadingProgress(25);
+      
+      // Single API call to get all analytics data
+      const response = await fetch('/api/analytics/all', {
+        headers: {
+          'Cache-Control': 'max-age=300' // Cache for 5 minutes
         }
       });
-
-      const results = await Promise.all(modelDataPromises);
-      setModels(results);
+      
+      setLoadingProgress(75);
+      
+      if (response.ok) {
+        const data = await response.json();
+        const results = data.data || [];
+        
+        // Cache the results
+        cache.set(cacheKey, results);
+        
+        setModels(results);
+      } else {
+        console.error('Failed to fetch analytics data:', response.status, response.statusText);
+        console.log('Falling back to individual API calls...');
+        
+        // Fallback: Use individual API calls if the bulk API fails
+        await fetchIndividualData();
+      }
+      
     } catch (error) {
-
+      console.error("Error fetching model data:", error);
+      setModels([]);
     } finally {
       setLoading(false);
+      setLoadingProgress(100);
     }
+  };
+
+  const fetchIndividualData = async () => {
+    const modelNames = [
+      "abbiehall", "aimee", "alaska", "amberr", "amyleigh", "amymaxwell", "b4byyeena", 
+      "babyscarlet", "babyyeena", "brooke", "brookex", "chloeayling", "chloeelizabeth", 
+      "chloetami", "chxrli_love", "ellejean", "em", "erinhannahxx", "freya", "georgiaaa", 
+      "ggxxmmaa", "josh", "kaceymay", "kaci", "kayley", "keanna", "kxceyrose", "laurdunne", 
+      "laylasoyoung", "libby", "lou", "megann", "michaelajayneex", "missbrown", 
+      "misssophiaisabella", "morgan", "ollie", "poppy", "rachel", "sel", "shania", 
+      "skye", "steff", "sxmmermae", "Blondestud69"
+    ];
+
+    const results: any[] = [];
+    
+    for (const modelName of modelNames) {
+      try {
+        const response = await fetch(`/api/track?page=${modelName}`);
+        if (response.ok) {
+          const data = await response.json();
+          const analyticsData = data.data || [];
+          
+          const pageVisits = analyticsData.filter((item: any) => (item.click_type || 'page_visit') === 'page_visit').length;
+          const exclusiveContentClicks = analyticsData.filter((item: any) => item.click_type === 'exclusive_content').length;
+          const subscribeClicks = analyticsData.filter((item: any) => item.click_type === 'subscribe_now').length;
+          const viewAllContentClicks = analyticsData.filter((item: any) => item.click_type === 'view_all_content').length;
+
+          results.push({
+            name: modelName,
+            url: ` lure.bio/${modelName}`,
+            totalVisitors: pageVisits,
+            pageVisits,
+            exclusiveContentClicks,
+            subscribeClicks,
+            viewAllContentClicks,
+            status: "active" as const
+          });
+        }
+      } catch (error) {
+        console.error(`Error fetching data for ${modelName}:`, error);
+      }
+    }
+    
+    setModels(results);
   };
 
   const copyToClipboard = (text: string) => {
@@ -147,6 +173,12 @@ export default function DeepLinksPage() {
 
   const handleSignOut = async () => {
     await signOut();
+  };
+
+  const handleRefresh = () => {
+    setCache(new Map()); // Clear cache
+    setModels([]); // Clear current data
+    fetchAllModelData(); // Refetch all data
   };
 
   const filteredModels = models.filter(model =>
@@ -179,6 +211,16 @@ export default function DeepLinksPage() {
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B19272] mx-auto mb-4"></div>
             <h2 className="text-xl font-semibold text-gray-900">Loading Deep Links...</h2>
+            <p className="text-gray-600 mt-2">Fetching analytics data for all models (single API call)</p>
+            <div className="w-64 mx-auto mt-4">
+              <div className="bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-[#B19272] h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${loadingProgress}%` }}
+                ></div>
+              </div>
+              <p className="text-sm text-gray-500 mt-2">{loadingProgress}% complete</p>
+            </div>
           </div>
         </div>
       </div>
@@ -302,10 +344,27 @@ export default function DeepLinksPage() {
                   <SidebarTrigger />
                   <div>
                     <h1 className="text-3xl font-bold text-gray-900">Deep Links</h1>
-                    <p className="text-gray-600">Manage and track your deep links</p>
+                    <p className="text-gray-600">
+                      Manage and track your deep links
+                      {!loading && (
+                        <span className="ml-2 text-sm text-gray-500">
+                          ({models.length} models loaded, {cache.size} cached)
+                        </span>
+                      )}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="border-gray-300"
+                    onClick={handleRefresh}
+                    disabled={loading}
+                  >
+                    <Activity className="w-4 h-4 mr-2" />
+                    Refresh Data
+                  </Button>
                   <Button variant="outline" size="sm" className="border-gray-300">
                     <Grid3X3 className="h-4 w-4 mr-2" />
                     Layout

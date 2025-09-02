@@ -42,7 +42,7 @@ function AmymaxwellAnalyticsContent() {
   const fetchAmymaxwellAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/amymaxwell-analytics');
+      const response = await fetch('/api/track?page=amymaxwell');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

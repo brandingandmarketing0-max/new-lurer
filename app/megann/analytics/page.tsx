@@ -42,7 +42,7 @@ function MegannAnalyticsContent() {
   const fetchMegannAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/megann-analytics');
+      const response = await fetch('/api/track?page=megann');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

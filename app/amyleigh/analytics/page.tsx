@@ -32,6 +32,8 @@ export default function AmyleighAnalyticsPage() {
 
 function AmyleighAnalyticsContent() {
   const [analyticsData, setAnalyticsData] = useState<AmyleighAnalyticsData[]>([]);
+  const [totalRecords, setTotalRecords] = useState<number>(0);
+  const [fetchedRecords, setFetchedRecords] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,12 +44,21 @@ function AmyleighAnalyticsContent() {
   const fetchAmyleighAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/amyleigh-analytics');
+      const response = await fetch('/api/track?page=amyleigh');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }
-      const data = await response.json();
-      setAnalyticsData(data.data || []);
+      const result = await response.json();
+      
+      if (result.success && result.data) {
+        setAnalyticsData(result.data || []);
+        setTotalRecords(result.totalRecords || 0);
+        setFetchedRecords(result.fetchedRecords || 0);
+      } else {
+        setAnalyticsData([]);
+        setTotalRecords(0);
+        setFetchedRecords(0);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch data');
     } finally {
@@ -130,6 +141,11 @@ function AmyleighAnalyticsContent() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Amyleigh</h1>
             <p className="text-gray-600">Track your page performance and visitor insights</p>
+            {totalRecords > 0 && (
+              <p className="text-sm text-gray-500">
+                Analyzing {fetchedRecords} of {totalRecords} total records
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <Button 

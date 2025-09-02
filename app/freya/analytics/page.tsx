@@ -42,7 +42,7 @@ function FreyaAnalyticsContent() {
   const fetchFreyaAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/freya-analytics');
+      const response = await fetch('/api/track?page=freya');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

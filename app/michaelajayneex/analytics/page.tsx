@@ -42,7 +42,7 @@ function MichaelajayneexAnalyticsContent() {
   const fetchMichaelajayneexAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/michaelajayneex-analytics');
+      const response = await fetch('/api/track?page=michaelajayneex');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }
@@ -314,3 +314,8 @@ function MichaelajayneexAnalyticsContent() {
     </div>
   );
 }
+
+
+
+
+

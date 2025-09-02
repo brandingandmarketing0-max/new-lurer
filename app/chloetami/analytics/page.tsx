@@ -42,7 +42,7 @@ function ChloetamiAnalyticsContent() {
   const fetchChloetamiAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/chloetami-analytics');
+      const response = await fetch('/api/track?page=chloetami');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

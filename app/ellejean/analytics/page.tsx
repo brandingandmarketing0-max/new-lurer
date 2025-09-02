@@ -42,7 +42,7 @@ function EllejeanAnalyticsContent() {
   const fetchEllejeanAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/ellejean-analytics');
+      const response = await fetch('/api/track?page=ellejean');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

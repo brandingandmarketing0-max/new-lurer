@@ -42,7 +42,7 @@ function ShaniaAnalyticsContent() {
   const fetchShaniaAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/shania-analytics');
+      const response = await fetch('/api/track?page=shania');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

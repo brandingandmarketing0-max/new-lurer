@@ -42,7 +42,7 @@ function SteffAnalyticsContent() {
   const fetchSteffAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/steff-analytics');
+      const response = await fetch('/api/track?page=steff');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

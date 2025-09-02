@@ -44,7 +44,7 @@ function BrookexAnalyticsContent() {
   const fetchBrookexAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/brookex-analytics');
+      const response = await fetch('/api/track?page=brookex');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

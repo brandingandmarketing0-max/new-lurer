@@ -42,7 +42,7 @@ function MissbrownAnalyticsContent() {
   const fetchMissbrownAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/missbrown-analytics');
+      const response = await fetch('/api/track?page=missbrown');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

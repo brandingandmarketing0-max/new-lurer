@@ -11,78 +11,233 @@ import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3 } from "luci
 
 const getReadableReferrer = (ref: string) => {
   if (!ref) return "Direct or unknown";
-  if (ref.includes("instagram.com")) return "Instagram";
-  if (ref.includes("twitter.com") || ref.includes("x.com")) return "Twitter/X";
-  if (ref.includes("facebook.com")) return "Facebook";
-  if (ref.includes("tiktok.com")) return "TikTok";
-  if (ref.includes("linkedin.com")) return "LinkedIn";
-  if (ref.includes("whatsapp.com") || ref.includes("wa.me")) return "WhatsApp";
+  
+  // Instagram - catches both mobile and desktop
+  if (ref.includes("instagram.com") || ref.includes("m.instagram.com")) return "Instagram";
+  
+  // Twitter/X - catches both mobile and desktop
+  if (ref.includes("twitter.com") || ref.includes("x.com") || ref.includes("mobile.twitter.com")) return "Twitter/X";
+  
+  // Facebook - catches both mobile and desktop
+  if (ref.includes("facebook.com") || ref.includes("m.facebook.com") || ref.includes("fb.com")) return "Facebook";
+  
+  // TikTok - catches both mobile and desktop
+  if (ref.includes("tiktok.com") || ref.includes("vm.tiktok.com")) return "TikTok";
+  
+  // LinkedIn - catches both mobile and desktop
+  if (ref.includes("linkedin.com") || ref.includes("m.linkedin.com")) return "LinkedIn";
+  
+  // WhatsApp - catches both mobile and desktop
+  if (ref.includes("whatsapp.com") || ref.includes("wa.me") || ref.includes("web.whatsapp.com")) return "WhatsApp";
+  
+  // Snapchat
+  if (ref.includes("snapchat.com")) return "Snapchat";
+  
+  // YouTube
+  if (ref.includes("youtube.com") || ref.includes("youtu.be") || ref.includes("m.youtube.com")) return "YouTube";
+  
+  // Reddit
+  if (ref.includes("reddit.com") || ref.includes("m.reddit.com")) return "Reddit";
+  
+  // Pinterest
+  if (ref.includes("pinterest.com") || ref.includes("m.pinterest.com")) return "Pinterest";
+  
+  // Telegram
+  if (ref.includes("t.me") || ref.includes("telegram.org")) return "Telegram";
+  
+  // Discord
+  if (ref.includes("discord.com") || ref.includes("discord.gg")) return "Discord";
+  
+  // Google search
+  if (ref.includes("google.com") || ref.includes("google.co.uk") || ref.includes("google.ca")) return "Google Search";
+  
+  // Bing search
+  if (ref.includes("bing.com")) return "Bing Search";
+  
+  // DuckDuckGo
+  if (ref.includes("duckduckgo.com")) return "DuckDuckGo";
+  
   return ref;
 };
 
 export default function ProfilePage() {
   const [referrer, setReferrer] = useState<string>("");
   const [rawReferrer, setRawReferrer] = useState<string>("");
+  const [userAgent, setUserAgent] = useState<string>("");
+  const [screenInfo, setScreenInfo] = useState<string>("");
+  const [timezone, setTimezone] = useState<string>("");
+  const [hasTracked, setHasTracked] = useState<boolean>(false);
 
   useEffect(() => {
+    console.log("🚀 Amyleigh page loaded - Starting analytics tracking...");
+    
+    // Check if we've already tracked this visit in this session
+    const trackingKey = `amyleigh_tracked_${Date.now()}`;
+    const sessionKey = `amyleigh_session_${Date.now()}`;
+    
+    // Check localStorage for existing tracking
+    const hasTrackedBefore = localStorage.getItem('amyleigh_visit_tracked');
+    const currentSession = localStorage.getItem('amyleigh_current_session');
+    
+    console.log("🔒 Tracking Check:", {
+      hasTrackedBefore,
+      currentSession,
+      trackingKey,
+      sessionKey
+    });
+    
+    // If we've already tracked this visit, don't track again
+    if (hasTrackedBefore) {
+      console.log("⏭️ Visit already tracked - skipping duplicate tracking");
+      setHasTracked(true);
+      return;
+    }
+    
+    // Get comprehensive referrer and search data
     const rawRef = document.referrer;
-    setRawReferrer(rawRef);
-    setReferrer(getReadableReferrer(rawRef));
+    const urlParams = new URLSearchParams(window.location.search);
+    const utmSource = urlParams.get('utm_source');
+    const utmMedium = urlParams.get('utm_medium');
+    const utmCampaign = urlParams.get('utm_campaign');
+    const utmTerm = urlParams.get('utm_term');
+    const utmContent = urlParams.get('utm_content');
+    
+    console.log("📊 Referrer Data:", {
+      rawReferrer: rawRef,
+      utmSource,
+      utmMedium,
+      utmCampaign,
+      utmTerm,
+      utmContent
+    });
+    
+    // Enhanced referrer detection
+    let finalReferrer = rawRef;
+    if (utmSource) {
+      finalReferrer = utmSource;
+    } else if (rawRef) {
+      finalReferrer = rawRef;
+    }
+    
+    console.log("🎯 Final Referrer:", finalReferrer);
+    console.log("🏷️ Readable Referrer:", getReadableReferrer(finalReferrer));
+    
+    setRawReferrer(finalReferrer);
+    setReferrer(getReadableReferrer(finalReferrer));
+
+    // Collect additional user data
+    const userAgentStr = navigator.userAgent;
+    const screenInfoStr = `${screen.width}x${screen.height}`;
+    const timezoneStr = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    
+    console.log("👤 User Data:", {
+      userAgent: userAgentStr,
+      screenInfo: screenInfoStr,
+      timezone: timezoneStr
+    });
+    
+    setUserAgent(userAgentStr);
+    setScreenInfo(screenInfoStr);
+    setTimezone(timezoneStr);
+
+    // Build comprehensive search params string
+    const searchParamsString = Array.from(urlParams.entries())
+      .map(([key, value]) => `${key}=${value}`)
+      .join('&');
+    
+    console.log("🔍 Search Params:", searchParamsString);
 
     // Send analytics to Supabase with sendBeacon
     const send = () => {
       try {
-        if (document.visibilityState !== 'visible') return;
+        // Double-check we haven't already tracked this visit
+        if (hasTracked) {
+          console.log("⏭️ Already tracked this visit - skipping");
+          return;
+        }
+        
         const payload = {
           page: "amyleigh",
-          referrer: rawRef,
+          referrer: finalReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/amyleigh",
-          searchParams: "",
+          pathname: window.location.pathname,
+          searchParams: searchParamsString,
           click_type: "page_visit"
         };
+        
+        // Debug logging
+        console.log("🔍 Amyleigh Analytics - Page Visit Tracking:", {
+          page: payload.page,
+          referrer: payload.referrer,
+          readableReferrer: getReadableReferrer(finalReferrer),
+          pathname: payload.pathname,
+          searchParams: payload.searchParams,
+          userAgent: navigator.userAgent,
+          screenInfo: `${screen.width}x${screen.height}`,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        });
+        
         const body = JSON.stringify(payload);
         if (navigator.sendBeacon) {
           const blob = new Blob([body], { type: 'application/json' });
-          navigator.sendBeacon('/api/amyleigh-analytics', blob);
+          navigator.sendBeacon('/api/track', blob);
+          console.log("✅ Amyleigh Analytics - Page visit tracked via sendBeacon");
+          
+          // Mark as tracked in localStorage
+          localStorage.setItem('amyleigh_visit_tracked', 'true');
+          localStorage.setItem('amyleigh_tracked_at', new Date().toISOString());
+          setHasTracked(true);
         } else {
-          fetch("/api/amyleigh-analytics", {
+          fetch("/api/track", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body,
             keepalive: true
-          }).catch(() => {});
+          }).then(() => {
+            console.log("✅ Amyleigh Analytics - Page visit tracked via fetch");
+            
+            // Mark as tracked in localStorage
+            localStorage.setItem('amyleigh_visit_tracked', 'true');
+            localStorage.setItem('amyleigh_tracked_at', new Date().toISOString());
+            setHasTracked(true);
+          }).catch((error) => {
+            console.error("❌ Amyleigh Analytics - Page visit tracking failed:", error);
+          });
         }
       } catch (error) {
-        console.error("Failed to track Amyleigh analytics:", error);
+        console.error("❌ Failed to track Amyleigh analytics:", error);
       }
     };
 
-    const timeout = setTimeout(send, 3000);
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') {
-        send();
-      }
-    };
-    document.addEventListener('visibilitychange', onVisible, { once: true });
+    // Track immediately when page loads (only once)
+    send();
+    
+    // No need for additional tracking calls since we only want to track once per visit
+    console.log("🎯 Single visit tracking enabled - no duplicate calls");
+    
     return () => {
-      clearTimeout(timeout);
-      document.removeEventListener('visibilitychange', onVisible);
+      // Cleanup not needed for single tracking
     };
   }, []);
 
   // Click tracking functions
   const trackClick = async (clickType: string) => {
     try {
-      await fetch("/api/amyleigh-analytics", {
+      // Get current URL parameters for comprehensive tracking
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchParamsString = Array.from(urlParams.entries())
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
+
+      await fetch("/api/track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           page: "amyleigh",
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/amyleigh",
-          searchParams: "",
+          pathname: window.location.pathname,
+          searchParams: searchParamsString,
           click_type: clickType
         }),
       });
@@ -226,8 +381,48 @@ export default function ProfilePage() {
           {/* Footer Info */}
           <div className="mt-6 text-center">
             <p className="text-gray-500 text-sm">
-               
+              
             </p>
+            
+            {/* Debug Tracking Buttons */}
+            <div className="flex gap-2 justify-center mt-2">
+              <Button 
+                onClick={() => {
+                  console.log("🧪 Manual tracking test clicked");
+                  trackClick("test_click");
+                }}
+                variant="outline" 
+                className="text-xs text-gray-400 border-gray-300 hover:bg-gray-100"
+              >
+                Test Click
+              </Button>
+              
+              <Button 
+                onClick={() => {
+                  console.log("🔄 Resetting tracking for testing");
+                  localStorage.removeItem('amyleigh_visit_tracked');
+                  localStorage.removeItem('amyleigh_tracked_at');
+                  setHasTracked(false);
+                  console.log("✅ Tracking reset - next visit will be tracked");
+                }}
+                variant="outline" 
+                className="text-xs text-blue-400 border-blue-300 hover:bg-blue-100"
+              >
+                Reset Tracking
+              </Button>
+            </div>
+            
+            {/* Tracking Status */}
+            <div className="mt-2 text-center">
+              <p className="text-xs text-gray-500">
+                Status: {hasTracked ? "✅ Tracked" : "⏳ Not Tracked"}
+              </p>
+              {hasTracked && (
+                <p className="text-xs text-gray-400">
+                  Tracked at: {localStorage.getItem('amyleigh_tracked_at') || 'Unknown'}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>

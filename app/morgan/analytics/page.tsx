@@ -42,7 +42,7 @@ function MorganAnalyticsContent() {
   const fetchMorganAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/morgan-analytics');
+      const response = await fetch('/api/track?page=morgan');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

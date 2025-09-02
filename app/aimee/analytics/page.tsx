@@ -36,7 +36,7 @@ export default function AimeeAnalyticsPage() {
   const fetchAimeeAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/aimee-analytics');
+      const response = await fetch('/api/track?page=aimee');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

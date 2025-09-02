@@ -42,7 +42,7 @@ function B4byyeenaAnalyticsContent() {
   const fetchB4byyeenaAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/b4byyeena-analytics');
+      const response = await fetch('/api/track?page=b4byyeena');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

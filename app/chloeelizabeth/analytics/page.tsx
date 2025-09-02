@@ -42,7 +42,7 @@ function ChloeelizabethAnalyticsContent() {
   const fetchChloeelizabethAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/chloeelizabeth-analytics');
+      const response = await fetch('/api/track?page=chloeelizabeth');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

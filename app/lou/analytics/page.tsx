@@ -42,7 +42,7 @@ function LouAnalyticsContent() {
   const fetchLouAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/lou-analytics');
+      const response = await fetch('/api/track?page=lou');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

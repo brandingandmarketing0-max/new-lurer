@@ -42,7 +42,7 @@ function LaurdunneAnalyticsContent() {
   const fetchLaurdunneAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/laurdunne-analytics');
+      const response = await fetch('/api/track?page=laurdunne');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

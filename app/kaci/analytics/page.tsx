@@ -42,7 +42,7 @@ function KaciAnalyticsContent() {
   const fetchKaciAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/kaci-analytics');
+      const response = await fetch('/api/track?page=kaci');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

@@ -42,7 +42,7 @@ function BrookeAnalyticsContent() {
   const fetchBrookeAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/brooke-analytics');
+      const response = await fetch('/api/track?page=brooke');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

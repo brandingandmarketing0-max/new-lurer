@@ -44,7 +44,7 @@ function AbbiehallAnalyticsContent() {
   const fetchAbbiehallAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/abbiehall-analytics');
+      const response = await fetch('/api/track?page=abbiehall');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

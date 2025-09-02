@@ -30,7 +30,7 @@ export default function ProfilePage() {
     setReferrer(getReadableReferrer(rawRef));
 
     // Send to Supabase analytics
-    fetch("/api/skye-analytics", {
+    fetch("/api/track", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -49,7 +49,7 @@ export default function ProfilePage() {
   // Click tracking functions
   const trackClick = async (clickType: string) => {
     try {
-      await fetch("/api/skye-analytics", {
+      await fetch("/api/track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

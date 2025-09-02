@@ -42,7 +42,7 @@ function AmberrAnalyticsContent() {
   const fetchAmberrAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/amberr-analytics');
+      const response = await fetch('/api/track?page=amberr');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

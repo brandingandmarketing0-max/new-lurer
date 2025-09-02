@@ -42,7 +42,7 @@ function LaylasoyoungAnalyticsContent() {
   const fetchLaylasoyoungAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/laylasoyoung-analytics');
+      const response = await fetch('/api/track?page=laylasoyoung');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }

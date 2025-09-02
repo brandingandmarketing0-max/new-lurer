@@ -45,9 +45,9 @@ export default function ProfilePage() {
         
         if (navigator.sendBeacon) {
           const blob = new Blob([body], { type: 'application/json' });
-          navigator.sendBeacon('/api/misssophiaisabella-analytics', blob);
+          navigator.sendBeacon('/api/track', blob);
         } else {
-          fetch("/api/misssophiaisabella-analytics", {
+          fetch("/api/track", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body,
@@ -84,7 +84,7 @@ export default function ProfilePage() {
         click_type: clickType
       };
       
-      await fetch("/api/misssophiaisabella-analytics", {
+      await fetch("/api/track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
