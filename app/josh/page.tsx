@@ -23,6 +23,7 @@ const getReadableReferrer = (ref: string) => {
 export default function ProfilePage() {
   const [referrer, setReferrer] = useState<string>("");
   const [rawReferrer, setRawReferrer] = useState<string>("");
+  const [hasTracked, setHasTracked] = useState<boolean>(false);
 
   useEffect(() => {
     const rawRef = document.referrer;
@@ -72,16 +73,11 @@ export default function ProfilePage() {
     };
 
     // Delay briefly and require visibility to reduce bot noise
-    const timeout = setTimeout(send, 3000);
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') {
-        send();
-      }
-    };
-    document.addEventListener('visibilitychange', onVisible, { once: true });
+    // Track immediately when page loads (only once per session)
+    send();
+    
     return () => {
-      clearTimeout(timeout);
-      document.removeEventListener('visibilitychange', onVisible);
+      // Cleanup not needed for single tracking
     };
   }, []);
 

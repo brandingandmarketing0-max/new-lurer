@@ -23,17 +23,31 @@ const getReadableReferrer = (ref: string) => {
 export default function ProfilePage() {
   const [referrer, setReferrer] = useState<string>("");
   const [rawReferrer, setRawReferrer] = useState<string>("");
+  const [hasTracked, setHasTracked] = useState<boolean>(false);
 
   useEffect(() => {
     const rawRef = document.referrer;
     setRawReferrer(rawRef);
     setReferrer(getReadableReferrer(rawRef));
 
-    // Send analytics to Supabase with sendBeacon
+    // Create a unique session ID for this page load
+    const sessionId = `lou_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const sessionKey = `lou_visit_tracked_${sessionId}`;
 
+    // Check if we've already tracked this session
+    if (localStorage.getItem(sessionKey)) {
+      setHasTracked(true);
+      return;
+    }
+
+    // Send analytics to Supabase with sendBeacon (only once per session)
     const send = () => {
       try {
-        if (document.visibilityState !== 'visible') return;
+        // Double-check we haven't already tracked this session
+        if (hasTracked || localStorage.getItem(sessionKey)) {
+          return;
+        }
+        
         const payload = {
           page: "lou",
           referrer: rawRef,
@@ -42,34 +56,44 @@ export default function ProfilePage() {
           searchParams: "",
           click_type: "page_visit"
         };
+        
         const body = JSON.stringify(payload);
         if (navigator.sendBeacon) {
           const blob = new Blob([body], { type: 'application/json' });
           navigator.sendBeacon('/api/track', blob);
+          console.log("✅ Lou Analytics - Page visit tracked via sendBeacon");
+          
+          // Mark this specific session as tracked
+          localStorage.setItem(sessionKey, 'true');
+          localStorage.setItem('lou_last_tracked', new Date().toISOString());
+          setHasTracked(true);
         } else {
           fetch("/api/track", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body,
             keepalive: true
-          }).catch(() => {});
+          }).then(() => {
+            console.log("✅ Lou Analytics - Page visit tracked via fetch");
+            
+            // Mark this specific session as tracked
+            localStorage.setItem(sessionKey, 'true');
+            localStorage.setItem('lou_last_tracked', new Date().toISOString());
+            setHasTracked(true);
+          }).catch((error) => {
+            console.error("❌ Lou Analytics - Page visit tracking failed:", error);
+          });
         }
-
       } catch (error) {
-        console.error("Failed to track Lou analytics:", error);
+        console.error("❌ Failed to track Lou analytics:", error);
       }
     };
 
-    const timeout = setTimeout(send, 3000);
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') {
-        send();
-      }
-    };
-    document.addEventListener('visibilitychange', onVisible, { once: true });
+    // Track immediately when page loads (only once per session)
+    send();
+    
     return () => {
-      clearTimeout(timeout);
-      document.removeEventListener('visibilitychange', onVisible);
+      // Cleanup not needed for single tracking
     };
   }, []);
 
