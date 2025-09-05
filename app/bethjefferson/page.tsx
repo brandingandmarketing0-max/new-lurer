@@ -35,10 +35,10 @@ export default function ProfilePage() {
       try {
         if (document.visibilityState !== 'visible') return;
         const payload = {
-          page: "chxrli_love",
+          page: "bethjefferson",
           referrer: rawRef,
           timestamp: new Date().toISOString(),
-          pathname: "/chxrli_love",
+          pathname: "/bethjefferson",
           searchParams: "",
           click_type: "page_visit"
         };
@@ -56,7 +56,7 @@ export default function ProfilePage() {
           }).catch(() => {});
         }
       } catch (error) {
-        console.error("Failed to track chxrli_love analytics:", error);
+        console.error("Failed to track bethjefferson analytics:", error);
       }
     };
 
@@ -72,10 +72,10 @@ export default function ProfilePage() {
   const trackClick = async (clickType: string) => {
     try {
       const payload = {
-        page: "chxrli_love",
+        page: "bethjefferson",
         referrer: rawReferrer,
         timestamp: new Date().toISOString(),
-        pathname: "/chxrli_love",
+        pathname: "/bethjefferson",
         searchParams: "",
         click_type: clickType
       };
@@ -123,9 +123,15 @@ export default function ProfilePage() {
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-[#B6997B]/60 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
                   <Avatar className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg">
-                    <AvatarImage src="/ch1.webp" alt="Chxrli Love" className="object-cover" />
+                    <AvatarImage src="/beth.webp" alt="Beth Jefferson" className="object-cover" />
                     <AvatarFallback className="bg-[#B6997B]/20 text-[#8B7355] text-2xl font-bold">
-                      CL
+                      <Image
+                        src="/beth1.png"
+                        alt="Beth Jefferson"
+                        width={112}
+                        height={112}
+                        className="h-full w-full object-cover rounded-full"
+                      />
                     </AvatarFallback>
                   </Avatar>
                   
@@ -144,7 +150,7 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                    Chxrli Love
+                    Beth Jefferson
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
                 </div>
@@ -168,12 +174,12 @@ export default function ProfilePage() {
 
           {/* Content Preview Card - Now Clickable with Tracking */}
           <div onClick={handleExclusiveContentClick}>
-            <Link href="https://onlyfans.com/yourfavscottishblonde" target="_blank" rel="noopener noreferrer">
+            <Link href="https://onlyfans.com/bethuncensoredxo" target="_blank" rel="noopener noreferrer">
               <Card className="mt-6 relative overflow-hidden border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-lg backdrop-blur-sm cursor-pointer hover:shadow-xl transition-shadow duration-300">
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src="/ch2.png"
+                      src="/beth2.png"
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
@@ -206,7 +212,7 @@ export default function ProfilePage() {
           {/* Action Buttons */}
           <div className="mt-6 space-y-4">
             <div onClick={handleSubscribeClick}>
-              <Link href="https://onlyfans.com/yourfavscottishblonde" target="_blank" rel="noopener noreferrer">
+              <Link href="https://onlyfans.com/bethuncensoredxo" target="_blank" rel="noopener noreferrer">
                 <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
                   <Heart className="h-5 w-5 mr-2" />
                   Subscribe Now
@@ -214,7 +220,7 @@ export default function ProfilePage() {
               </Link>
             </div>
             <div onClick={handleViewAllContentClick}>
-              <Link href="https://onlyfans.com/yourfavscottishblonde" target="_blank" rel="noopener noreferrer">
+              <Link href="https://onlyfans.com/bethuncensoredxo" target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" className="w-full border-[#B6997B]/50 text-[#8B7355] hover:bg-[#B6997B]/20 backdrop-blur-sm">
                   View All Content
                 </Button>
@@ -233,6 +239,3 @@ export default function ProfilePage() {
     </div>
   )
 }
-
-
-

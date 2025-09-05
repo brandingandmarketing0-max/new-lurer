@@ -126,7 +126,7 @@ export default function DeepLinksPage() {
   const fetchIndividualData = async () => {
     const modelNames = [
       "abbiehall", "aimee", "alaska", "amberr", "amyleigh", "amymaxwell", "b4byyeena", 
-      "babyscarlet", "babyyeena", "brooke", "brookex", "chloeayling", "chloeelizabeth", 
+      "babyscarlet", "babyyeena", "bethjefferson", "brooke", "brookex", "chloeayling", "chloeelizabeth", 
       "chloetami", "chxrli_love", "ellejean", "em", "erinhannahxx", "freya", "georgiaaa", 
       "ggxxmmaa", "josh", "kaceymay", "kaci", "kayley", "keanna", "kxceyrose", "laurdunne", 
       "laylasoyoung", "libby", "lou", "megann", "michaelajayneex", "missbrown", 

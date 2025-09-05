@@ -123,7 +123,7 @@ export default function ProfilePage() {
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-[#B6997B]/60 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
                   <Avatar className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg">
-                    <AvatarImage src="/mi2.jpg" alt="Erin Hannah" className="object-cover" />
+                    <AvatarImage src="/av1.avif" alt="Erin Hannah" className="object-cover" />
                     <AvatarFallback className="bg-[#B6997B]/20 text-[#8B7355] text-2xl font-bold">
                       EH
                     </AvatarFallback>
@@ -168,12 +168,12 @@ export default function ProfilePage() {
 
           {/* Content Preview Card - Now Clickable with Tracking */}
           <div onClick={handleExclusiveContentClick}>
-            <Link href="https://onlyfans.com/erinhannahxx" target="_blank" rel="noopener noreferrer">
+            <Link href="https://onlyfans.com/erinhannah" target="_blank" rel="noopener noreferrer">
               <Card className="mt-6 relative overflow-hidden border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-lg backdrop-blur-sm cursor-pointer hover:shadow-xl transition-shadow duration-300">
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src="/mi1.png"
+                      src="/av2.png"
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
@@ -206,7 +206,7 @@ export default function ProfilePage() {
           {/* Action Buttons */}
           <div className="mt-6 space-y-4">
             <div onClick={handleSubscribeClick}>
-              <Link href="https://onlyfans.com/erinhannahxx" target="_blank" rel="noopener noreferrer">
+              <Link href="https://onlyfans.com/erinhannah" target="_blank" rel="noopener noreferrer">
                 <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
                   <Heart className="h-5 w-5 mr-2" />
                   Subscribe Now
@@ -214,7 +214,7 @@ export default function ProfilePage() {
               </Link>
             </div>
             <div onClick={handleViewAllContentClick}>
-              <Link href="https://onlyfans.com/erinhannahxx" target="_blank" rel="noopener noreferrer">
+              <Link href="https://onlyfans.com/erinhannah" target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" className="w-full border-[#B6997B]/50 text-[#8B7355] hover:bg-[#B6997B]/20 backdrop-blur-sm">
                   View All Content
                 </Button>
