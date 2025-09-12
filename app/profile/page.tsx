@@ -27,7 +27,7 @@ export default function ProfilePage() {
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-gray-200 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
                   <Avatar className="relative h-28 w-28 border-4 border-white shadow-lg">
-                    <AvatarImage src="/images/avatar.png" alt="Summermae" className="object-cover" />
+                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtWpkm615gbqUvXNlhmPadO3GES8j964o2Ft7T" alt="Summermae" className="object-cover" />
                     <AvatarFallback className="bg-gray-100 text-gray-600 text-2xl font-bold">
                       SM
                     </AvatarFallback>
@@ -75,7 +75,7 @@ export default function ProfilePage() {
             <CardContent className="p-0">
               <div className="relative group">
                 <Image
-                  src="/images/summermae.png"
+                  src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtWpkm615gbqUvXNlhmPadO3GES8j964o2Ft7T"
                   alt="Exclusive Content Preview"
                   width={400}
                   height={300}
