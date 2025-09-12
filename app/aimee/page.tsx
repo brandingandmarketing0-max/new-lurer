@@ -149,7 +149,7 @@ export default function ProfilePage() {
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-[#B6997B]/60 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
                   <Avatar className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg">
-                    <AvatarImage src="/images/aime1.png" alt="Aimee" className="object-cover" />
+                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtWz9l68g5gbqUvXNlhmPadO3GES8j964o2Ft7" alt="Aimee" className="object-cover" />
                     <AvatarFallback className="bg-[#B6997B]/20 text-[#8B7355] text-2xl font-bold">
                       AI
                     </AvatarFallback>
@@ -158,7 +158,7 @@ export default function ProfilePage() {
                   {/* Verified Badge */}
                   <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/80 shadow-lg ring-4 ring-[#B6997B]/20">
                     <Image
-                      src="/images/verified-badge.png"
+                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrt98ZBhgCmgTM2aZbQ3nqXNLtGe4hVci06FUJk"
                       alt="Verified Badge"
                       width={20}
                       height={20}
@@ -179,7 +179,7 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-2 bg-[#B6997B]/10 rounded-full px-4 py-2 border border-[#B6997B]/30">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/20 p-1">
                     <Image
-                      src="/images/of-logo.png"
+                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtzPJGHA9qCSay35uLTDJ0d4jn8xMZUczPtBrR"
                       alt="OnlyFans Logo"
                       width={24}
                       height={24}
@@ -199,7 +199,7 @@ export default function ProfilePage() {
               <CardContent className="p-0">
                 <div className="relative group">
                   <Image
-                    src="/images/aime2.png"
+                    src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrte2PctKDVTbWye4LIz7jlNHsC1uoncERaqJ3M"
                     alt="Exclusive Content Preview"
                     width={400}
                     height={300}

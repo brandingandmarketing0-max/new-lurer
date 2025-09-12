@@ -36,7 +36,7 @@ export default function ProfilePage() {
                   {/* Verified Badge */}
                   <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 shadow-lg ring-4 ring-white">
                     <Image
-                      src="/images/verified-badge.png"
+                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrt98ZBhgCmgTM2aZbQ3nqXNLtGe4hVci06FUJk"
                       alt="Verified Badge"
                       width={20}
                       height={20}
@@ -57,7 +57,7 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 p-1">
                     <Image
-                      src="/images/of-logo.png"
+                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtzPJGHA9qCSay35uLTDJ0d4jn8xMZUczPtBrR"
                       alt="OnlyFans Logo"
                       width={24}
                       height={24}
