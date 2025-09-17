@@ -120,14 +120,26 @@ export default function ProfilePage() {
 
   const handleExclusiveContentClick = () => {
     trackClick("exclusive_content");
+    setShowAgeWarning(true);
   };
 
   const handleSubscribeClick = () => {
     trackClick("subscribe_now");
+    setShowAgeWarning(true);
   };
 
   const handleViewAllContentClick = () => {
     trackClick("view_all_content");
+    setShowAgeWarning(true);
+  };
+
+  const handleCancelAge = () => {
+    setShowAgeWarning(false);
+  };
+
+  const handleConfirmAge = () => {
+    setShowAgeWarning(false);
+    window.open("https://onlyfans.com/laylasoyoung", "_blank", "noopener,noreferrer");
   };
 
   return (
