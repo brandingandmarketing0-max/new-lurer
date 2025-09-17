@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3 } from "lucide-react"
+import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3, AlertTriangle, X } from "lucide-react"
 
 const getReadableReferrer = (ref: string) => {
   if (!ref) return "Direct or unknown";
@@ -67,6 +67,7 @@ export default function ProfilePage() {
   const [screenInfo, setScreenInfo] = useState<string>("");
   const [timezone, setTimezone] = useState<string>("");
   const [hasTracked, setHasTracked] = useState<boolean>(false);
+  const [showAgeWarning, setShowAgeWarning] = useState<boolean>(false);
 
   useEffect(() => {
     console.log("🚀 Amyleigh page loaded - Starting analytics tracking...");
@@ -246,16 +247,25 @@ export default function ProfilePage() {
     }
   };
 
-  const handleExclusiveContentClick = () => {
+  const handleExclusiveContentClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     trackClick("exclusive_content");
+    setShowAgeWarning(true);
   };
 
-  const handleSubscribeClick = () => {
+  const handleSubscribeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     trackClick("subscribe_now");
+    setShowAgeWarning(true);
   };
 
-  const handleViewAllContentClick = () => {
-    trackClick("view_all_content");
+  const handleConfirmAge = () => {
+    setShowAgeWarning(false);
+    window.open("https://onlyfans.com/amyleighegan", "_blank", "noopener,noreferrer");
+  };
+
+  const handleCancelAge = () => {
+    setShowAgeWarning(false);
   };
 
   return (
@@ -324,57 +334,46 @@ export default function ProfilePage() {
 
           {/* Content Preview Card - Now Clickable with Tracking */}
           <div onClick={handleExclusiveContentClick}>
-            <Link href="https://onlyfans.com/amyleighegan" target="_blank" rel="noopener noreferrer">
-              <Card className="mt-6 relative overflow-hidden border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-lg backdrop-blur-sm cursor-pointer hover:shadow-xl transition-shadow duration-300">
-                <CardContent className="p-0">
-                  <div className="relative group">
-                    <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrt7dKuNjWweTa21oZ6FBLsySt0JG89fRMdipO3"
-                      alt="Exclusive Content Preview"
-                      width={400}
-                      height={300}
-                      className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-black/30"></div>
-                    
-                    {/* Content Badge */}
-                    <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                      <Badge className="bg-[#B6997B]/80 text-white border-0">
-                        <span className="flex items-center gap-1">
-                          <Star className="h-3 w-3" />
-                          Exclusive Content
-                        </span>
-                      </Badge>
-                    </div>
-
-                    {/* Lock Icon */}
-                    <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/40 backdrop-blur-sm text-[#8B7355] border border-[#B6997B]/50">
-                      <Lock className="h-4 w-4" />
-                    </div>
+            <Card className="mt-6 relative overflow-hidden border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-lg backdrop-blur-sm cursor-pointer hover:shadow-xl transition-shadow duration-300">
+              <CardContent className="p-0">
+                <div className="relative group">
+                  <Image
+                    src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrt7dKuNjWweTa21oZ6FBLsySt0JG89fRMdipO3"
+                    alt="Exclusive Content Preview"
+                    width={400}
+                    height={300}
+                    className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-black/30"></div>
+                  
+                  {/* Content Badge */}
+                  <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                    <Badge className="bg-[#B6997B]/80 text-white border-0">
+                      <span className="flex items-center gap-1">
+                        <Star className="h-3 w-3" />
+                        Exclusive Content
+                      </span>
+                    </Badge>
                   </div>
-                </CardContent>
-              </Card>
-            </Link>
+
+                  {/* Lock Icon */}
+                  <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/40 backdrop-blur-sm text-[#8B7355] border border-[#B6997B]/50">
+                    <Lock className="h-4 w-4" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Action Buttons */}
           <div className="mt-6 space-y-4">
             <div onClick={handleSubscribeClick}>
-              <Link href="https://onlyfans.com/amyleighegan" target="_blank" rel="noopener noreferrer">
-                <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
-                  <Heart className="h-5 w-5 mr-2" />
-                  Subscribe Now
-                </Button>
-              </Link>
-            </div>
-            <div onClick={handleViewAllContentClick}>
-              <Link href="https://onlyfans.com/amyleighegan" target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="w-full border-[#B6997B]/50 text-[#8B7355] hover:bg-[#B6997B]/20 backdrop-blur-sm">
-                  View All Content
-                </Button>
-              </Link>
+              <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
+                <Heart className="h-5 w-5 mr-2" />
+                Subscribe Now
+              </Button>
             </div>
           </div>
 
@@ -384,48 +383,71 @@ export default function ProfilePage() {
               
             </p>
             
-            {/* Debug Tracking Buttons */}
-            <div className="flex gap-2 justify-center mt-2">
-              <Button 
-                onClick={() => {
-                  console.log("🧪 Manual tracking test clicked");
-                  trackClick("test_click");
-                }}
-                variant="outline" 
-                className="text-xs text-gray-400 border-gray-300 hover:bg-gray-100"
-              >
-                Test Click
-              </Button>
-              
-              <Button 
-                onClick={() => {
-                  console.log("🔄 Resetting tracking for testing");
-                  localStorage.removeItem('amyleigh_visit_tracked');
-                  localStorage.removeItem('amyleigh_tracked_at');
-                  setHasTracked(false);
-                  console.log("✅ Tracking reset - next visit will be tracked");
-                }}
-                variant="outline" 
-                className="text-xs text-blue-400 border-blue-300 hover:bg-blue-100"
-              >
-                Reset Tracking
-              </Button>
-            </div>
-            
-            {/* Tracking Status */}
-            <div className="mt-2 text-center">
-              <p className="text-xs text-gray-500">
-                Status: {hasTracked ? "✅ Tracked" : "⏳ Not Tracked"}
-              </p>
-              {hasTracked && (
-                <p className="text-xs text-gray-400">
-                  Tracked at: {localStorage.getItem('amyleigh_tracked_at') || 'Unknown'}
-                </p>
-              )}
-            </div>
           </div>
         </div>
       </div>
+
+      {/* 18+ Age Warning Modal */}
+      {showAgeWarning && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md mx-auto border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-2xl backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-6 w-6 text-red-500" />
+                  <h2 className="text-xl font-bold text-[#8B7355]">18+ Content Warning</h2>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCancelAge}
+                  className="text-[#8B7355] hover:bg-[#B6997B]/20"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <div className="space-y-4">
+                <p className="text-[#8B7355] text-sm leading-relaxed">
+                  This content is intended for adults only (18+). By clicking "Continue", you confirm that:
+                </p>
+                
+                <ul className="text-[#8B7355] text-sm space-y-2 ml-4">
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#B6997B] font-bold">•</span>
+                    You are 18 years of age or older
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#B6997B] font-bold">•</span>
+                    You consent to viewing adult content
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#B6997B] font-bold">•</span>
+                    You understand this content may not be suitable for minors
+                  </li>
+                </ul>
+                
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    onClick={handleCancelAge}
+                    variant="outline"
+                    className="flex-1 border-[#B6997B]/50 text-[#8B7355] hover:bg-[#B6997B]/20"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleConfirmAge}
+                    className="flex-1 bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
     </div>
   )
 } 

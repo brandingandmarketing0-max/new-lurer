@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3 } from "lucide-react"
+import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3, AlertTriangle, X } from "lucide-react"
 
 const getReadableReferrer = (ref: string) => {
   if (!ref) return "Direct or unknown";
@@ -24,6 +24,7 @@ export default function ProfilePage() {
   const [referrer, setReferrer] = useState<string>("");
   const [rawReferrer, setRawReferrer] = useState<string>("");
   const [hasTracked, setHasTracked] = useState<boolean>(false);
+  const [showAgeWarning, setShowAgeWarning] = useState<boolean>(false);
 
   useEffect(() => {
     const rawRef = document.referrer;
@@ -195,8 +196,7 @@ export default function ProfilePage() {
 
           {/* Content Preview Card - Now Clickable with Tracking */}
           <div onClick={handleExclusiveContentClick}>
-            <Link href="https://onlyfans.com/yourgirlrxch" target="_blank" rel="noopener noreferrer">
-              <Card className="mt-6 relative overflow-hidden border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-lg backdrop-blur-sm cursor-pointer hover:shadow-xl transition-shadow duration-300">
+            <Card className="mt-6 relative overflow-hidden border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-lg backdrop-blur-sm cursor-pointer hover:shadow-xl transition-shadow duration-300">
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
@@ -226,26 +226,16 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            </Link>
+            </Card>
           </div>
 
           {/* Action Buttons */}
           <div className="mt-6 space-y-4">
             <div onClick={handleSubscribeClick}>
-              <Link href="https://onlyfans.com/yourgirlrxch" target="_blank" rel="noopener noreferrer">
-                <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
-                  <Heart className="h-5 w-5 mr-2" />
-                  Subscribe Now
-                </Button>
-              </Link>
-            </div>
-            <div onClick={handleViewAllContentClick}>
-              <Link href="https://onlyfans.com/yourgirlrxch" target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="w-full border-gray-300 text-[#8B7355] hover:bg-gray-50">
-                  View All Content
-                </Button>
-              </Link>
+              <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
+                <Heart className="h-5 w-5 mr-2" />
+                Subscribe Now
+              </Button>
             </div>
           </div>
 

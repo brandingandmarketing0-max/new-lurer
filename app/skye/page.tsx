@@ -23,6 +23,7 @@ const getReadableReferrer = (ref: string) => {
 export default function ProfilePage() {
   const [referrer, setReferrer] = useState<string>("");
   const [rawReferrer, setRawReferrer] = useState<string>("");
+  const [showAgeWarning, setShowAgeWarning] = useState<boolean>(false);
 
   useEffect(() => {
     const rawRef = document.referrer;
