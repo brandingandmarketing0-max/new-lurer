@@ -139,7 +139,7 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    window.open("https://onlyfans.com/ollie", "_blank", "noopener,noreferrer");
+    window.open("https://onlyfans.com/kingollie01", "_blank", "noopener,noreferrer");
   };
 
   return (

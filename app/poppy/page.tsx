@@ -139,7 +139,7 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    window.open("https://onlyfans.com/poppy", "_blank", "noopener,noreferrer");
+    window.open("https://onlyfans.com/poppymayxx", "_blank", "noopener,noreferrer");
   };
 
   return (

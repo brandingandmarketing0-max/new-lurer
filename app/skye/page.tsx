@@ -153,50 +153,46 @@ export default function ProfilePage() {
 
           {/* Content Preview Card - Now Clickable with Tracking */}
           <div onClick={handleExclusiveContentClick}>
-            <Link href="https://onlyfans.com/skyexx1" target="_blank" rel="noopener noreferrer">
-              <Card className="mt-6 relative overflow-hidden border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-lg backdrop-blur-sm cursor-pointer hover:shadow-xl transition-shadow duration-300">
-                <CardContent className="p-0">
-                  <div className="relative group">
-                    <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtuAVMtXEGgHoNOym2ezcR7jbSZ0x5sakELWhI"
-                      alt="Exclusive Content Preview"
-                      width={400}
-                      height={300}
-                      className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-black/30"></div>
-                    
-                    {/* Content Badge */}
-                    <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                      <Badge className="bg-[#B6997B]/80 text-white border-0">
-                        <span className="flex items-center gap-1">
-                          <Star className="h-3 w-3" />
-                          Exclusive Content
-                        </span>
-                      </Badge>
-                    </div>
-
-                    {/* Lock Icon */}
-                    <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/40 backdrop-blur-sm text-[#8B7355] border border-[#B6997B]/50">
-                      <Lock className="h-4 w-4" />
-                    </div>
+            <Card className="mt-6 relative overflow-hidden border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-lg backdrop-blur-sm cursor-pointer hover:shadow-xl transition-shadow duration-300">
+              <CardContent className="p-0">
+                <div className="relative group">
+                  <Image
+                    src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtuAVMtXEGgHoNOym2ezcR7jbSZ0x5sakELWhI"
+                    alt="Exclusive Content Preview"
+                    width={400}
+                    height={300}
+                    className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-black/30"></div>
+                  
+                  {/* Content Badge */}
+                  <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                    <Badge className="bg-[#B6997B]/80 text-white border-0">
+                      <span className="flex items-center gap-1">
+                        <Star className="h-3 w-3" />
+                        Exclusive Content
+                      </span>
+                    </Badge>
                   </div>
-                </CardContent>
-              </Card>
-            </Link>
+
+                  {/* Lock Icon */}
+                  <div className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/40 backdrop-blur-sm text-[#8B7355] border border-[#B6997B]/50">
+                    <Lock className="h-4 w-4" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Action Buttons */}
           <div className="mt-6 space-y-4">
             <div onClick={handleSubscribeClick}>
-              <Link href="https://onlyfans.com/skyexx1" target="_blank" rel="noopener noreferrer">
-                <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
-                  <Heart className="h-5 w-5 mr-2" />
-                  Subscribe Now
-                </Button>
-              </Link>
+              <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
+                <Heart className="h-5 w-5 mr-2" />
+                Subscribe Now
+              </Button>
             </div>
           </div>
 

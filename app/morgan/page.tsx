@@ -139,7 +139,7 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    window.open("https://onlyfans.com/morgan", "_blank", "noopener,noreferrer");
+    window.open("https://onlyfans.com/morganwalsh", "_blank", "noopener,noreferrer");
   };
 
   return (
