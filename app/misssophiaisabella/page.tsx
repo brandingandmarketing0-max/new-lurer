@@ -165,7 +165,7 @@ export default function ProfilePage() {
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-[#B6997B]/60 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
                   <Avatar className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg">
-                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtKnHYErMoIFQf5TiLHjV7u0D63yYgCwEtxB8Z" alt="Miss Sophia Isabella" className="object-cover" />
+                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtG6NXMSfdI6gQWypxBht52wZXF49uYKDqErLn" alt="Miss Sophia Isabella" className="object-cover" />
                   
                   </Avatar>
                   

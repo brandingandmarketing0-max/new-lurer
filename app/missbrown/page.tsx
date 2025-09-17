@@ -111,7 +111,7 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    window.open("https://onlyfans.com/missbrown", "_blank", "noopener,noreferrer");
+    window.open("https://onlyfans.com/missbrownxo", "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -182,7 +182,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrt6p7SvinbAVMlHRWpPwDv1kTzN2nUg0mSyaJL"
+                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtzwDGQD9qCSay35uLTDJ0d4jn8xMZUczPtBrR"
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}

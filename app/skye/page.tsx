@@ -77,10 +77,6 @@ export default function ProfilePage() {
     setShowAgeWarning(true);
   };
 
-  const handleViewAllContentClick = () => {
-    trackClick("view_all_content");
-    setShowAgeWarning(true);
-  };
 
   const handleCancelAge = () => {
     setShowAgeWarning(false);
@@ -199,13 +195,6 @@ export default function ProfilePage() {
                 <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
                   <Heart className="h-5 w-5 mr-2" />
                   Subscribe Now
-                </Button>
-              </Link>
-            </div>
-            <div onClick={handleViewAllContentClick}>
-              <Link href="https://onlyfans.com/skyexx1" target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="w-full border-gray-300 text-[#8B7355] hover:bg-gray-50">
-                  View All Content
                 </Button>
               </Link>
             </div>
