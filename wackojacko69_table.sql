@@ -1,7 +1,7 @@
--- Maddison Analytics Table with Click Tracking
+-- WackoJacko69 Analytics Table with Click Tracking
 -- Run this SQL command in your Supabase SQL editor
 
-CREATE TABLE IF NOT EXISTS maddison_analytics (
+CREATE TABLE IF NOT EXISTS wackojacko69_analytics (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     page VARCHAR(255) NOT NULL,
     referrer TEXT,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS maddison_analytics (
 );
 
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_maddison_analytics_timestamp ON maddison_analytics(timestamp);
-CREATE INDEX IF NOT EXISTS idx_maddison_analytics_readable_referrer ON maddison_analytics(readable_referrer);
-CREATE INDEX IF NOT EXISTS idx_maddison_analytics_click_type ON maddison_analytics(click_type);
+CREATE INDEX IF NOT EXISTS idx_wackojacko69_analytics_timestamp ON wackojacko69_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_wackojacko69_analytics_readable_referrer ON wackojacko69_analytics(readable_referrer);
+CREATE INDEX IF NOT EXISTS idx_wackojacko69_analytics_click_type ON wackojacko69_analytics(click_type);
 

@@ -32,8 +32,8 @@ export default function ProfilePage() {
     setReferrer(getReadableReferrer(rawRef));
 
     // Create a unique session ID for this page load
-    const sessionId = `maddison_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const sessionKey = `maddison_visit_tracked_${sessionId}`;
+    const sessionId = `wackojacko69_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const sessionKey = `wackojacko69_visit_tracked_${sessionId}`;
 
     // Check if we've already tracked this session
     if (localStorage.getItem(sessionKey)) {
@@ -50,10 +50,10 @@ export default function ProfilePage() {
         }
         
         const payload = {
-          page: "maddison",
+          page: "wackojacko69",
           referrer: rawRef,
           timestamp: new Date().toISOString(),
-          pathname: "/maddison",
+          pathname: "/wackojacko69",
           searchParams: "",
           click_type: "page_visit"
         };
@@ -62,11 +62,11 @@ export default function ProfilePage() {
         if (navigator.sendBeacon) {
           const blob = new Blob([body], { type: 'application/json' });
           navigator.sendBeacon('/api/track', blob);
-          console.log("✅ Maddison Analytics - Page visit tracked via sendBeacon");
+          console.log("✅ WackoJacko69 Analytics - Page visit tracked via sendBeacon");
           
           // Mark this specific session as tracked
           localStorage.setItem(sessionKey, 'true');
-          localStorage.setItem('maddison_last_tracked', new Date().toISOString());
+          localStorage.setItem('wackojacko69_last_tracked', new Date().toISOString());
           setHasTracked(true);
         } else {
           fetch("/api/track", {
@@ -75,18 +75,18 @@ export default function ProfilePage() {
             body,
             keepalive: true
           }).then(() => {
-            console.log("✅ Maddison Analytics - Page visit tracked via fetch");
+            console.log("✅ WackoJacko69 Analytics - Page visit tracked via fetch");
             
             // Mark this specific session as tracked
             localStorage.setItem(sessionKey, 'true');
-            localStorage.setItem('maddison_last_tracked', new Date().toISOString());
+            localStorage.setItem('wackojacko69_last_tracked', new Date().toISOString());
             setHasTracked(true);
           }).catch((error) => {
-            console.error("❌ Maddison Analytics - Page visit tracking failed:", error);
+            console.error("❌ WackoJacko69 Analytics - Page visit tracking failed:", error);
           });
         }
       } catch (error) {
-        console.error("❌ Failed to track Maddison analytics:", error);
+        console.error("❌ Failed to track WackoJacko69 analytics:", error);
       }
     };
 
@@ -105,10 +105,10 @@ export default function ProfilePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          page: "maddison",
+          page: "wackojacko69",
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/maddison",
+          pathname: "/wackojacko69",
           searchParams: "",
           click_type: clickType
         }),
@@ -139,7 +139,7 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    window.open("https://onlyfans.com/maddison.woods", "_blank", "noopener,noreferrer");
+    window.open("https://onlyfans.com/wackojacko69", "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -163,9 +163,9 @@ export default function ProfilePage() {
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-[#B6997B]/60 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
                   <Avatar className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg">
-                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtSXVbaqT2CJrnQmTUKN4XfF89iAuaSsv7pM6j" alt="Maddison" className="object-cover" />
+                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtVpYUV1zUkvrqpFG0ygHEzfL2ncJhAetV4R3T" alt="Jack" className="object-cover" />
                     <AvatarFallback className="bg-[#B6997B]/20 text-[#8B7355] text-2xl font-bold">
-                      M
+                      J
                     </AvatarFallback>
                   </Avatar>
                   
@@ -184,7 +184,7 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                    Maddison
+                    Jack
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
                 </div>
@@ -212,7 +212,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrt9U8MgkCmgTM2aZbQ3nqXNLtGe4hVci06FUJk"
+                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrthOQ7jOQiEcfAFW435V1LnPm2vkgNqaxYtzRS"
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
