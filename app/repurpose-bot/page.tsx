@@ -149,7 +149,7 @@ export default function WatermarkUrlPage() {
       }
     },
     onUploadError: (error: Error) => {
-      setError(`Watermark upload failed: ${error.message}`);
+      setError(`Watermark upoad failed: ${error.message}`);
       console.error('Upload error:', error);
     },
   });
