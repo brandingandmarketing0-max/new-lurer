@@ -1,7 +1,7 @@
--- Petitelils Analytics Table with Click Tracking
+-- Brooke XOX Analytics Table with Click Tracking
 -- Run this SQL command in your Supabase SQL editor
 
-CREATE TABLE IF NOT EXISTS petitelils_analytics (
+CREATE TABLE IF NOT EXISTS brooke_xox_analytics (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     page VARCHAR(255) NOT NULL,
     referrer TEXT,
@@ -16,24 +16,24 @@ CREATE TABLE IF NOT EXISTS petitelils_analytics (
 );
 
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_petitelils_analytics_timestamp ON petitelils_analytics(timestamp);
-CREATE INDEX IF NOT EXISTS idx_petitelils_analytics_readable_referrer ON petitelils_analytics(readable_referrer);
-CREATE INDEX IF NOT EXISTS idx_petitelils_analytics_click_type ON petitelils_analytics(click_type);
-CREATE INDEX IF NOT EXISTS idx_petitelils_analytics_page ON petitelils_analytics(page);
+CREATE INDEX IF NOT EXISTS idx_brooke_xox_analytics_timestamp ON brooke_xox_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_brooke_xox_analytics_readable_referrer ON brooke_xox_analytics(readable_referrer);
+CREATE INDEX IF NOT EXISTS idx_brooke_xox_analytics_click_type ON brooke_xox_analytics(click_type);
+CREATE INDEX IF NOT EXISTS idx_brooke_xox_analytics_page ON brooke_xox_analytics(page);
 
 -- Optional: Create a view for easier analytics queries
-CREATE OR REPLACE VIEW petitelils_analytics_summary AS
+CREATE OR REPLACE VIEW brooke_xox_analytics_summary AS
 SELECT 
     DATE(timestamp) as date,
     click_type,
     readable_referrer,
     COUNT(*) as total_events,
     COUNT(DISTINCT ip_address) as unique_visitors
-FROM petitelils_analytics 
+FROM brooke_xox_analytics 
 GROUP BY DATE(timestamp), click_type, readable_referrer
 ORDER BY date DESC, total_events DESC;
 
 -- Grant necessary permissions (adjust as needed for your setup)
--- GRANT SELECT, INSERT ON petitelils_analytics TO authenticated;
--- GRANT SELECT ON petitelils_analytics_summary TO authenticated;
+-- GRANT SELECT, INSERT ON brooke_xox_analytics TO authenticated;
+-- GRANT SELECT ON brooke_xox_analytics_summary TO authenticated;
 
