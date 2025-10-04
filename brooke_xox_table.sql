@@ -38,3 +38,4 @@ ORDER BY date DESC, total_events DESC;
 -- GRANT SELECT ON brooke_xox_analytics_summary TO authenticated;
 
 
+

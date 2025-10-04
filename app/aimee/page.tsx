@@ -208,11 +208,11 @@ export default function ProfilePage() {
               <CardContent className="p-0">
                 <div className="relative group">
                   <Image
-                    src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtNBg1sZo0jGBVsJlCoqntZOMSHyTWQ4rmAFwL"
+                    src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtWfjdnh5gbqUvXNlhmPadO3GES8j964o2Ft7T"
                     alt="Exclusive Content Preview"
                     width={400}
-                    height={300}
-                    className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    height={500}
+                    className="w-full h-96 object-contain transition-transform duration-300 group-hover:scale-105"
                   />
                   
                   {/* Overlay */}
