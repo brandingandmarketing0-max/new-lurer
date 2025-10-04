@@ -113,7 +113,7 @@ if (loading) {
       <div className="min-h-screen bg-white p-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-gray-800 text-center py-20">
-            <h1 className="text-2xl font-bold mb-4">Error Loading Analytics</h1>
+            <h1 className="text-2xl font-bold mb-4">Error Loading nalytics</h1>
             <p className="text-red-600 mb-4">{error}</p>
             <Button onClick={fetchPoppyAnalytics} className="bg-[#B19272] hover:bg-[#9A7B5F]">Retry</Button>
           </div>
