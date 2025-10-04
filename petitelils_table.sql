@@ -37,3 +37,4 @@ ORDER BY date DESC, total_events DESC;
 -- GRANT SELECT, INSERT ON petitelils_analytics TO authenticated;
 -- GRANT SELECT ON petitelils_analytics_summary TO authenticated;
 
+

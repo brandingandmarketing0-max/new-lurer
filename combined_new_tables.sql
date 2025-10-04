@@ -124,3 +124,4 @@ ORDER BY date DESC, total_events DESC;
 
 -- Check if views were created successfully:
 -- SELECT table_name FROM information_schema.views WHERE table_name IN ('brooke_xox_analytics_summary', 'lily_analytics_summary', 'lsy_analytics_summary');
+

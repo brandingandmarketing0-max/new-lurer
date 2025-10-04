@@ -37,3 +37,4 @@ ORDER BY date DESC, total_events DESC;
 -- GRANT SELECT, INSERT ON brooke_xox_analytics TO authenticated;
 -- GRANT SELECT ON brooke_xox_analytics_summary TO authenticated;
 
+
