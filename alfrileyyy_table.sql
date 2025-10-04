@@ -37,3 +37,4 @@ ORDER BY date DESC, total_events DESC;
 -- GRANT SELECT, INSERT ON alfrileyyy_analytics TO authenticated;
 -- GRANT SELECT ON alfrileyyy_analytics_summary TO authenticated;
 
+
