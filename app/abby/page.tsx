@@ -104,7 +104,7 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    window.open("https://onlyfans.com/abby", "_blank", "noopener,noreferrer");
+    window.open("https://onlyfans.com/yourblueeyedbaby", "_blank", "noopener,noreferrer");
   };
 
   const handleCancelAge = () => {

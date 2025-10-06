@@ -132,7 +132,7 @@ export default function ProfilePage() {
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-[#B6997B]/60 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
                   <Avatar className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg">
-                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrt59ZHQ8mVTon8G5vFmEWJsKazYk0O2fCwj3HB" alt="Scarletxroseeevip" className="object-cover" />
+                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtVRoiylzUkvrqpFG0ygHEzfL2ncJhAetV4R3T" alt="Scarletxroseeevip" className="object-cover" />
                     <AvatarFallback className="bg-[#B6997B]/20 text-[#8B7355] text-2xl font-bold">
                       SR
                     </AvatarFallback>
@@ -181,7 +181,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtWzVNSZp5gbqUvXNlhmPadO3GES8j964o2Ft7"
+                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrt64ZB4lnbAVMlHRWpPwDv1kTzN2nUg0mSyaJL"
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
