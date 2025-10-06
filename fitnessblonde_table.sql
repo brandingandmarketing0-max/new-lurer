@@ -36,3 +36,4 @@ ORDER BY date DESC, total_events DESC;
 -- Grant necessary permissions (adjust as needed for your setup)
 -- GRANT SELECT, INSERT ON fitnessblonde_analytics TO authenticated;
 -- GRANT SELECT ON fitnessblonde_analytics_summary TO authenticated;
+

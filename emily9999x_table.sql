@@ -36,3 +36,4 @@ ORDER BY date DESC, total_events DESC;
 -- Grant necessary permissions (adjust as needed for your setup)
 -- GRANT SELECT, INSERT ON emily9999x_analytics TO authenticated;
 -- GRANT SELECT ON emily9999x_analytics_summary TO authenticated;
+

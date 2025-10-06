@@ -36,3 +36,4 @@ ORDER BY date DESC, total_events DESC;
 -- Grant necessary permissions (adjust as needed for your setup)
 -- GRANT SELECT, INSERT ON onlyjessxrose_analytics TO authenticated;
 -- GRANT SELECT ON onlyjessxrose_analytics_summary TO authenticated;
+

@@ -181,7 +181,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtWzVNSZp5gbqUvXNlhmPadO3GES8j964o2Ft7"
+                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtaw01PuezjdJnwcF16THlXkoRthei5DYVuZLI"
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
@@ -293,5 +293,6 @@ export default function ProfilePage() {
     </div>
   )
 } 
+
 
 

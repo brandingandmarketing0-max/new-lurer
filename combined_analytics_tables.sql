@@ -494,3 +494,4 @@ ORDER BY date DESC, total_events DESC;
 -- GRANT SELECT ON kimbo_bimbo_analytics_summary TO authenticated;
 -- GRANT SELECT, INSERT ON paigexb_analytics TO authenticated;
 -- GRANT SELECT ON paigexb_analytics_summary TO authenticated;
+
