@@ -1,7 +1,7 @@
--- Rachsotiny Analytics Table with Click Tracking
+-- Cowgurlkacey Analytics Table with Click Tracking
 -- Run this SQL command in your Supabase SQL editor
 
-CREATE TABLE IF NOT EXISTS rachsotiny_analytics (
+CREATE TABLE IF NOT EXISTS cowgurlkacey_analytics (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     page VARCHAR(255) NOT NULL,
     referrer TEXT,
@@ -16,28 +16,23 @@ CREATE TABLE IF NOT EXISTS rachsotiny_analytics (
 );
 
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_rachsotiny_analytics_timestamp ON rachsotiny_analytics(timestamp);
-CREATE INDEX IF NOT EXISTS idx_rachsotiny_analytics_readable_referrer ON rachsotiny_analytics(readable_referrer);
-CREATE INDEX IF NOT EXISTS idx_rachsotiny_analytics_click_type ON rachsotiny_analytics(click_type);
-CREATE INDEX IF NOT EXISTS idx_rachsotiny_analytics_page ON rachsotiny_analytics(page);
+CREATE INDEX IF NOT EXISTS idx_cowgurlkacey_analytics_timestamp ON cowgurlkacey_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_cowgurlkacey_analytics_readable_referrer ON cowgurlkacey_analytics(readable_referrer);
+CREATE INDEX IF NOT EXISTS idx_cowgurlkacey_analytics_click_type ON cowgurlkacey_analytics(click_type);
+CREATE INDEX IF NOT EXISTS idx_cowgurlkacey_analytics_page ON cowgurlkacey_analytics(page);
 
 -- Optional: Create a view for easier analytics queries
-CREATE OR REPLACE VIEW rachsotiny_analytics_summary AS
+CREATE OR REPLACE VIEW cowgurlkacey_analytics_summary AS
 SELECT 
     DATE(timestamp) as date,
     click_type,
     readable_referrer,
     COUNT(*) as total_events,
     COUNT(DISTINCT ip_address) as unique_visitors
-FROM rachsotiny_analytics 
+FROM cowgurlkacey_analytics 
 GROUP BY DATE(timestamp), click_type, readable_referrer
 ORDER BY date DESC, total_events DESC;
 
 -- Grant necessary permissions (adjust as needed for your setup)
--- GRANT SELECT, INSERT ON rachsotiny_analytics TO authenticated;
--- GRANT SELECT ON rachsotiny_analytics_summary TO authenticated;
-
-
-
-
-
+-- GRANT SELECT, INSERT ON cowgurlkacey_analytics TO authenticated;
+-- GRANT SELECT ON cowgurlkacey_analytics_summary TO authenticated;
