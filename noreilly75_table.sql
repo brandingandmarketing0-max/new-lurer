@@ -37,3 +37,4 @@ ORDER BY date DESC, total_events DESC;
 -- GRANT SELECT, INSERT ON noreilly75_analytics TO authenticated;
 -- GRANT SELECT ON noreilly75_analytics_summary TO authenticated;
 
+

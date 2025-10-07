@@ -37,3 +37,4 @@ ORDER BY date DESC, total_events DESC;
 -- GRANT SELECT, INSERT ON grace_analytics TO authenticated;
 -- GRANT SELECT ON grace_analytics_summary TO authenticated;
 
+

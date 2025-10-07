@@ -1,7 +1,7 @@
--- Chloeinskip Analytics Table with Click Tracking
+-- Laylaasoyoung Analytics Table with Click Tracking
 -- Run this SQL command in your Supabase SQL editor
 
-CREATE TABLE IF NOT EXISTS chloeinskip_analytics (
+CREATE TABLE IF NOT EXISTS laylaasoyoung_analytics (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     page VARCHAR(255) NOT NULL,
     referrer TEXT,
@@ -16,25 +16,30 @@ CREATE TABLE IF NOT EXISTS chloeinskip_analytics (
 );
 
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_chloeinskip_analytics_timestamp ON chloeinskip_analytics(timestamp);
-CREATE INDEX IF NOT EXISTS idx_chloeinskip_analytics_readable_referrer ON chloeinskip_analytics(readable_referrer);
-CREATE INDEX IF NOT EXISTS idx_chloeinskip_analytics_click_type ON chloeinskip_analytics(click_type);
-CREATE INDEX IF NOT EXISTS idx_chloeinskip_analytics_page ON chloeinskip_analytics(page);
+CREATE INDEX IF NOT EXISTS idx_laylaasoyoung_analytics_timestamp ON laylaasoyoung_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_laylaasoyoung_analytics_readable_referrer ON laylaasoyoung_analytics(readable_referrer);
+CREATE INDEX IF NOT EXISTS idx_laylaasoyoung_analytics_click_type ON laylaasoyoung_analytics(click_type);
+CREATE INDEX IF NOT EXISTS idx_laylaasoyoung_analytics_page ON laylaasoyoung_analytics(page);
 
 -- Optional: Create a view for easier analytics queries
-CREATE OR REPLACE VIEW chloeinskip_analytics_summary AS
+CREATE OR REPLACE VIEW laylaasoyoung_analytics_summary AS
 SELECT 
     DATE(timestamp) as date,
     click_type,
     readable_referrer,
     COUNT(*) as total_events,
     COUNT(DISTINCT ip_address) as unique_visitors
-FROM chloeinskip_analytics 
+FROM laylaasoyoung_analytics 
 GROUP BY DATE(timestamp), click_type, readable_referrer
 ORDER BY date DESC, total_events DESC;
 
 -- Grant necessary permissions (adjust as needed for your setup)
--- GRANT SELECT, INSERT ON chloeinskip_analytics TO authenticated;
--- GRANT SELECT ON chloeinskip_analytics_summary TO authenticated;
+-- GRANT SELECT, INSERT ON laylaasoyoung_analytics TO authenticated;
+-- GRANT SELECT ON laylaasoyoung_analytics_summary TO authenticated;
+
+
+
+
+
 
 

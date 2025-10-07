@@ -37,3 +37,4 @@ ORDER BY date DESC, total_events DESC;
 -- GRANT SELECT, INSERT ON scarletxroseeevip_analytics TO authenticated;
 -- GRANT SELECT ON scarletxroseeevip_analytics_summary TO authenticated;
 
+

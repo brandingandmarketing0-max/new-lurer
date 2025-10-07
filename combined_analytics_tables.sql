@@ -495,3 +495,4 @@ ORDER BY date DESC, total_events DESC;
 -- GRANT SELECT, INSERT ON paigexb_analytics TO authenticated;
 -- GRANT SELECT ON paigexb_analytics_summary TO authenticated;
 
+

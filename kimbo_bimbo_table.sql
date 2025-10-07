@@ -37,3 +37,4 @@ ORDER BY date DESC, total_events DESC;
 -- GRANT SELECT, INSERT ON kimbo_bimbo_analytics TO authenticated;
 -- GRANT SELECT ON kimbo_bimbo_analytics_summary TO authenticated;
 
+
