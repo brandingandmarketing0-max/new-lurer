@@ -84,7 +84,7 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    window.open("https://onlyfans.com/skye", "_blank", "noopener,noreferrer");
+    window.open("https://onlyfans.com/skyexx1", "_blank", "noopener,noreferrer");
   };
 
   return (
