@@ -1,7 +1,7 @@
--- Alicia Analytics Table with Click Tracking
+-- Jason Analytics Table with Click Tracking
 -- Run this SQL command in your Supabase SQL editor
 
-CREATE TABLE IF NOT EXISTS alicia_analytics (
+CREATE TABLE IF NOT EXISTS jason_analytics (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     page VARCHAR(255) NOT NULL,
     referrer TEXT,
@@ -16,26 +16,26 @@ CREATE TABLE IF NOT EXISTS alicia_analytics (
 );
 
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_alicia_analytics_timestamp ON alicia_analytics(timestamp);
-CREATE INDEX IF NOT EXISTS idx_alicia_analytics_readable_referrer ON alicia_analytics(readable_referrer);
-CREATE INDEX IF NOT EXISTS idx_alicia_analytics_click_type ON alicia_analytics(click_type);
-CREATE INDEX IF NOT EXISTS idx_alicia_analytics_page ON alicia_analytics(page);
+CREATE INDEX IF NOT EXISTS idx_jason_analytics_timestamp ON jason_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_jason_analytics_readable_referrer ON jason_analytics(readable_referrer);
+CREATE INDEX IF NOT EXISTS idx_jason_analytics_click_type ON jason_analytics(click_type);
+CREATE INDEX IF NOT EXISTS idx_jason_analytics_page ON jason_analytics(page);
 
 -- Optional: Create a view for easier analytics queries
-CREATE OR REPLACE VIEW alicia_analytics_summary AS
+CREATE OR REPLACE VIEW jason_analytics_summary AS
 SELECT 
     DATE(timestamp) as date,
     click_type,
     readable_referrer,
     COUNT(*) as total_events,
     COUNT(DISTINCT ip_address) as unique_visitors
-FROM alicia_analytics 
+FROM jason_analytics 
 GROUP BY DATE(timestamp), click_type, readable_referrer
 ORDER BY date DESC, total_events DESC;
 
 -- Grant necessary permissions (adjust as needed for your setup)
--- GRANT SELECT, INSERT ON alicia_analytics TO authenticated;
--- GRANT SELECT ON alicia_analytics_summary TO authenticated;
+-- GRANT SELECT, INSERT ON jason_analytics TO authenticated;
+-- GRANT SELECT ON jason_analytics_summary TO authenticated;
 
 
 

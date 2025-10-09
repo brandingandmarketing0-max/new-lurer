@@ -38,3 +38,6 @@ ORDER BY date DESC, total_events DESC;
 -- GRANT SELECT ON kimbo_bimbo_analytics_summary TO authenticated;
 
 
+
+
+

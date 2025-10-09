@@ -38,3 +38,6 @@ ORDER BY date DESC, total_events DESC;
 -- GRANT SELECT ON noreilly75_analytics_summary TO authenticated;
 
 
+
+
+
