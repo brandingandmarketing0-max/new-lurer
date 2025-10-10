@@ -31,62 +31,34 @@ export default function ProfilePage() {
     setRawReferrer(rawRef);
     setReferrer(getReadableReferrer(rawRef));
 
-    // Create a unique session ID for this page load
-    const sessionId = `brooke_xox_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const sessionKey = `brooke_xox_visit_tracked_${sessionId}`;
+    // Send analytics to Supabase with sendBeacon
 
-    // Check if we've already tracked this session
-    if (localStorage.getItem(sessionKey)) {
-      setHasTracked(true);
-      return;
-    }
-
-    // Send analytics to Supabase with sendBeacon (only once per session)
     const send = () => {
       try {
-        // Double-check we haven't already tracked this session
-        if (hasTracked || localStorage.getItem(sessionKey)) {
-          return;
-        }
-        
+        if (document.visibilityState !== 'visible') return;
         const payload = {
-          page: "brooke_xox",
+          page: "hannah",
           referrer: rawRef,
           timestamp: new Date().toISOString(),
-          pathname: "/brooke_xox",
+          pathname: "/hannah",
           searchParams: "",
           click_type: "page_visit"
         };
-        
         const body = JSON.stringify(payload);
         if (navigator.sendBeacon) {
           const blob = new Blob([body], { type: 'application/json' });
           navigator.sendBeacon('/api/track', blob);
-          console.log("✅ Brooke XOX Analytics - Page visit tracked via sendBeacon");
-          
-          // Mark this specific session as tracked
-          localStorage.setItem(sessionKey, 'true');
-          localStorage.setItem('brooke_xox_last_tracked', new Date().toISOString());
-          setHasTracked(true);
         } else {
           fetch("/api/track", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body,
             keepalive: true
-          }).then(() => {
-            console.log("✅ Brooke XOX Analytics - Page visit tracked via fetch");
-            
-            // Mark this specific session as tracked
-            localStorage.setItem(sessionKey, 'true');
-            localStorage.setItem('brooke_xox_last_tracked', new Date().toISOString());
-            setHasTracked(true);
-          }).catch((error) => {
-            console.error("❌ Brooke XOX Analytics - Page visit tracking failed:", error);
-          });
+          }).catch(() => {});
         }
+
       } catch (error) {
-        console.error("❌ Failed to track Brooke XOX analytics:", error);
+        console.error("Failed to track Hannah analytics:", error);
       }
     };
 
@@ -105,10 +77,10 @@ export default function ProfilePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          page: "brooke_xox",
+          page: "hannah",
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/brooke_xox",
+          pathname: "/hannah",
           searchParams: "",
           click_type: clickType
         }),
@@ -118,28 +90,25 @@ export default function ProfilePage() {
     }
   };
 
-  const handleExclusiveContentClick = () => {
+  const handleExclusiveContentClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     trackClick("exclusive_content");
     setShowAgeWarning(true);
   };
 
-  const handleSubscribeClick = () => {
+  const handleSubscribeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     trackClick("subscribe_now");
     setShowAgeWarning(true);
   };
 
-  const handleViewAllContentClick = () => {
-    trackClick("view_all_content");
-    setShowAgeWarning(true);
+  const handleConfirmAge = () => {
+    setShowAgeWarning(false);
+    window.open("https://onlyfans.com/hannahambrose", "_blank", "noopener,noreferrer");
   };
 
   const handleCancelAge = () => {
     setShowAgeWarning(false);
-  };
-
-  const handleConfirmAge = () => {
-    setShowAgeWarning(false);
-    window.open("https://onlyfans.com/brooke_xox", "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -163,9 +132,9 @@ export default function ProfilePage() {
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-[#B6997B]/60 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
                   <Avatar className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg">
-                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtKJQTceMoIFQf5TiLHjV7u0D63yYgCwEtxB8Z" alt="Brooke XOX" className="object-cover" />
+                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtZcXRFTvbPGauSHQODWF2T4omiRxK7ZpkfUYB" alt="Hannah" className="object-cover" />
                     <AvatarFallback className="bg-[#B6997B]/20 text-[#8B7355] text-2xl font-bold">
-                      B
+                      H
                     </AvatarFallback>
                   </Avatar>
                   
@@ -184,7 +153,7 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                    Brooke XOX
+                    hannah
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
                 </div>
@@ -212,7 +181,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtdnN2urPAmFy0qf4twoQ8J9pGeKnugEsc7kNb"
+                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtF3k9pbcf5QeZo76jBcMzg2DEVPJRlL80I1qm"
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
@@ -324,13 +293,6 @@ export default function ProfilePage() {
     </div>
   )
 } 
-
-
-
-
-
-
-
 
 
 

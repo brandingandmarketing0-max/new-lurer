@@ -1,7 +1,7 @@
--- Grace Analytics Table with Click Tracking
+-- Hannah Analytics Table with Click Tracking
 -- Run this SQL command in your Supabase SQL editor
 
-CREATE TABLE IF NOT EXISTS grace_analytics (
+CREATE TABLE IF NOT EXISTS hannah_analytics (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     page VARCHAR(255) NOT NULL,
     referrer TEXT,
@@ -16,27 +16,26 @@ CREATE TABLE IF NOT EXISTS grace_analytics (
 );
 
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_grace_analytics_timestamp ON grace_analytics(timestamp);
-CREATE INDEX IF NOT EXISTS idx_grace_analytics_readable_referrer ON grace_analytics(readable_referrer);
-CREATE INDEX IF NOT EXISTS idx_grace_analytics_click_type ON grace_analytics(click_type);
-CREATE INDEX IF NOT EXISTS idx_grace_analytics_page ON grace_analytics(page);
+CREATE INDEX IF NOT EXISTS idx_hannah_analytics_timestamp ON hannah_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_hannah_analytics_readable_referrer ON hannah_analytics(readable_referrer);
+CREATE INDEX IF NOT EXISTS idx_hannah_analytics_click_type ON hannah_analytics(click_type);
+CREATE INDEX IF NOT EXISTS idx_hannah_analytics_page ON hannah_analytics(page);
 
 -- Optional: Create a view for easier analytics queries
-CREATE OR REPLACE VIEW grace_analytics_summary AS
+CREATE OR REPLACE VIEW hannah_analytics_summary AS
 SELECT 
     DATE(timestamp) as date,
     click_type,
     readable_referrer,
     COUNT(*) as total_events,
     COUNT(DISTINCT ip_address) as unique_visitors
-FROM grace_analytics 
+FROM hannah_analytics 
 GROUP BY DATE(timestamp), click_type, readable_referrer
 ORDER BY date DESC, total_events DESC;
 
 -- Grant necessary permissions (adjust as needed for your setup)
--- GRANT SELECT, INSERT ON grace_analytics TO authenticated;
--- GRANT SELECT ON grace_analytics_summary TO authenticated;
-
+-- GRANT SELECT, INSERT ON hannah_analytics TO authenticated;
+-- GRANT SELECT ON hannah_analytics_summary TO authenticated;
 
 
 
