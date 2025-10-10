@@ -37,10 +37,10 @@ export default function ProfilePage() {
       try {
         if (document.visibilityState !== 'visible') return;
         const payload = {
-          page: "scarletxroseeevip",
+          page: "robynnparkerr",
           referrer: rawRef,
           timestamp: new Date().toISOString(),
-          pathname: "/scarletxroseeevip",
+          pathname: "/robynnparkerr",
           searchParams: "",
           click_type: "page_visit"
         };
@@ -58,7 +58,7 @@ export default function ProfilePage() {
         }
 
       } catch (error) {
-        console.error("Failed to track Scarletxroseeevip analytics:", error);
+        console.error("Failed to track Robynnparkerr analytics:", error);
       }
     };
 
@@ -77,10 +77,10 @@ export default function ProfilePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          page: "scarletxroseeevip",
+          page: "robynnparkerr",
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/scarletxroseeevip",
+          pathname: "/robynnparkerr",
           searchParams: "",
           click_type: clickType
         }),
@@ -104,7 +104,7 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    window.open("https://onlyfans.com/scarletxroseeevip", "_blank", "noopener,noreferrer");
+    window.open("https://onlyfans.com/robynnparkerr", "_blank", "noopener,noreferrer");
   };
 
   const handleCancelAge = () => {
@@ -132,9 +132,9 @@ export default function ProfilePage() {
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-[#B6997B]/60 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
                   <Avatar className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg">
-                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtVRoiylzUkvrqpFG0ygHEzfL2ncJhAetV4R3T" alt="Scarletxroseeevip" className="object-cover" />
+                    <AvatarImage src="https://79scy4fign.ufs.sh/f/bFrQ1ld8h0ZPk4Vb8agb0xgySCUI31m7e64rLp5TtuRX2fQq" alt="Robynnparkerr" className="object-cover" />
                     <AvatarFallback className="bg-[#B6997B]/20 text-[#8B7355] text-2xl font-bold">
-                      SR
+                      R
                     </AvatarFallback>
                   </Avatar>
                   
@@ -153,7 +153,7 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                    scarletxroseeevip
+                    robynnparkerr
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
                 </div>
@@ -181,7 +181,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrt64ZB4lnbAVMlHRWpPwDv1kTzN2nUg0mSyaJL"
+                      src="https://79scy4fign.ufs.sh/f/bFrQ1ld8h0ZPw5Kd8cPqgWEPUkJv7wH6oX21ZnT0VC4cbYNQ"
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
