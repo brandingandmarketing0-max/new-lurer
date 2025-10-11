@@ -8,7 +8,7 @@ import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft, RefreshCw, 
 import Link from "next/link";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 
-interface JasonAnalyticsData {
+interface JoshAnalyticsData {
   id: number;
   page: string;
   referrer: string;
@@ -22,27 +22,27 @@ interface JasonAnalyticsData {
   click_type?: string; // Added for click tracking
 }
 
-export default function JasonAnalyticsPage() {
+export default function JoshAnalyticsPage() {
   return (
     <ProtectedRoute>
-      <JasonAnalyticsContent />
+      <JoshAnalyticsContent />
     </ProtectedRoute>
   );
 }
 
-function JasonAnalyticsContent() {
-  const [analyticsData, setAnalyticsData] = useState<JasonAnalyticsData[]>([]);
+function JoshAnalyticsContent() {
+  const [analyticsData, setAnalyticsData] = useState<JoshAnalyticsData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchJasonAnalytics();
+    fetchJoshAnalytics();
   }, []);
 
-  const fetchJasonAnalytics = async () => {
+  const fetchJoshAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/track?page=jason');
+      const response = await fetch('/api/track?page=josh');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }
@@ -101,7 +101,7 @@ if (loading) {
         <div className="max-w-6xl mx-auto">
           <div className="text-gray-800 text-center py-20">
             <BarChart3 className="h-12 w-12 mx-auto mb-4 animate-spin text-[#B19272]" />
-            <h1 className="text-2xl font-bold">Loading Jason Analytics...</h1>
+            <h1 className="text-2xl font-bold">Loading Josh Analytics...</h1>
           </div>
         </div>
       </div>
@@ -115,7 +115,7 @@ if (loading) {
           <div className="text-gray-800 text-center py-20">
             <h1 className="text-2xl font-bold mb-4">Error Loading Analytics</h1>
             <p className="text-red-600 mb-4">{error}</p>
-            <Button onClick={fetchJasonAnalytics} className="bg-[#B19272] hover:bg-[#9A7B5F]">Retry</Button>
+            <Button onClick={fetchJoshAnalytics} className="bg-[#B19272] hover:bg-[#9A7B5F]">Retry</Button>
           </div>
         </div>
       </div>
@@ -128,19 +128,19 @@ if (loading) {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Jason</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Josh</h1>
             <p className="text-gray-600">Track your page performance and visitor insights</p>
           </div>
           <div className="flex items-center gap-3">
             <Button 
-              onClick={fetchJasonAnalytics}
+              onClick={fetchJoshAnalytics}
               variant="outline" 
               className="border-[#B19272] text-[#B19272] hover:bg-[#B19272] hover:text-white"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
-            <Link href="/jason">
+            <Link href="/josh">
               <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Profile
@@ -162,7 +162,7 @@ if (loading) {
             </div>
             <div className="flex items-center gap-2 mb-4">
               <LinkIcon className="h-4 w-4 text-[#B19272]" />
-              <span className="text-[#B19272] font-medium"> lure.bio/jason</span>
+              <span className="text-[#B19272] font-medium"> lure.bio/josh</span>
             </div>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-4 w-4 text-gray-500" />
@@ -313,7 +313,6 @@ if (loading) {
     </div>
   );
 }
-
 
 
 

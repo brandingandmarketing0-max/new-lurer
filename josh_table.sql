@@ -1,7 +1,7 @@
--- Dominika Analytics Table with Click Tracking
+-- Josh Analytics Table with Click Tracking
 -- Run this SQL command in your Supabase SQL editor
 
-CREATE TABLE IF NOT EXISTS dominika_analytics (
+CREATE TABLE IF NOT EXISTS josh_analytics (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     page VARCHAR(255) NOT NULL,
     referrer TEXT,
@@ -16,28 +16,26 @@ CREATE TABLE IF NOT EXISTS dominika_analytics (
 );
 
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_dominika_analytics_timestamp ON dominika_analytics(timestamp);
-CREATE INDEX IF NOT EXISTS idx_dominika_analytics_readable_referrer ON dominika_analytics(readable_referrer);
-CREATE INDEX IF NOT EXISTS idx_dominika_analytics_click_type ON dominika_analytics(click_type);
-CREATE INDEX IF NOT EXISTS idx_dominika_analytics_page ON dominika_analytics(page);
+CREATE INDEX IF NOT EXISTS idx_josh_analytics_timestamp ON josh_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_josh_analytics_readable_referrer ON josh_analytics(readable_referrer);
+CREATE INDEX IF NOT EXISTS idx_josh_analytics_click_type ON josh_analytics(click_type);
+CREATE INDEX IF NOT EXISTS idx_josh_analytics_page ON josh_analytics(page);
 
 -- Optional: Create a view for easier analytics queries
-CREATE OR REPLACE VIEW dominika_analytics_summary AS
+CREATE OR REPLACE VIEW josh_analytics_summary AS
 SELECT 
     DATE(timestamp) as date,
     click_type,
     readable_referrer,
     COUNT(*) as total_events,
     COUNT(DISTINCT ip_address) as unique_visitors
-FROM dominika_analytics 
+FROM josh_analytics 
 GROUP BY DATE(timestamp), click_type, readable_referrer
 ORDER BY date DESC, total_events DESC;
 
 -- Grant necessary permissions (adjust as needed for your setup)
--- GRANT SELECT, INSERT ON dominika_analytics TO authenticated;
--- GRANT SELECT ON dominika_analytics_summary TO authenticated;
-
-
+-- GRANT SELECT, INSERT ON josh_analytics TO authenticated;
+-- GRANT SELECT ON josh_analytics_summary TO authenticated;
 
 
 

@@ -37,10 +37,10 @@ export default function ProfilePage() {
       try {
         if (document.visibilityState !== 'visible') return;
         const payload = {
-          page: "paigexb",
+          page: "josh",
           referrer: rawRef,
           timestamp: new Date().toISOString(),
-          pathname: "/paigexb",
+          pathname: "/josh",
           searchParams: "",
           click_type: "page_visit"
         };
@@ -58,7 +58,7 @@ export default function ProfilePage() {
         }
 
       } catch (error) {
-        console.error("Failed to track Paigexb analytics:", error);
+        console.error("Failed to track Josh analytics:", error);
       }
     };
 
@@ -77,10 +77,10 @@ export default function ProfilePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          page: "paigexb",
+          page: "josh",
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/paigexb",
+          pathname: "/josh",
           searchParams: "",
           click_type: clickType
         }),
@@ -104,7 +104,7 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    window.open("https://onlyfans.com/paigexb", "_blank", "noopener,noreferrer");
+    window.open("https://onlyfans.com/joshstoney", "_blank", "noopener,noreferrer");
   };
 
   const handleCancelAge = () => {
@@ -132,9 +132,9 @@ export default function ProfilePage() {
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-[#B6997B]/60 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
                   <Avatar className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg">
-                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtG6AzEP4dI6gQWypxBht52wZXF49uYKDqErLn" alt="Paigexb" className="object-cover" />
+                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtiLpV9tslATwoI4p5NLEYWZtg3UXS2BFR9Gdj" alt="Josh" className="object-cover" />
                     <AvatarFallback className="bg-[#B6997B]/20 text-[#8B7355] text-2xl font-bold">
-                      PX
+                      J
                     </AvatarFallback>
                   </Avatar>
                   
@@ -153,7 +153,7 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                    paigexb
+                    josh
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
                 </div>
@@ -181,7 +181,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtaw01PuezjdJnwcF16THlXkoRthei5DYVuZLI"
+                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtrTIayh1jIRKJzQT7nNO3maM5CHuhyUstijXP"
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
@@ -293,7 +293,6 @@ export default function ProfilePage() {
     </div>
   )
 } 
-
 
 
 
