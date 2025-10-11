@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
-// List of all model names
+// List of all model names - updated to include all models from app directory
 const MODEL_NAMES = [
-  "abbiehall", "aimee", "alaska", "amberr", "amyleigh", "amymaxwell", "b4byyeena", 
-  "babyscarlet", "babyyeena", "brooke", "brookex", "chloeayling", "chloeelizabeth", 
-  "chloetami", "chxrli_love", "ellejean", "em", "erinhannahxx", "freya", "georgiaaa", 
-  "ggxxmmaa", "josh", "kaceymay", "kaci", "kayley", "keanna", "kxceyrose", "laurdunne", 
-  "laylasoyoung", "libby", "lou", "megann", "michaelajayneex", "missbrown", 
-  "misssophiaisabella", "morgan", "ollie", "poppy", "rachel", "sel", "shania", 
-  "skye", "steff", "sxmmermae", "Blondestud69"
+  "abbiehall", "abby", "aimee", "alaska", "alfrileyyy", "alicia", "amberr", "amyleigh", "amymaxwell",
+  "babyscarlet", "bethjefferson", "Blondestud69", "brooke", "brooke_xox", "brookex",
+  "chloeayling", "chloeelizabeth", "chloeinskip", "chloetami", "chxrli_love", "cowgurlkacey",
+  "dominika", "ellejean", "em", "emily9999x", "erinhannahxx", "fitnessblonde", "freya", "georgiaaa",
+  "grace", "hannah", "jason", "josh", "kaceymay", "kayley", "keanna", "kimbo_bimbo", "kxceyrose",
+  "laurdunne", "laylaasoyoung", "laylasoyoung", "libby", "lily", "lou", "lsy",
+  "maddison", "maddysmith111x", "megann", "michaelajayneex", "missbrown", "misssophiaisabella", "morgan",
+  "noreilly75", "ollie", "onlyjessxrose", "paigexb", "petitelils", "poppy",
+  "rachel", "rachsotiny", "robynnparkerr", "scarletxroseeevip", "sel", "skye", "steff", "sxmmermae",
+  "victoria", "wackojacko69"
 ];
 
 export async function GET(req: NextRequest) {
