@@ -33,3 +33,4 @@ CREATE POLICY "Allow service role to insert bellapetitie analytics" ON bellapeti
 GRANT SELECT ON bellapetitie_analytics TO authenticated;
 GRANT INSERT ON bellapetitie_analytics TO service_role;
 GRANT USAGE ON SEQUENCE bellapetitie_analytics_id_seq TO service_role;
+
