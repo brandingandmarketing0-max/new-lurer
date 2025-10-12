@@ -1,38 +1,35 @@
--- Rachelirl Analytics Table with Click Tracking
--- Run this SQL command in your Supabase SQL editor
-
+-- Create rachelirl analytics table
 CREATE TABLE IF NOT EXISTS rachelirl_analytics (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    page VARCHAR(255) NOT NULL,
+    id SERIAL PRIMARY KEY,
+    page VARCHAR(50) NOT NULL DEFAULT 'rachelirl',
     referrer TEXT,
     readable_referrer VARCHAR(255),
     user_agent TEXT,
-    ip_address VARCHAR(45),
-    timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    ip_address INET,
+    timestamp TIMESTAMPTZ DEFAULT NOW(),
     pathname VARCHAR(255),
     search_params TEXT,
-    click_type VARCHAR(50) DEFAULT 'page_visit', -- Added for click tracking
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    click_type VARCHAR(100) DEFAULT 'page_visit',
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Create indexes for better query performance
+-- Create index for better query performance
 CREATE INDEX IF NOT EXISTS idx_rachelirl_analytics_timestamp ON rachelirl_analytics(timestamp);
-CREATE INDEX IF NOT EXISTS idx_rachelirl_analytics_readable_referrer ON rachelirl_analytics(readable_referrer);
 CREATE INDEX IF NOT EXISTS idx_rachelirl_analytics_click_type ON rachelirl_analytics(click_type);
-CREATE INDEX IF NOT EXISTS idx_rachelirl_analytics_page ON rachelirl_analytics(page);
+CREATE INDEX IF NOT EXISTS idx_rachelirl_analytics_referrer ON rachelirl_analytics(readable_referrer);
 
--- Optional: Create a view for easier analytics queries
-CREATE OR REPLACE VIEW rachelirl_analytics_summary AS
-SELECT 
-    DATE(timestamp) as date,
-    click_type,
-    readable_referrer,
-    COUNT(*) as total_events,
-    COUNT(DISTINCT ip_address) as unique_visitors
-FROM rachelirl_analytics 
-GROUP BY DATE(timestamp), click_type, readable_referrer
-ORDER BY date DESC, total_events DESC;
+-- Add RLS (Row Level Security) policies
+ALTER TABLE rachelirl_analytics ENABLE ROW LEVEL SECURITY;
 
--- Grant necessary permissions (adjust as needed for your setup)
--- GRANT SELECT, INSERT ON rachelirl_analytics TO authenticated;
--- GRANT SELECT ON rachelirl_analytics_summary TO authenticated;
+-- Policy to allow authenticated users to read data
+CREATE POLICY "Allow authenticated users to read rachelirl analytics" ON rachelirl_analytics
+    FOR SELECT USING (auth.role() = 'authenticated');
+
+-- Policy to allow service role to insert data
+CREATE POLICY "Allow service role to insert rachelirl analytics" ON rachelirl_analytics
+    FOR INSERT WITH CHECK (true);
+
+-- Grant permissions
+GRANT SELECT ON rachelirl_analytics TO authenticated;
+GRANT INSERT ON rachelirl_analytics TO service_role;
+GRANT USAGE ON SEQUENCE rachelirl_analytics_id_seq TO service_role;

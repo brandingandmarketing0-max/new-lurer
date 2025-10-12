@@ -30,6 +30,28 @@ export default function ProfilePage() {
   const [showAgeWarning, setShowAgeWarning] = useState<boolean>(false);
   const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
   const [botDetectionComplete, setBotDetectionComplete] = useState<boolean>(false);
+  
+  // Obfuscation helper functions
+  const decodeUrl = () => {
+    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 108, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120, 47, 99, 49, 53];
+    return chars.map(c => String.fromCharCode(c)).join("");
+  };
+  
+  // Image URL obfuscation
+  const getObfuscatedImageUrl = (imageId: string) => {
+    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 50, 101, 111, 118, 105, 57, 108, 50, 103, 99, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
+    return baseUrl + imageId;
+  };
+  
+  // Dummy functions to confuse crawlers
+  const dummyFunction1 = () => "https://example.com";
+  const dummyFunction2 = () => "https://google.com";
+  const dummyFunction3 = () => "https://facebook.com";
+  
+  // Additional obfuscation - fake URLs to confuse crawlers
+  const fakeUrl1 = () => "https://instagram.com/littlelouxxx";
+  const fakeUrl2 = () => "https://twitter.com/littlelouxxx";
+  const fakeUrl3 = () => "https://tiktok.com/@littlelouxxx";
 
   useEffect(() => {
     // BotD check - IMMEDIATE, before any content renders
@@ -56,6 +78,71 @@ export default function ProfilePage() {
     const rawRef = document.referrer;
     setRawReferrer(rawRef);
     setReferrer(getReadableReferrer(rawRef));
+
+    // Image protection handlers
+    const preventImageActions = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    };
+
+    const preventImageContextMenu = (e: MouseEvent) => {
+      // Allow normal right-click everywhere - no blocking
+      return true;
+    };
+
+    const preventDragStart = (e: DragEvent) => {
+      e.preventDefault();
+      return false;
+    };
+
+    const preventImageSelection = (e: Event) => {
+      if (e.target instanceof HTMLImageElement) {
+        e.preventDefault();
+        return false;
+      }
+    };
+
+    // Add protection to all images
+    const addImageProtection = () => {
+      const images = document.querySelectorAll('img');
+      images.forEach(img => {
+        img.addEventListener('dragstart', preventDragStart);
+        img.addEventListener('selectstart', preventImageSelection);
+        img.style.userSelect = 'none';
+        img.style.webkitUserSelect = 'none';
+        (img.style as any).webkitTouchCallout = 'none';
+        img.draggable = false;
+      });
+    };
+
+    // Add global protection only for drag/select
+    document.addEventListener('selectstart', preventImageSelection);
+    document.addEventListener('dragstart', preventDragStart);
+
+    // Set images loaded after a delay and dynamically load avatar
+    setTimeout(() => {
+      setImagesLoaded(true);
+      addImageProtection();
+      
+      // Dynamically create and insert avatar image
+      const avatarContainer = document.getElementById('avatar-container');
+      if (avatarContainer) {
+        const img = document.createElement('img');
+        img.src = getObfuscatedImageUrl('XQC8QM7wDFrtiv2TKAslATwoI4p5NLEYWZtg3UXS2BFR9Gdj');
+        img.alt = 'Littlelouxxx';
+        img.className = 'w-full h-full object-cover select-none';
+        img.draggable = false;
+        img.addEventListener('dragstart', preventDragStart);
+        img.addEventListener('selectstart', preventImageSelection);
+        img.style.userSelect = 'none';
+        img.style.webkitUserSelect = 'none';
+        (img.style as any).webkitTouchCallout = 'none';
+        
+        avatarContainer.innerHTML = '';
+        avatarContainer.appendChild(img);
+      }
+    }, 100);
 
     // Create a unique session ID for this page load
     const sessionId = `littlelouxxx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -120,7 +207,9 @@ export default function ProfilePage() {
     send();
     
     return () => {
-      // Cleanup not needed for single tracking
+      // Cleanup
+      document.removeEventListener('selectstart', preventImageSelection);
+      document.removeEventListener('dragstart', preventDragStart);
     };
   }, []);
 
@@ -165,11 +254,43 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    window.open("https://onlyfans.com/littlelouxxx/c15", "_blank", "noopener,noreferrer");
+    // Use obfuscated URL generation
+    const targetUrl = decodeUrl();
+    
+    // Random delay with additional obfuscation
+    const delay = Math.floor(Math.random() * 300) + 100;
+    setTimeout(() => {
+      window.open(targetUrl, "_blank", "noopener,noreferrer");
+    }, delay);
   };
 
   return (
-    <div className="min-h-screen bg-black p-4 overflow-x-hidden">
+    <>
+      {/* Bot Detection Loading Screen */}
+      {!botDetectionComplete && (
+        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B6997B] mx-auto mb-4"></div>
+            <p className="text-[#8B7355] text-sm">Loading...</p>
+          </div>
+        </div>
+      )}
+      
+      {/* Main Content - Only render after bot detection */}
+      {botDetectionComplete && (
+    <div 
+      className="min-h-screen bg-black p-4 overflow-x-hidden select-none"
+      style={{
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        WebkitTouchCallout: 'none',
+        WebkitUserDrag: 'none',
+        KhtmlUserSelect: 'none',
+        MozUserSelect: 'none',
+        msUserSelect: 'none'
+      } as React.CSSProperties}
+      onDragStart={(e: React.DragEvent) => e.preventDefault()}
+    >
       <div className="flex min-h-screen items-center justify-center px-2">
         <div className="w-full max-w-md mx-auto">
           {/* Main Profile Card */}
@@ -188,21 +309,25 @@ export default function ProfilePage() {
                 {/* Avatar with border */}
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-[#B6997B]/60 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
-                  <Avatar className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg">
-                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtiv2TKAslATwoI4p5NLEYWZtg3UXS2BFR9Gdj" alt="Littlelouxxx" className="object-cover" />
-                    <AvatarFallback className="bg-[#B6997B]/20 text-[#8B7355] text-2xl font-bold">
-                      L
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg rounded-full overflow-hidden bg-[#B6997B]/20">
+                    <div 
+                      id="avatar-container"
+                      className="w-full h-full flex items-center justify-center bg-[#B6997B]/20"
+                    >
+                      <span className="text-[#8B7355] text-2xl font-bold">L</span>
+                    </div>
+                  </div>
                   
                   {/* Verified Badge */}
                   <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/80 shadow-lg ring-4 ring-[#B6997B]/20">
                     <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrt98ZBhgCmgTM2aZbQ3nqXNLtGe4hVci06FUJk"
+                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrt98ZBhgCmgTM2aZbQ3nqXNLtGe4hVci06FUJk") : ""}
                       alt="Verified Badge"
                       width={20}
                       height={20}
-                      className="h-full w-full object-contain"
+                      className="h-full w-full object-contain select-none"
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
                     />
                   </div>
                 </div>
@@ -215,19 +340,6 @@ export default function ProfilePage() {
                   </h1>
                 </div>
 
-                {/* Platform Badge */}
-                <div className="flex items-center gap-2 bg-[#B6997B]/10 rounded-full px-4 py-2 border border-[#B6997B]/30">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/20 p-1">
-                    <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtzPJGHA9qCSay35uLTDJ0d4jn8xMZUczPtBrR"
-                      alt="OnlyFans Logo"
-                      width={24}
-                      height={24}
-                      className="h-full w-full object-contain"
-                    />
-                  </div>
-                  <span className="text-[#8B7355] font-medium">OnlyFans Creator</span>
-                </div>
               </div>
             </CardContent>
           </Card>
@@ -238,11 +350,13 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtfBQnAPrFEYHRmqn7SKJGctzVyX9N8iI0r1TZ"
+                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrtfBQnAPrFEYHRmqn7SKJGctzVyX9N8iI0r1TZ") : ""}
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
-                      className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
                     />
                     
                     {/* Overlay */}
@@ -348,6 +462,8 @@ export default function ProfilePage() {
       )}
 
     </div>
+      )}
+    </>
   )
 } 
 

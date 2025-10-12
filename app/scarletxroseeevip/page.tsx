@@ -37,6 +37,11 @@ export default function ProfilePage() {
     return chars.map(c => String.fromCharCode(c)).join("");
   };
   
+  // Additional obfuscation - fake URLs to confuse crawlers
+  const fakeUrl1 = () => "https://instagram.com/scarletxroseeevip";
+  const fakeUrl2 = () => "https://twitter.com/scarletxroseeevip";
+  const fakeUrl3 = () => "https://tiktok.com/@scarletxroseeevip";
+  
   // Image URL obfuscation
   const getObfuscatedImageUrl = (imageId: string) => {
     const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 50, 101, 111, 118, 105, 57, 108, 50, 103, 99, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
@@ -304,21 +309,6 @@ export default function ProfilePage() {
                   </h1>
                 </div>
 
-                {/* Platform Badge */}
-                <div className="flex items-center gap-2 bg-[#B6997B]/10 rounded-full px-4 py-2 border border-[#B6997B]/30">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/20 p-1">
-                    <Image
-                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrtzPJGHA9qCSay35uLTDJ0d4jn8xMZUczPtBrR") : ""}
-                      alt="OnlyFans Logo"
-                      width={24}
-                      height={24}
-                      className="h-full w-full object-contain select-none"
-                      draggable={false}
-                      onDragStart={(e) => e.preventDefault()}
-                    />
-                  </div>
-                  <span className="text-[#8B7355] font-medium">OnlyFans Creator</span>
-                </div>
               </div>
             </CardContent>
           </Card>

@@ -25,7 +25,7 @@ export function middleware(request: NextRequest) {
     }
 
     // Protected paths (Phase 1)
-    const protectedPaths = ['/josh', '/rachelirl', '/petitelils', '/scarletxroseeevip'];
+    const protectedPaths = ['/josh', '/rachelirl', '/petitelils', '/scarletxroseeevip', '/bellapetitie', '/littlelouxxx'];
     const isProtected = protectedPaths.some(p => pathname === p || pathname.startsWith(p + '/'));
 
     // Debug logging
@@ -94,7 +94,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
     // Intercept API routes and the protected pages
-    matcher: ['/api/:path*', '/josh', '/josh/:path*', '/rachelirl', '/rachelirl/:path*', '/petitelils', '/petitelils/:path*', '/scarletxroseeevip', '/scarletxroseeevip/:path*'],
+    matcher: ['/api/:path*', '/josh', '/josh/:path*', '/rachelirl', '/rachelirl/:path*', '/petitelils', '/petitelils/:path*', '/scarletxroseeevip', '/scarletxroseeevip/:path*', '/bellapetitie', '/bellapetitie/:path*', '/littlelouxxx', '/littlelouxxx/:path*'],
 };
 
 
