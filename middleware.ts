@@ -25,19 +25,31 @@ export function middleware(request: NextRequest) {
     }
 
     // Protected paths (Phase 1)
-    const protectedPaths = ['/josh', '/rachelirl'];
+    const protectedPaths = ['/josh', '/rachelirl', '/petitelils', '/scarletxroseeevip'];
     const isProtected = protectedPaths.some(p => pathname === p || pathname.startsWith(p + '/'));
+
+    // Debug logging
+    console.log(`🔍 Middleware: ${pathname} - Protected: ${isProtected} - UA: ${ua.substring(0, 50)}...`);
 
     if (!isProtected) {
         return NextResponse.next();
     }
 
-    // Simple bot detection - only block obvious bots
+    // Enhanced bot detection - block obvious bots and suspicious patterns
     const isKnownBot = isbot(ua);
     const hasObviousBotUA = ua.includes('bot') || ua.includes('crawler') || ua.includes('spider') || ua.includes('scraper');
+    const hasSuspiciousUA = ua.includes('headless') || ua.includes('phantom') || ua.includes('selenium') || ua.includes('webdriver') || ua.includes('puppeteer') || ua.includes('playwright') || ua.includes('chrome-lighthouse') || ua.includes('lighthouse');
+    const hasAutomationUA = ua.includes('automation') || ua.includes('test') || ua.includes('scraper') || ua.includes('extractor') || ua.includes('parser') || ua.includes('monitor') || ua.includes('checker') || ua.includes('scanner');
+    const hasEmptyUA = !ua || ua.length < 10;
+    const hasSuspiciousHeaders = purpose === 'prefetch' || secPurpose === 'prefetch' || purpose === 'preconnect';
+    const hasBotPatterns = ua.includes('python') || ua.includes('requests') || ua.includes('urllib') || ua.includes('curl') || ua.includes('wget') || ua.includes('httpie');
+    const hasCrawlerPatterns = ua.includes('crawl') || ua.includes('spider') || ua.includes('bot') || ua.includes('crawler') || ua.includes('scraper') || ua.includes('harvester');
     
-    // If obvious bot → return Google-style error page
-    if (isKnownBot || hasObviousBotUA) {
+    console.log(`🤖 Enhanced Bot Detection: ${pathname} - isKnownBot: ${isKnownBot} - hasObviousBotUA: ${hasObviousBotUA} - hasSuspiciousUA: ${hasSuspiciousUA} - hasAutomationUA: ${hasAutomationUA} - hasEmptyUA: ${hasEmptyUA} - hasSuspiciousHeaders: ${hasSuspiciousHeaders} - hasBotPatterns: ${hasBotPatterns} - hasCrawlerPatterns: ${hasCrawlerPatterns}`);
+    
+    // If any bot indicators detected → return Google-style error page
+    if (isKnownBot || hasObviousBotUA || hasSuspiciousUA || hasAutomationUA || hasEmptyUA || hasSuspiciousHeaders || hasBotPatterns || hasCrawlerPatterns) {
+        console.log(`🚫 BLOCKING BOT: ${pathname} - ${ua.substring(0, 50)}...`);
         const errorHtml = `
 <!DOCTYPE html>
 <html>
@@ -64,7 +76,13 @@ export function middleware(request: NextRequest) {
 </html>`;
         return new NextResponse(errorHtml, { 
             status: 404,
-            headers: { 'Content-Type': 'text/html' }
+            headers: { 
+                'Content-Type': 'text/html',
+                'X-Robots-Tag': 'noindex, nofollow, noarchive, nosnippet, noimageindex',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
         });
     }
     
@@ -76,7 +94,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
     // Intercept API routes and the protected pages
-    matcher: ['/api/:path*', '/josh', '/josh/:path*', '/rachelirl', '/rachelirl/:path*'],
+    matcher: ['/api/:path*', '/josh', '/josh/:path*', '/rachelirl', '/rachelirl/:path*', '/petitelils', '/petitelils/:path*', '/scarletxroseeevip', '/scarletxroseeevip/:path*'],
 };
 
 
