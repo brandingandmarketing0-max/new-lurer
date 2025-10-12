@@ -1,7 +1,7 @@
--- Hannah Analytics Table with Click Tracking
+-- Rachelirl Analytics Table with Click Tracking
 -- Run this SQL command in your Supabase SQL editor
 
-CREATE TABLE IF NOT EXISTS hannah_analytics (
+CREATE TABLE IF NOT EXISTS rachelirl_analytics (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     page VARCHAR(255) NOT NULL,
     referrer TEXT,
@@ -16,34 +16,23 @@ CREATE TABLE IF NOT EXISTS hannah_analytics (
 );
 
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_hannah_analytics_timestamp ON hannah_analytics(timestamp);
-CREATE INDEX IF NOT EXISTS idx_hannah_analytics_readable_referrer ON hannah_analytics(readable_referrer);
-CREATE INDEX IF NOT EXISTS idx_hannah_analytics_click_type ON hannah_analytics(click_type);
-CREATE INDEX IF NOT EXISTS idx_hannah_analytics_page ON hannah_analytics(page);
+CREATE INDEX IF NOT EXISTS idx_rachelirl_analytics_timestamp ON rachelirl_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_rachelirl_analytics_readable_referrer ON rachelirl_analytics(readable_referrer);
+CREATE INDEX IF NOT EXISTS idx_rachelirl_analytics_click_type ON rachelirl_analytics(click_type);
+CREATE INDEX IF NOT EXISTS idx_rachelirl_analytics_page ON rachelirl_analytics(page);
 
 -- Optional: Create a view for easier analytics queries
-CREATE OR REPLACE VIEW hannah_analytics_summary AS
+CREATE OR REPLACE VIEW rachelirl_analytics_summary AS
 SELECT 
     DATE(timestamp) as date,
     click_type,
     readable_referrer,
     COUNT(*) as total_events,
     COUNT(DISTINCT ip_address) as unique_visitors
-FROM hannah_analytics 
+FROM rachelirl_analytics 
 GROUP BY DATE(timestamp), click_type, readable_referrer
 ORDER BY date DESC, total_events DESC;
 
 -- Grant necessary permissions (adjust as needed for your setup)
--- GRANT SELECT, INSERT ON hannah_analytics TO authenticated;
--- GRANT SELECT ON hannah_analytics_summary TO authenticated;
-
-
-
-
-
-
-
-
-
-
-
+-- GRANT SELECT, INSERT ON rachelirl_analytics TO authenticated;
+-- GRANT SELECT ON rachelirl_analytics_summary TO authenticated;

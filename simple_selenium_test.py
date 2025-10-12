@@ -19,7 +19,7 @@ def test_bot_protection():
     
     try:
         print("Navigating to http://localhost:3000/josh...")
-        driver.get("http://localhost:3000/josh")
+        driver.get("https://www.linkli.cc/josh")
         
         # Wait for page to load
         time.sleep(3)
@@ -64,3 +64,4 @@ def test_bot_protection():
 
 if __name__ == "__main__":
     test_bot_protection()
+

@@ -31,34 +31,62 @@ export default function ProfilePage() {
     setRawReferrer(rawRef);
     setReferrer(getReadableReferrer(rawRef));
 
-    // Send analytics to Supabase with sendBeacon
+    // Create a unique session ID for this page load
+    const sessionId = `rachelirl_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const sessionKey = `rachelirl_visit_tracked_${sessionId}`;
 
+    // Check if we've already tracked this session
+    if (localStorage.getItem(sessionKey)) {
+      setHasTracked(true);
+      return;
+    }
+
+    // Send analytics to Supabase with sendBeacon (only once per session)
     const send = () => {
       try {
-        if (document.visibilityState !== 'visible') return;
+        // Double-check we haven't already tracked this session
+        if (hasTracked || localStorage.getItem(sessionKey)) {
+          return;
+        }
+        
         const payload = {
-          page: "noreilly75",
+          page: "rachelirl",
           referrer: rawRef,
           timestamp: new Date().toISOString(),
-          pathname: "/noreilly75",
+          pathname: "/rachelirl",
           searchParams: "",
           click_type: "page_visit"
         };
+        
         const body = JSON.stringify(payload);
         if (navigator.sendBeacon) {
           const blob = new Blob([body], { type: 'application/json' });
           navigator.sendBeacon('/api/track', blob);
+          console.log("✅ Rachelirl Analytics - Page visit tracked via sendBeacon");
+          
+          // Mark this specific session as tracked
+          localStorage.setItem(sessionKey, 'true');
+          localStorage.setItem('rachelirl_last_tracked', new Date().toISOString());
+          setHasTracked(true);
         } else {
           fetch("/api/track", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body,
             keepalive: true
-          }).catch(() => {});
+          }).then(() => {
+            console.log("✅ Rachelirl Analytics - Page visit tracked via fetch");
+            
+            // Mark this specific session as tracked
+            localStorage.setItem(sessionKey, 'true');
+            localStorage.setItem('rachelirl_last_tracked', new Date().toISOString());
+            setHasTracked(true);
+          }).catch((error) => {
+            console.error("❌ Rachelirl Analytics - Page visit tracking failed:", error);
+          });
         }
-
       } catch (error) {
-        console.error("Failed to track Noreilly75 analytics:", error);
+        console.error("❌ Failed to track Rachelirl analytics:", error);
       }
     };
 
@@ -77,10 +105,10 @@ export default function ProfilePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          page: "noreilly75",
+          page: "rachelirl",
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/noreilly75",
+          pathname: "/rachelirl",
           searchParams: "",
           click_type: clickType
         }),
@@ -90,25 +118,28 @@ export default function ProfilePage() {
     }
   };
 
-  const handleExclusiveContentClick = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleExclusiveContentClick = () => {
     trackClick("exclusive_content");
     setShowAgeWarning(true);
   };
 
-  const handleSubscribeClick = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleSubscribeClick = () => {
     trackClick("subscribe_now");
     setShowAgeWarning(true);
   };
 
-  const handleConfirmAge = () => {
-    setShowAgeWarning(false);
-    window.open("https://onlyfans.com/noreilly75", "_blank", "noopener,noreferrer");
+  const handleViewAllContentClick = () => {
+    trackClick("view_all_content");
+    setShowAgeWarning(true);
   };
 
   const handleCancelAge = () => {
     setShowAgeWarning(false);
+  };
+
+  const handleConfirmAge = () => {
+    setShowAgeWarning(false);
+    window.open("https://onlyfans.com/yourgirlrxch/c6", "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -132,9 +163,9 @@ export default function ProfilePage() {
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-[#B6997B]/60 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
                   <Avatar className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg">
-                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtn9wYfUy36uSMfltpLRQP9qZCyvFHEg0AkXho" alt="Noreilly75" className="object-cover" />
+                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtcmtiuqITW4mI0AxkbMGZ3ViDPvE5npKtzd2N" alt="Summermae" className="object-cover" />
                     <AvatarFallback className="bg-[#B6997B]/20 text-[#8B7355] text-2xl font-bold">
-                      NR
+                      SM
                     </AvatarFallback>
                   </Avatar>
                   
@@ -153,7 +184,7 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                    noreilly75
+                    Rachelirl
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
                 </div>
@@ -181,7 +212,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtXptIqb7wDFrtu6IWL8KB4GHJCO0zo5MEAV1P"
+                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtEK5F5RaI615U4iCKmxeWkBpODqQthF89lGTR"
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
@@ -293,17 +324,5 @@ export default function ProfilePage() {
     </div>
   )
 } 
-
-
-
-
-
-
-
-
-
-
-
-
 
 
