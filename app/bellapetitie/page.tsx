@@ -37,7 +37,7 @@ export default function ProfilePage() {
   
   // Image URL obfuscation
   const getObfuscatedImageUrl = (imageId: string) => {
-    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 55, 57, 115, 99, 121, 52, 102, 105, 103, 110, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
+    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 50, 101, 111, 118, 105, 57, 108, 50, 103, 99, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
     return baseUrl + imageId;
   };
   
@@ -127,7 +127,7 @@ export default function ProfilePage() {
       const avatarContainer = document.getElementById('avatar-container');
       if (avatarContainer) {
         const img = document.createElement('img');
-        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtWz9l68g5gbqUvXNlhmPadO3GES8j964o2Ft7");
+        img.src = "https://79scy4fign.ufs.sh/f/bFrQ1ld8h0ZPPEkll4BlrwuQxs6WjoJHmtSPeOq5AR2p8cGZ";
         img.alt = "Bellapetitie";
         img.className = "w-full h-full object-cover select-none";
         img.draggable = false;
