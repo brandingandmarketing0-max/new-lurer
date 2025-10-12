@@ -25,7 +25,7 @@ export function middleware(request: NextRequest) {
     }
 
     // Protected paths (Phase 1)
-    const protectedPaths = ['/josh'];
+    const protectedPaths = ['/josh', '/rachelirl'];
     const isProtected = protectedPaths.some(p => pathname === p || pathname.startsWith(p + '/'));
 
     if (!isProtected) {
@@ -75,8 +75,8 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    // Intercept API routes and the protected page
-    matcher: ['/api/:path*', '/josh', '/josh/:path*'],
+    // Intercept API routes and the protected pages
+    matcher: ['/api/:path*', '/josh', '/josh/:path*', '/rachelirl', '/rachelirl/:path*'],
 };
 
 

@@ -28,7 +28,7 @@ def test_bot_protection():
     
     try:
         print("📍 Navigating to http://localhost:3000/rachelirl...")
-        driver.get("https://www.linkli.cc/josh")
+        driver.get("https://www.viewit.bio/rachelirl")
         
         # Wait for page to load
         print("⏳ Waiting for page to load...")
@@ -212,7 +212,7 @@ def test_multiple_pages():
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         
         try:
-            driver.get(f"http://localhost:3000{page}")
+            driver.get(f"https://www.viewit.bio/{page}")
             time.sleep(5)
             
             current_url = driver.current_url
