@@ -20,8 +20,6 @@ const getReadableReferrer = (ref: string) => {
   if (ref.includes("tiktok.com")) return "TikTok";
   if (ref.includes("linkedin.com")) return "LinkedIn";
   if (ref.includes("whatsapp.com") || ref.includes("wa.me")) return "WhatsApp";
-  return ref;
-};
   
   // Google search
   if (ref.includes("google.com") || ref.includes("google.co.uk") || ref.includes("google.ca")) return "Google Search";
@@ -360,6 +358,7 @@ export default function ProfilePage() {
         </div>
       )}
     </div>
+      )}
     </>
   );
 }

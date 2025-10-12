@@ -101,26 +101,6 @@ export default function ProfilePage() {
     
     runBotDetection();
   }, []);
-        } else {
-          fetch("/api/track", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body,
-            keepalive: true
-          }).catch(() => {});
-        }
-      } catch (error) {
-        console.error("Failed to track Chloeayling analytics:", error);
-      }
-    };
-
-    // Track immediately when page loads (only once per session)
-    send();
-    
-    return () => {
-      // Cleanup not needed for single tracking
-    };
-  }, []);
 
   // Click tracking functions
   const trackClick = async (clickType: string) => {
@@ -366,6 +346,7 @@ export default function ProfilePage() {
         </div>
       )}
     </div>
+      )}
     </>
   );
 } 

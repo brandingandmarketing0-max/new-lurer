@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3, AlertTriangle, X } from "lucide-react"
 
 // BotD import (npm)
@@ -402,9 +403,8 @@ export default function ProfilePage() {
           </Card>
         </div>
       )}
-
     </div>
-  )
+  );
 } 
 
 
