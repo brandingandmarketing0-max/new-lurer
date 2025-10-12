@@ -1,0 +1,42 @@
+{
+  "target_url": "https://www.viewit.bio/rachelirl",
+  "selenium_result": {
+    "success": true,
+    "text_content": "This site can't be reachedViewItThis site can't be reachedThe webpage might be temporarily down or it may have moved permanently to a new web address.ERR_QUIC_PROTOCOL_ERROR",
+    "images_count": 0,
+    "buttons_count": 0,
+    "links_count": 0,
+    "html_length": 8170
+  },
+  "request_variations": [
+    {
+      "request": 1,
+      "status": 200,
+      "content_length": 6883,
+      "text_length": 16,
+      "has_loading": true
+    },
+    {
+      "request": 2,
+      "status": 200,
+      "content_length": 6883,
+      "text_length": 16,
+      "has_loading": true
+    },
+    {
+      "request": 3,
+      "status": 200,
+      "content_length": 6883,
+      "text_length": 16,
+      "has_loading": true
+    },
+    {
+      "request": 4,
+      "status": 200,
+      "content_length": 6883,
+      "text_length": 16,
+      "has_loading": true
+    }
+  ],
+  "timestamp": 1760285842.0372229
+}

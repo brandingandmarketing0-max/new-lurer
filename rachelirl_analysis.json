@@ -1,0 +1,26 @@
+{
+  "url": "https://www.viewit.bio/rachelirl",
+  "status_code": 200,
+  "response_time": 0.1974632740020752,
+  "content_length": 6883,
+  "is_loading_screen": true,
+  "scripts_count": 15,
+  "images_count": 0,
+  "links_count": 0,
+  "buttons_count": 0,
+  "meta_tags_count": 4,
+  "css_classes_count": 18,
+  "all_text": "ViewItLoading...",
+  "patterns_found": {
+    "rachelirl": 5,
+    "rachel": 5,
+    "creator": 0,
+    "premium": 0,
+    "onlyfans": 0,
+    "https://[a-zA-Z0-9.-]+": 0,
+    "String\\.fromCharCode": 0,
+    "chars\\s*=\\s*\\[": 0,
+    "decodeUrl": 0,
+    "obfuscated": 0
+  }
+}

@@ -31,13 +31,13 @@ export default function ProfilePage() {
   
   // Obfuscation helper functions
   const decodeUrl = () => {
-    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 98, 101, 108, 108, 97, 112, 101, 116, 105, 116, 101, 120, 120, 120];
+    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 112, 101, 116, 105, 116, 101, 108, 105, 108, 115, 47, 99, 49, 49, 53];
     return chars.map(c => String.fromCharCode(c)).join("");
   };
   
   // Image URL obfuscation
   const getObfuscatedImageUrl = (imageId: string) => {
-    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 50, 101, 111, 118, 105, 57, 108, 50, 103, 99, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
+    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 55, 57, 115, 99, 121, 52, 102, 105, 103, 110, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
     return baseUrl + imageId;
   };
   
