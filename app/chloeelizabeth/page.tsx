@@ -3,11 +3,14 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image"
 import Link from "next/link"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3, AlertTriangle, X } from "lucide-react"
+
+// BotD import (npm)
+import { load } from '@fingerprintjs/botd';
 
 const getReadableReferrer = (ref: string) => {
   if (!ref) return "Direct or unknown";
@@ -23,30 +26,81 @@ const getReadableReferrer = (ref: string) => {
 export default function ProfilePage() {
   const [referrer, setReferrer] = useState<string>("");
   const [rawReferrer, setRawReferrer] = useState<string>("");
-  const [hasTracked, setHasTracked] = useState<boolean>(false);
   const [showAgeWarning, setShowAgeWarning] = useState<boolean>(false);
+  const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
+  const [botDetectionComplete, setBotDetectionComplete] = useState<boolean>(false);
+  
+  // Obfuscation helper functions
+  const decodeUrl = () => {
+    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 99, 104, 108, 111, 101, 101, 108, 105, 122, 97, 98, 101, 116, 104, 120, 120, 120];
+    return chars.map(c => String.fromCharCode(c)).join("");
+  };
+  
+  // Image URL obfuscation
+  const getObfuscatedImageUrl = (imageId: string) => {
+    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 50, 101, 111, 118, 105, 57, 108, 50, 103, 99, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
+    return baseUrl + imageId;
+  };
+  
+  // Dummy functions to confuse crawlers
+  const dummyFunction1 = () => "https://example.com";
+  const dummyFunction2 = () => "https://google.com";
+  const dummyFunction3 = () => "https://facebook.com";
 
   useEffect(() => {
-    const rawRef = document.referrer;
-    setRawReferrer(rawRef);
-    setReferrer(getReadableReferrer(rawRef));
-
-    // Send analytics to Supabase with sendBeacon
-    const send = () => {
+    // BotD check - IMMEDIATE, before any content renders
+    const runBotDetection = async () => {
       try {
-        if (document.visibilityState !== 'visible') return;
-        const payload = {
-          page: "chloeelizabeth",
-          referrer: rawRef,
-          timestamp: new Date().toISOString(),
-          pathname: "/chloeelizabeth",
-          searchParams: "",
-          click_type: "page_visit"
-        };
-        const body = JSON.stringify(payload);
-        if (navigator.sendBeacon) {
-          const blob = new Blob([body], { type: 'application/json' });
-          navigator.sendBeacon('/api/track', blob);
+        const botd = await load();
+        const result = await botd.detect();
+        
+        console.log('BotD Detection Result:', result);
+        
+        if (result.bot) {
+          console.log('Bot detected, blocking access');
+          // Redirect bots or show different content
+          window.location.href = '/blocked';
+          return;
+        }
+        
+        console.log('Human detected, allowing access');
+        setBotDetectionComplete(true);
+        
+        // Get referrer info after bot detection passes
+        const rawRef = document.referrer;
+        setRawReferrer(rawRef);
+        setReferrer(getReadableReferrer(rawRef));
+        
+        // Track page visit
+        try {
+          await fetch("/api/track", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              page: "chloeelizabeth",
+              referrer: rawRef,
+              timestamp: new Date().toISOString(),
+              pathname: window.location.pathname,
+              click_type: "page_visit"
+            }),
+          });
+        } catch (error) {
+          console.error("Failed to track page visit:", error);
+        }
+        
+      } catch (error) {
+        console.error('BotD detection failed:', error);
+        // If detection fails, allow access but log the error
+        setBotDetectionComplete(true);
+        
+        const rawRef = document.referrer;
+        setRawReferrer(rawRef);
+        setReferrer(getReadableReferrer(rawRef));
+      }
+    };
+    
+    runBotDetection();
+  }, []);
         } else {
           fetch("/api/track", {
             method: "POST",
@@ -78,8 +132,7 @@ export default function ProfilePage() {
           page: "chloeelizabeth",
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/chloeelizabeth",
-          searchParams: "",
+          pathname: window.location.pathname,
           click_type: clickType
         }),
       });
@@ -102,7 +155,7 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    window.open("https://onlyfans.com/chloeelizabethxo", "_blank", "noopener,noreferrer");
+    window.open(decodeUrl(), "_blank", "noopener,noreferrer");
   };
 
   const handleCancelAge = () => {
@@ -110,7 +163,32 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-black p-4 overflow-x-hidden">
+    <>
+      {/* Bot Detection Loading Screen */}
+      {!botDetectionComplete && (
+        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B6997B] mx-auto mb-4"></div>
+            <p className="text-[#8B7355] text-sm">Loading...</p>
+          </div>
+        </div>
+      )}
+      
+      {/* Main Content - Only render after bot detection */}
+      {botDetectionComplete && (
+    <div 
+      className="min-h-screen bg-black p-4 overflow-x-hidden select-none"
+      style={{
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        WebkitTouchCallout: 'none',
+        WebkitUserDrag: 'none',
+        KhtmlUserSelect: 'none',
+        MozUserSelect: 'none',
+        msUserSelect: 'none'
+      } as React.CSSProperties}
+      onDragStart={(e: React.DragEvent) => e.preventDefault()}
+    >
       <div className="flex min-h-screen items-center justify-center px-2">
         <div className="w-full max-w-md mx-auto">
           {/* Main Profile Card */}
@@ -287,9 +365,9 @@ export default function ProfilePage() {
           </Card>
         </div>
       )}
-
     </div>
-  )
+    </>
+  );
 } 
 
 

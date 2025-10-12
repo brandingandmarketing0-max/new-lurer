@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -162,7 +162,7 @@ if (loading) {
             </div>
             <div className="flex items-center gap-2 mb-4">
               <LinkIcon className="h-4 w-4 text-[#B19272]" />
-              <span className="text-[#B19272] font-medium"> lure.bio/morgan</span>
+              <span className="text-[#B19272] font-medium">viewit.bio/morgan</span>
             </div>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-4 w-4 text-gray-500" />
@@ -297,7 +297,7 @@ if (loading) {
                 ))}
                 <div className="pt-4 border-t border-gray-200">
                   <p className="text-sm text-gray-600">
-                    {totalVisits} total visits • Showing click distribution across all referral sources
+                    {totalVisits} total visits � Showing click distribution across all referral sources
                   </p>
                 </div>
               </div>

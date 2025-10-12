@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
 
          return {
            name: modelName,
-           url: ` lure.bio/${modelName}`,
+           url: `viewit.bio/${modelName}`,
            totalVisitors: pageVisitsCount || 0,
            pageVisits: pageVisitsCount || 0,
            exclusiveContentClicks: exclusiveClicksCount || 0,
@@ -92,7 +92,7 @@ export async function GET(req: NextRequest) {
         console.error(`Error processing ${modelName}:`, error);
         return {
           name: modelName,
-          url: ` lure.bio/${modelName}`,
+          url: `viewit.bio/${modelName}`,
           totalVisitors: 0,
           pageVisits: 0,
           exclusiveContentClicks: 0,

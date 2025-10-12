@@ -178,7 +178,7 @@ function AmyleighAnalyticsContent() {
             </div>
             <div className="flex items-center gap-2 mb-4">
               <LinkIcon className="h-4 w-4 text-[#B19272]" />
-              <span className="text-[#B19272] font-medium"> lure.bio/amyleigh</span>
+              <span className="text-[#B19272] font-medium">viewit.bio/amyleigh</span>
             </div>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-4 w-4 text-gray-500" />

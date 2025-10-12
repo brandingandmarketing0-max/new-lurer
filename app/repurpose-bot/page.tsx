@@ -776,7 +776,7 @@ export default function WatermarkUrlPage() {
                   <Video className="w-5 h-5 text-white" />
           </div>
                 <div>
-                  <h2 className="font-semibold text-gray-900"> lure.bio</h2>
+                  <h2 className="font-semibold text-gray-900">ViewIt</h2>
                   <p className="text-xs text-gray-500">Repurpose Bot</p>
         </div>
               </div>

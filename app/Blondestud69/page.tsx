@@ -3,50 +3,25 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image"
 import Link from "next/link"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3, AlertTriangle, X } from "lucide-react"
+
+// BotD import (npm)
+import { load } from '@fingerprintjs/botd';
 
 const getReadableReferrer = (ref: string) => {
   if (!ref) return "Direct or unknown";
-  
-  // Instagram - catches both mobile and desktop
-  if (ref.includes("instagram.com") || ref.includes("m.instagram.com")) return "Instagram";
-  
-  // Twitter/X - catches both mobile and desktop
-  if (ref.includes("twitter.com") || ref.includes("x.com") || ref.includes("mobile.twitter.com")) return "Twitter/X";
-  
-  // Facebook - catches both mobile and desktop
-  if (ref.includes("facebook.com") || ref.includes("m.facebook.com") || ref.includes("fb.com")) return "Facebook";
-  
-  // TikTok - catches both mobile and desktop
-  if (ref.includes("tiktok.com") || ref.includes("vm.tiktok.com")) return "TikTok";
-  
-  // LinkedIn - catches both mobile and desktop
-  if (ref.includes("linkedin.com") || ref.includes("m.linkedin.com")) return "LinkedIn";
-  
-  // WhatsApp - catches both mobile and desktop
-  if (ref.includes("whatsapp.com") || ref.includes("wa.me") || ref.includes("web.whatsapp.com")) return "WhatsApp";
-  
-  // Snapchat
-  if (ref.includes("snapchat.com")) return "Snapchat";
-  
-  // YouTube
-  if (ref.includes("youtube.com") || ref.includes("youtu.be") || ref.includes("m.youtube.com")) return "YouTube";
-  
-  // Reddit
-  if (ref.includes("reddit.com") || ref.includes("m.reddit.com")) return "Reddit";
-  
-  // Pinterest
-  if (ref.includes("pinterest.com") || ref.includes("m.pinterest.com")) return "Pinterest";
-  
-  // Telegram
-  if (ref.includes("t.me") || ref.includes("telegram.org")) return "Telegram";
-  
-  // Discord
-  if (ref.includes("discord.com") || ref.includes("discord.gg")) return "Discord";
+  if (ref.includes("instagram.com")) return "Instagram";
+  if (ref.includes("twitter.com") || ref.includes("x.com")) return "Twitter/X";
+  if (ref.includes("facebook.com")) return "Facebook";
+  if (ref.includes("tiktok.com")) return "TikTok";
+  if (ref.includes("linkedin.com")) return "LinkedIn";
+  if (ref.includes("whatsapp.com") || ref.includes("wa.me")) return "WhatsApp";
+  return ref;
+};
   
   // Google search
   if (ref.includes("google.com") || ref.includes("google.co.uk") || ref.includes("google.ca")) return "Google Search";
@@ -63,123 +38,85 @@ const getReadableReferrer = (ref: string) => {
 export default function ProfilePage() {
   const [referrer, setReferrer] = useState<string>("");
   const [rawReferrer, setRawReferrer] = useState<string>("");
-  const [userAgent, setUserAgent] = useState<string>("");
-  const [screenInfo, setScreenInfo] = useState<string>("");
-  const [timezone, setTimezone] = useState<string>("");
-  const [hasTracked, setHasTracked] = useState<boolean>(false);
   const [showAgeWarning, setShowAgeWarning] = useState<boolean>(false);
+  const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
+  const [botDetectionComplete, setBotDetectionComplete] = useState<boolean>(false);
+  
+  // Obfuscation helper functions
+  const decodeUrl = () => {
+    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 98, 108, 111, 110, 100, 101, 115, 116, 117, 100, 54, 57, 120, 120, 120];
+    return chars.map(c => String.fromCharCode(c)).join("");
+  };
+  
+  // Image URL obfuscation
+  const getObfuscatedImageUrl = (imageId: string) => {
+    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 50, 101, 111, 118, 105, 57, 108, 50, 103, 99, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
+    return baseUrl + imageId;
+  };
+  
+  // Dummy functions to confuse crawlers
+  const dummyFunction1 = () => "https://example.com";
+  const dummyFunction2 = () => "https://google.com";
+  const dummyFunction3 = () => "https://facebook.com";
 
   useEffect(() => {
-    // Create a unique session ID for this page load
-    const sessionId = `Blondestud69_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const sessionKey = `Blondestud69_session_${sessionId}`;
-    
-    // Check if we've already tracked this specific session
-    const hasTrackedThisSession = localStorage.getItem(sessionKey);
-    
-    // If we've already tracked this specific session, don't track again
-    if (hasTrackedThisSession) {
-      setHasTracked(true);
-      return;
-    }
-    
-    // Get comprehensive referrer and search data
-    const rawRef = document.referrer;
-    const urlParams = new URLSearchParams(window.location.search);
-    const utmSource = urlParams.get('utm_source');
-    const utmMedium = urlParams.get('utm_medium');
-    const utmCampaign = urlParams.get('utm_campaign');
-    const utmTerm = urlParams.get('utm_term');
-    const utmContent = urlParams.get('utm_content');
-    
-    // Enhanced referrer detection
-    let finalReferrer = rawRef;
-    if (utmSource) {
-      finalReferrer = utmSource;
-    } else if (rawRef) {
-      finalReferrer = rawRef;
-    }
-    
-    setRawReferrer(finalReferrer);
-    setReferrer(getReadableReferrer(finalReferrer));
-
-    // Collect additional user data
-    const userAgentStr = navigator.userAgent;
-    const screenInfoStr = `${screen.width}x${screen.height}`;
-    const timezoneStr = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    
-    setUserAgent(userAgentStr);
-    setScreenInfo(screenInfoStr);
-    setTimezone(timezoneStr);
-
-    // Build comprehensive search params string
-    const searchParamsString = Array.from(urlParams.entries())
-      .map(([key, value]) => `${key}=${value}`)
-      .join('&');
-
-    // Send analytics to Supabase with sendBeacon
-    const send = () => {
+    // BotD check - IMMEDIATE, before any content renders
+    const runBotDetection = async () => {
       try {
-        // Double-check we haven't already tracked this session
-        if (hasTracked) {
+        const botd = await load();
+        const result = await botd.detect();
+        
+        console.log('BotD Detection Result:', result);
+        
+        if (result.bot) {
+          console.log('Bot detected, blocking access');
+          // Redirect bots or show different content
+          window.location.href = '/blocked';
           return;
         }
         
-        const payload = {
-          page: "Blondestud69",
-          referrer: finalReferrer,
-          timestamp: new Date().toISOString(),
-          pathname: window.location.pathname,
-          searchParams: searchParamsString,
-          click_type: "page_visit"
-        };
+        console.log('Human detected, allowing access');
+        setBotDetectionComplete(true);
         
-        const body = JSON.stringify(payload);
-        if (navigator.sendBeacon) {
-          const blob = new Blob([body], { type: 'application/json' });
-          navigator.sendBeacon('/api/track', blob);
-          
-          // Mark this specific session as tracked
-          localStorage.setItem(sessionKey, 'true');
-          localStorage.setItem('Blondestud69_last_tracked', new Date().toISOString());
-          setHasTracked(true);
-        } else {
-          fetch("/api/track", {
+        // Get referrer info after bot detection passes
+        const rawRef = document.referrer;
+        setRawReferrer(rawRef);
+        setReferrer(getReadableReferrer(rawRef));
+        
+        // Track page visit
+        try {
+          await fetch("/api/track", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body,
-            keepalive: true
-          }).then(() => {
-            // Mark this specific session as tracked
-            localStorage.setItem(sessionKey, 'true');
-            localStorage.setItem('Blondestud69_last_tracked', new Date().toISOString());
-            setHasTracked(true);
-          }).catch((error) => {
-            console.error("Failed to track Blondestud69 analytics:", error);
+            body: JSON.stringify({
+              page: "Blondestud69",
+              referrer: rawRef,
+              timestamp: new Date().toISOString(),
+              pathname: window.location.pathname,
+              click_type: "page_visit"
+            }),
           });
+        } catch (error) {
+          console.error("Failed to track page visit:", error);
         }
+        
       } catch (error) {
-        console.error("Failed to track Blondestud69 analytics:", error);
+        console.error('BotD detection failed:', error);
+        // If detection fails, allow access but log the error
+        setBotDetectionComplete(true);
+        
+        const rawRef = document.referrer;
+        setRawReferrer(rawRef);
+        setReferrer(getReadableReferrer(rawRef));
       }
     };
-
-    // Track immediately when page loads (only once per session)
-    send();
     
-    return () => {
-      // Cleanup not needed for single tracking
-    };
+    runBotDetection();
   }, []);
 
   // Click tracking functions
   const trackClick = async (clickType: string) => {
     try {
-      // Get current URL parameters for comprehensive tracking
-      const urlParams = new URLSearchParams(window.location.search);
-      const searchParamsString = Array.from(urlParams.entries())
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-
       await fetch("/api/track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -188,7 +125,6 @@ export default function ProfilePage() {
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
           pathname: window.location.pathname,
-          searchParams: searchParamsString,
           click_type: clickType
         }),
       });
@@ -211,7 +147,7 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    window.open("https://onlyfans.com/blondestud6969", "_blank", "noopener,noreferrer");
+    window.open(decodeUrl(), "_blank", "noopener,noreferrer");
   };
 
   const handleCancelAge = () => {
@@ -219,7 +155,32 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-black p-4 overflow-x-hidden">
+    <>
+      {/* Bot Detection Loading Screen */}
+      {!botDetectionComplete && (
+        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B6997B] mx-auto mb-4"></div>
+            <p className="text-[#8B7355] text-sm">Loading...</p>
+          </div>
+        </div>
+      )}
+      
+      {/* Main Content - Only render after bot detection */}
+      {botDetectionComplete && (
+    <div 
+      className="min-h-screen bg-black p-4 overflow-x-hidden select-none"
+      style={{
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        WebkitTouchCallout: 'none',
+        WebkitUserDrag: 'none',
+        KhtmlUserSelect: 'none',
+        MozUserSelect: 'none',
+        msUserSelect: 'none'
+      } as React.CSSProperties}
+      onDragStart={(e: React.DragEvent) => e.preventDefault()}
+    >
       <div className="flex min-h-screen items-center justify-center px-2">
         <div className="w-full max-w-md mx-auto">
           {/* Main Profile Card */}
@@ -398,7 +359,7 @@ export default function ProfilePage() {
           </Card>
         </div>
       )}
-
     </div>
-  )
+    </>
+  );
 }

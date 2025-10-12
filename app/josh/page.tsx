@@ -27,6 +27,7 @@ export default function ProfilePage() {
   const [rawReferrer, setRawReferrer] = useState<string>("");
   const [showAgeWarning, setShowAgeWarning] = useState<boolean>(false);
   const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
+  const [botDetectionComplete, setBotDetectionComplete] = useState<boolean>(false);
   
   // Obfuscation helper functions
   const decodeUrl = () => {
@@ -46,7 +47,7 @@ export default function ProfilePage() {
   const dummyFunction3 = () => "https://facebook.com";
 
   useEffect(() => {
-    // BotD check
+    // BotD check - IMMEDIATE, before any content renders
     (async () => {
       try {
         const botd = await load({ monitoring: false });
@@ -57,9 +58,13 @@ export default function ProfilePage() {
           window.location.replace('/blocked');
           return;
         }
+        
+        // Only set complete if not a bot
+        setBotDetectionComplete(true);
       } catch (error) {
         // If BotD fails, allow user through (don't block on errors)
         console.error('BotD detection failed:', error);
+        setBotDetectionComplete(true);
       }
     })();
 
@@ -222,6 +227,19 @@ export default function ProfilePage() {
 
 
   return (
+    <>
+      {/* Bot Detection Loading Screen */}
+      {!botDetectionComplete && (
+        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B6997B] mx-auto mb-4"></div>
+            <p className="text-[#8B7355] text-sm">Loading...</p>
+          </div>
+        </div>
+      )}
+      
+      {/* Main Content - Only render after bot detection */}
+      {botDetectionComplete && (
     <div 
       className="min-h-screen bg-black p-4 overflow-x-hidden select-none"
       style={{
@@ -404,6 +422,8 @@ export default function ProfilePage() {
       )}
 
     </div>
+      )}
+    </>
   )
 } 
 

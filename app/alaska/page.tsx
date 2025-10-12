@@ -3,11 +3,13 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image"
 import Link from "next/link"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3, AlertTriangle, X } from "lucide-react"
+
+// BotD import (npm)
+import { load } from '@fingerprintjs/botd';
 
 const getReadableReferrer = (ref: string) => {
   if (!ref) return "Direct or unknown";
@@ -23,32 +25,122 @@ const getReadableReferrer = (ref: string) => {
 export default function ProfilePage() {
   const [referrer, setReferrer] = useState<string>("");
   const [rawReferrer, setRawReferrer] = useState<string>("");
-  const [hasTracked, setHasTracked] = useState<boolean>(false);
   const [showAgeWarning, setShowAgeWarning] = useState<boolean>(false);
+  const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
+  const [botDetectionComplete, setBotDetectionComplete] = useState<boolean>(false);
+  
+  // Obfuscation helper functions
+  const decodeUrl = () => {
+    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 97, 108, 97, 115, 107, 97, 120, 120, 120];
+    return chars.map(c => String.fromCharCode(c)).join("");
+  };
+  
+  // Image URL obfuscation
+  const getObfuscatedImageUrl = (imageId: string) => {
+    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 50, 101, 111, 118, 105, 57, 108, 50, 103, 99, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
+    return baseUrl + imageId;
+  };
+  
+  // Dummy functions to confuse crawlers
+  const dummyFunction1 = () => "https://example.com";
+  const dummyFunction2 = () => "https://google.com";
+  const dummyFunction3 = () => "https://facebook.com";
 
   useEffect(() => {
+    // BotD check - IMMEDIATE, before any content renders
+    (async () => {
+      try {
+        const botd = await load({ monitoring: false });
+        const result = await botd.detect();
+        
+        // BotD returns { bot: true/false, botKind?: BotKind }
+        if (result.bot === true) {
+          window.location.replace('/blocked');
+          return;
+        }
+        
+        // Only set complete if not a bot
+        setBotDetectionComplete(true);
+      } catch (error) {
+        // If BotD fails, allow user through (don't block on errors)
+        console.error('BotD detection failed:', error);
+        setBotDetectionComplete(true);
+      }
+    })();
+
     const rawRef = document.referrer;
     setRawReferrer(rawRef);
     setReferrer(getReadableReferrer(rawRef));
 
-    // Create a unique session ID for this page load
-    const sessionId = `alaska_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const sessionKey = `alaska_visit_tracked_${sessionId}`;
+    // Image protection handlers
+    const preventImageActions = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    };
 
-    // Check if we've already tracked this session
-    if (localStorage.getItem(sessionKey)) {
-      setHasTracked(true);
-      return;
-    }
+    const preventImageContextMenu = (e: MouseEvent) => {
+      // Allow normal right-click everywhere - no blocking
+      return true;
+    };
 
-    // Send analytics to Supabase with sendBeacon (only once per session)
+    const preventDragStart = (e: DragEvent) => {
+      e.preventDefault();
+      return false;
+    };
+
+    const preventImageSelection = (e: Event) => {
+      if (e.target instanceof HTMLImageElement) {
+        e.preventDefault();
+        return false;
+      }
+    };
+
+    // Add protection to all images
+    const addImageProtection = () => {
+      const images = document.querySelectorAll('img');
+      images.forEach(img => {
+        img.addEventListener('dragstart', preventDragStart);
+        img.addEventListener('selectstart', preventImageSelection);
+        img.style.userSelect = 'none';
+        img.style.webkitUserSelect = 'none';
+        (img.style as any).webkitTouchCallout = 'none';
+        img.draggable = false;
+      });
+    };
+
+    // Add global protection only for drag/select
+    document.addEventListener('selectstart', preventImageSelection);
+    document.addEventListener('dragstart', preventDragStart);
+
+    // Set images loaded after a delay and dynamically load avatar
+    setTimeout(() => {
+      setImagesLoaded(true);
+      addImageProtection();
+      
+      // Dynamically create and insert avatar image
+      const avatarContainer = document.getElementById('avatar-container');
+      if (avatarContainer) {
+        const img = document.createElement('img');
+        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtWz9l68g5gbqUvXNlhmPadO3GES8j964o2Ft7");
+        img.alt = "Alaska";
+        img.className = "w-full h-full object-cover select-none";
+        img.draggable = false;
+        img.addEventListener('dragstart', preventDragStart);
+        img.addEventListener('selectstart', preventImageSelection);
+        img.style.userSelect = 'none';
+        img.style.webkitUserSelect = 'none';
+        (img.style as any).webkitTouchCallout = 'none';
+        
+        avatarContainer.innerHTML = '';
+        avatarContainer.appendChild(img);
+      }
+    }, 100);
+
+    // Send analytics to Supabase with sendBeacon
     const send = () => {
       try {
-        // Double-check we haven't already tracked this session
-        if (hasTracked || localStorage.getItem(sessionKey)) {
-          return;
-        }
-        
+        if (document.visibilityState !== 'visible') return;
         const payload = {
           page: "alaska",
           referrer: rawRef,
@@ -57,36 +149,21 @@ export default function ProfilePage() {
           searchParams: "",
           click_type: "page_visit"
         };
-        
         const body = JSON.stringify(payload);
         if (navigator.sendBeacon) {
           const blob = new Blob([body], { type: 'application/json' });
           navigator.sendBeacon('/api/track', blob);
-          console.log("✅ Alaska Analytics - Page visit tracked via sendBeacon");
-          
-          // Mark this specific session as tracked
-          localStorage.setItem(sessionKey, 'true');
-          localStorage.setItem('alaska_last_tracked', new Date().toISOString());
-          setHasTracked(true);
         } else {
           fetch("/api/track", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body,
             keepalive: true
-          }).then(() => {
-            console.log("✅ Alaska Analytics - Page visit tracked via fetch");
-            
-            // Mark this specific session as tracked
-            localStorage.setItem(sessionKey, 'true');
-            localStorage.setItem('alaska_last_tracked', new Date().toISOString());
-            setHasTracked(true);
-          }).catch((error) => {
-            console.error("❌ Alaska Analytics - Page visit tracking failed:", error);
-          });
+          }).catch(() => {});
         }
+
       } catch (error) {
-        console.error("❌ Failed to track Alaska analytics:", error);
+        console.error("Failed to track Alaska analytics:", error);
       }
     };
 
@@ -94,7 +171,9 @@ export default function ProfilePage() {
     send();
     
     return () => {
-      // Cleanup not needed for single tracking
+      // Cleanup
+      document.removeEventListener('selectstart', preventImageSelection);
+      document.removeEventListener('dragstart', preventDragStart);
     };
   }, []);
 

@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3, AlertTriangle, X } from "lucide-react"
 
+// BotD import (npm)
+import { load } from '@fingerprintjs/botd';
+
 const getReadableReferrer = (ref: string) => {
   if (!ref) return "Direct or unknown";
   if (ref.includes("instagram.com")) return "Instagram";
@@ -25,8 +28,31 @@ export default function ProfilePage() {
   const [rawReferrer, setRawReferrer] = useState<string>("");
   const [hasTracked, setHasTracked] = useState<boolean>(false);
   const [showAgeWarning, setShowAgeWarning] = useState<boolean>(false);
+  const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
+  const [botDetectionComplete, setBotDetectionComplete] = useState<boolean>(false);
 
   useEffect(() => {
+    // BotD check - IMMEDIATE, before any content renders
+    (async () => {
+      try {
+        const botd = await load({ monitoring: false });
+        const result = await botd.detect();
+        
+        // BotD returns { bot: true/false, botKind?: BotKind }
+        if (result.bot === true) {
+          window.location.replace('/blocked');
+          return;
+        }
+        
+        // Only set complete if not a bot
+        setBotDetectionComplete(true);
+      } catch (error) {
+        // If BotD fails, allow user through (don't block on errors)
+        console.error('BotD detection failed:', error);
+        setBotDetectionComplete(true);
+      }
+    })();
+
     const rawRef = document.referrer;
     setRawReferrer(rawRef);
     setReferrer(getReadableReferrer(rawRef));

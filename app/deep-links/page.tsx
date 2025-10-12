@@ -153,7 +153,7 @@ export default function DeepLinksPage() {
 
           results.push({
             name: modelName,
-            url: ` lure.bio/${modelName}`,
+            url: `viewit.bio/${modelName}`,
             totalVisitors: pageVisits,
             pageVisits,
             exclusiveContentClicks,
@@ -242,7 +242,7 @@ export default function DeepLinksPage() {
                   <LinkIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="font-semibold text-gray-900"> lure.bio</h2>
+                  <h2 className="font-semibold text-gray-900">ViewIt</h2>
                   <p className="text-xs text-gray-500">Deep Links Manager</p>
                 </div>
               </div>

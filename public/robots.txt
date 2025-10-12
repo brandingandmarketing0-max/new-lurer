@@ -3,6 +3,6 @@ Disallow: /api/
 Disallow: /josh
 Allow: /
 
-Sitemap: https://lure.bio/sitemap.xml
+Sitemap: https://viewit.bio/sitemap.xml
 
 

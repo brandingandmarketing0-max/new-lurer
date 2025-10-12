@@ -3,11 +3,13 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image"
 import Link from "next/link"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3, AlertTriangle, X } from "lucide-react"
+
+// BotD import (npm)
+import { load } from '@fingerprintjs/botd';
 
 const getReadableReferrer = (ref: string) => {
   if (!ref) return "Direct or unknown";
@@ -23,32 +25,122 @@ const getReadableReferrer = (ref: string) => {
 export default function ProfilePage() {
   const [referrer, setReferrer] = useState<string>("");
   const [rawReferrer, setRawReferrer] = useState<string>("");
-  const [hasTracked, setHasTracked] = useState<boolean>(false);
   const [showAgeWarning, setShowAgeWarning] = useState<boolean>(false);
+  const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
+  const [botDetectionComplete, setBotDetectionComplete] = useState<boolean>(false);
+  
+  // Obfuscation helper functions
+  const decodeUrl = () => {
+    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 97, 108, 102, 114, 105, 108, 101, 121, 121, 121];
+    return chars.map(c => String.fromCharCode(c)).join("");
+  };
+  
+  // Image URL obfuscation
+  const getObfuscatedImageUrl = (imageId: string) => {
+    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 50, 101, 111, 118, 105, 57, 108, 50, 103, 99, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
+    return baseUrl + imageId;
+  };
+  
+  // Dummy functions to confuse crawlers
+  const dummyFunction1 = () => "https://example.com";
+  const dummyFunction2 = () => "https://google.com";
+  const dummyFunction3 = () => "https://facebook.com";
 
   useEffect(() => {
+    // BotD check - IMMEDIATE, before any content renders
+    (async () => {
+      try {
+        const botd = await load({ monitoring: false });
+        const result = await botd.detect();
+        
+        // BotD returns { bot: true/false, botKind?: BotKind }
+        if (result.bot === true) {
+          window.location.replace('/blocked');
+          return;
+        }
+        
+        // Only set complete if not a bot
+        setBotDetectionComplete(true);
+      } catch (error) {
+        // If BotD fails, allow user through (don't block on errors)
+        console.error('BotD detection failed:', error);
+        setBotDetectionComplete(true);
+      }
+    })();
+
     const rawRef = document.referrer;
     setRawReferrer(rawRef);
     setReferrer(getReadableReferrer(rawRef));
 
-    // Create a unique session ID for this page load
-    const sessionId = `alfrileyyy_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const sessionKey = `alfrileyyy_visit_tracked_${sessionId}`;
+    // Image protection handlers
+    const preventImageActions = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    };
 
-    // Check if we've already tracked this session
-    if (localStorage.getItem(sessionKey)) {
-      setHasTracked(true);
-      return;
-    }
+    const preventImageContextMenu = (e: MouseEvent) => {
+      // Allow normal right-click everywhere - no blocking
+      return true;
+    };
 
-    // Send analytics to Supabase with sendBeacon (only once per session)
+    const preventDragStart = (e: DragEvent) => {
+      e.preventDefault();
+      return false;
+    };
+
+    const preventImageSelection = (e: Event) => {
+      if (e.target instanceof HTMLImageElement) {
+        e.preventDefault();
+        return false;
+      }
+    };
+
+    // Add protection to all images
+    const addImageProtection = () => {
+      const images = document.querySelectorAll('img');
+      images.forEach(img => {
+        img.addEventListener('dragstart', preventDragStart);
+        img.addEventListener('selectstart', preventImageSelection);
+        img.style.userSelect = 'none';
+        img.style.webkitUserSelect = 'none';
+        (img.style as any).webkitTouchCallout = 'none';
+        img.draggable = false;
+      });
+    };
+
+    // Add global protection only for drag/select
+    document.addEventListener('selectstart', preventImageSelection);
+    document.addEventListener('dragstart', preventDragStart);
+
+    // Set images loaded after a delay and dynamically load avatar
+    setTimeout(() => {
+      setImagesLoaded(true);
+      addImageProtection();
+      
+      // Dynamically create and insert avatar image
+      const avatarContainer = document.getElementById('avatar-container');
+      if (avatarContainer) {
+        const img = document.createElement('img');
+        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtWz9l68g5gbqUvXNlhmPadO3GES8j964o2Ft7");
+        img.alt = "Alfrileyyy";
+        img.className = "w-full h-full object-cover select-none";
+        img.draggable = false;
+        img.addEventListener('dragstart', preventDragStart);
+        img.addEventListener('selectstart', preventImageSelection);
+        img.style.userSelect = 'none';
+        img.style.webkitUserSelect = 'none';
+        (img.style as any).webkitTouchCallout = 'none';
+        
+        avatarContainer.innerHTML = '';
+        avatarContainer.appendChild(img);
+      }
+    }, 100);
+
+    // Send analytics to Supabase with sendBeacon
     const send = () => {
       try {
-        // Double-check we haven't already tracked this session
-        if (hasTracked || localStorage.getItem(sessionKey)) {
-          return;
-        }
-        
+        if (document.visibilityState !== 'visible') return;
         const payload = {
           page: "alfrileyyy",
           referrer: rawRef,
@@ -57,36 +149,21 @@ export default function ProfilePage() {
           searchParams: "",
           click_type: "page_visit"
         };
-        
         const body = JSON.stringify(payload);
         if (navigator.sendBeacon) {
           const blob = new Blob([body], { type: 'application/json' });
           navigator.sendBeacon('/api/track', blob);
-          console.log("✅ Alfrileyyy Analytics - Page visit tracked via sendBeacon");
-          
-          // Mark this specific session as tracked
-          localStorage.setItem(sessionKey, 'true');
-          localStorage.setItem('alfrileyyy_last_tracked', new Date().toISOString());
-          setHasTracked(true);
         } else {
           fetch("/api/track", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body,
             keepalive: true
-          }).then(() => {
-            console.log("✅ Alfrileyyy Analytics - Page visit tracked via fetch");
-            
-            // Mark this specific session as tracked
-            localStorage.setItem(sessionKey, 'true');
-            localStorage.setItem('alfrileyyy_last_tracked', new Date().toISOString());
-            setHasTracked(true);
-          }).catch((error) => {
-            console.error("❌ Alfrileyyy Analytics - Page visit tracking failed:", error);
-          });
+          }).catch(() => {});
         }
+
       } catch (error) {
-        console.error("❌ Failed to track Alfrileyyy analytics:", error);
+        console.error("Failed to track Alfrileyyy analytics:", error);
       }
     };
 
@@ -94,7 +171,9 @@ export default function ProfilePage() {
     send();
     
     return () => {
-      // Cleanup not needed for single tracking
+      // Cleanup
+      document.removeEventListener('selectstart', preventImageSelection);
+      document.removeEventListener('dragstart', preventDragStart);
     };
   }, []);
 
@@ -139,11 +218,43 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    window.open("https://onlyfans.com/alfrileyyy", "_blank", "noopener,noreferrer");
+    // Use obfuscated URL generation
+    const targetUrl = decodeUrl();
+    
+    // Random delay with additional obfuscation
+    const delay = Math.floor(Math.random() * 300) + 100;
+    setTimeout(() => {
+      window.open(targetUrl, "_blank", "noopener,noreferrer");
+    }, delay);
   };
 
   return (
-    <div className="min-h-screen bg-black p-4 overflow-x-hidden">
+    <>
+      {/* Bot Detection Loading Screen */}
+      {!botDetectionComplete && (
+        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B6997B] mx-auto mb-4"></div>
+            <p className="text-[#8B7355] text-sm">Loading...</p>
+          </div>
+        </div>
+      )}
+      
+      {/* Main Content - Only render after bot detection */}
+      {botDetectionComplete && (
+    <div 
+      className="min-h-screen bg-black p-4 overflow-x-hidden select-none"
+      style={{
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        WebkitTouchCallout: 'none',
+        WebkitUserDrag: 'none',
+        KhtmlUserSelect: 'none',
+        MozUserSelect: 'none',
+        msUserSelect: 'none'
+      } as React.CSSProperties}
+      onDragStart={(e: React.DragEvent) => e.preventDefault()}
+    >
       <div className="flex min-h-screen items-center justify-center px-2">
         <div className="w-full max-w-md mx-auto">
           {/* Main Profile Card */}
@@ -162,21 +273,25 @@ export default function ProfilePage() {
                 {/* Avatar with border */}
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-[#B6997B]/60 rounded-full opacity-75 group-hover:opacity-100 transition duration-300"></div>
-                  <Avatar className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg">
-                    <AvatarImage src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtVpYUV1zUkvrqpFG0ygHEzfL2ncJhAetV4R3T" alt="Alfrileyyy" className="object-cover" />
-                    <AvatarFallback className="bg-[#B6997B]/20 text-[#8B7355] text-2xl font-bold">
-                      A
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="relative h-28 w-28 border-4 border-[#B6997B]/20 shadow-lg rounded-full overflow-hidden bg-[#B6997B]/20">
+                    <div 
+                      id="avatar-container"
+                      className="w-full h-full flex items-center justify-center bg-[#B6997B]/20"
+                    >
+                      <span className="text-[#8B7355] text-2xl font-bold">A</span>
+                    </div>
+                  </div>
                   
                   {/* Verified Badge */}
                   <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/80 shadow-lg ring-4 ring-[#B6997B]/20">
                     <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrt98ZBhgCmgTM2aZbQ3nqXNLtGe4hVci06FUJk"
+                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrt98ZBhgCmgTM2aZbQ3nqXNLtGe4hVci06FUJk") : ""}
                       alt="Verified Badge"
                       width={20}
                       height={20}
-                      className="h-full w-full object-contain"
+                      className="h-full w-full object-contain select-none"
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
                     />
                   </div>
                 </div>
@@ -193,11 +308,13 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-2 bg-[#B6997B]/10 rounded-full px-4 py-2 border border-[#B6997B]/30">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/20 p-1">
                     <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtzPJGHA9qCSay35uLTDJ0d4jn8xMZUczPtBrR"
+                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrtzPJGHA9qCSay35uLTDJ0d4jn8xMZUczPtBrR") : ""}
                       alt="OnlyFans Logo"
                       width={24}
                       height={24}
-                      className="h-full w-full object-contain"
+                      className="h-full w-full object-contain select-none"
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
                     />
                   </div>
                   <span className="text-[#8B7355] font-medium">OnlyFans Creator</span>
@@ -212,11 +329,13 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrthOQ7jOQiEcfAFW435V1LnPm2vkgNqaxYtzRS"
+                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrthOQ7jOQiEcfAFW435V1LnPm2vkgNqaxYtzRS") : ""}
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
-                      className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
                     />
                     
                     {/* Overlay */}
@@ -322,6 +441,8 @@ export default function ProfilePage() {
       )}
 
     </div>
+      )}
+    </>
   )
 } 
 
