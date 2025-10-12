@@ -1,5 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { createClient } from '@supabase/supabase-js';
+
+// Use service role key for server-side operations
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+});
 
 // Define the analytics data interface
 interface AnalyticsData {
@@ -18,6 +29,15 @@ interface AnalyticsData {
 
 export async function POST(req: NextRequest) {
   try {
+    // Check if service role key is available
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('SUPABASE_SERVICE_ROLE_KEY environment variable is not set');
+      return NextResponse.json({ 
+        success: false, 
+        error: "Server configuration error: Missing service role key" 
+      }, { status: 500 });
+    }
+
     // Parse the request body
     const body = await req.json();
     const { referrer, timestamp, page, pathname, searchParams, click_type } = body;
@@ -116,10 +136,15 @@ export async function POST(req: NextRequest) {
       .select();
 
     if (error) {
+      console.error('Supabase insert error:', error);
+      console.error('Table name:', tableName);
+      console.error('Data being inserted:', analyticsData);
       return NextResponse.json({ 
         success: false, 
         error: error.message,
-        table: tableName
+        table: tableName,
+        details: error.details,
+        hint: error.hint
       }, { status: 500 });
     }
 

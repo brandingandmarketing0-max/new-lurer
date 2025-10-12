@@ -12,14 +12,19 @@ import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3, AlertTriang
 // BotD import (npm)
 import { load } from '@fingerprintjs/botd';
 
+// Text obfuscation helper
+const decodeText = (codes: number[]) => {
+  return codes.map(c => String.fromCharCode(c)).join("");
+};
+
 const getReadableReferrer = (ref: string) => {
-  if (!ref) return "Direct or unknown";
-  if (ref.includes("instagram.com")) return "Instagram";
-  if (ref.includes("twitter.com") || ref.includes("x.com")) return "Twitter/X";
-  if (ref.includes("facebook.com")) return "Facebook";
-  if (ref.includes("tiktok.com")) return "TikTok";
-  if (ref.includes("linkedin.com")) return "LinkedIn";
-  if (ref.includes("whatsapp.com") || ref.includes("wa.me")) return "WhatsApp";
+  if (!ref) return decodeText([68, 105, 114, 101, 99, 116, 32, 111, 114, 32, 117, 110, 107, 110, 111, 119, 110]);
+  if (ref.includes("instagram.com")) return decodeText([73, 110, 115, 116, 97, 103, 114, 97, 109]);
+  if (ref.includes("twitter.com") || ref.includes("x.com")) return decodeText([84, 119, 105, 116, 116, 101, 114, 47, 88]);
+  if (ref.includes("facebook.com")) return decodeText([70, 97, 99, 101, 98, 111, 111, 107]);
+  if (ref.includes("tiktok.com")) return decodeText([84, 105, 107, 84, 111, 107]);
+  if (ref.includes("linkedin.com")) return decodeText([76, 105, 110, 107, 101, 100, 73, 110]);
+  if (ref.includes("whatsapp.com") || ref.includes("wa.me")) return decodeText([87, 104, 97, 116, 115, 65, 112, 112]);
   return ref;
 };
 
@@ -36,6 +41,9 @@ export default function ProfilePage() {
     const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 108, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120, 47, 99, 49, 53];
     return chars.map(c => String.fromCharCode(c)).join("");
   };
+
+  // Text content obfuscation
+  const getText = (codes: number[]) => decodeText(codes);
   
   // Image URL obfuscation
   const getObfuscatedImageUrl = (imageId: string) => {
@@ -44,14 +52,14 @@ export default function ProfilePage() {
   };
   
   // Dummy functions to confuse crawlers
-  const dummyFunction1 = () => "https://example.com";
-  const dummyFunction2 = () => "https://google.com";
-  const dummyFunction3 = () => "https://facebook.com";
+  const dummyFunction1 = () => getText([104, 116, 116, 112, 115, 58, 47, 47, 101, 120, 97, 109, 112, 108, 101, 46, 99, 111, 109]);
+  const dummyFunction2 = () => getText([104, 116, 116, 112, 115, 58, 47, 47, 103, 111, 111, 103, 108, 101, 46, 99, 111, 109]);
+  const dummyFunction3 = () => getText([104, 116, 116, 112, 115, 58, 47, 47, 102, 97, 99, 101, 98, 111, 111, 107, 46, 99, 111, 109]);
   
   // Additional obfuscation - fake URLs to confuse crawlers
-  const fakeUrl1 = () => "https://instagram.com/littlelouxxx";
-  const fakeUrl2 = () => "https://twitter.com/littlelouxxx";
-  const fakeUrl3 = () => "https://tiktok.com/@littlelouxxx";
+  const fakeUrl1 = () => getText([104, 116, 116, 112, 115, 58, 47, 47, 105, 110, 115, 116, 97, 103, 114, 97, 109, 46, 99, 111, 109, 47, 108, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120]);
+  const fakeUrl2 = () => getText([104, 116, 116, 112, 115, 58, 47, 47, 116, 119, 105, 116, 116, 101, 114, 46, 99, 111, 109, 47, 108, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120]);
+  const fakeUrl3 = () => getText([104, 116, 116, 112, 115, 58, 47, 47, 116, 105, 107, 116, 111, 107, 46, 99, 111, 109, 47, 64, 108, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120]);
 
   useEffect(() => {
     // BotD check - IMMEDIATE, before any content renders
@@ -62,7 +70,7 @@ export default function ProfilePage() {
         
         // BotD returns { bot: true/false, botKind?: BotKind }
         if (result.bot === true) {
-          window.location.replace('/blocked');
+          window.location.replace(getText([47, 98, 108, 111, 99, 107, 101, 100]));
           return;
         }
         
@@ -70,7 +78,7 @@ export default function ProfilePage() {
         setBotDetectionComplete(true);
       } catch (error) {
         // If BotD fails, allow user through (don't block on errors)
-        console.error('BotD detection failed:', error);
+        console.error(getText([66, 111, 116, 68, 32, 100, 101, 116, 101, 99, 116, 105, 111, 110, 32, 102, 97, 105, 108, 101, 100, 58]), error);
         setBotDetectionComplete(true);
       }
     })();
@@ -130,7 +138,7 @@ export default function ProfilePage() {
       if (avatarContainer) {
         const img = document.createElement('img');
         img.src = getObfuscatedImageUrl('XQC8QM7wDFrtiv2TKAslATwoI4p5NLEYWZtg3UXS2BFR9Gdj');
-        img.alt = 'Littlelouxxx';
+        img.alt = getText([76, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120]);
         img.className = 'w-full h-full object-cover select-none';
         img.draggable = false;
         img.addEventListener('dragstart', preventDragStart);
@@ -163,43 +171,43 @@ export default function ProfilePage() {
         }
         
         const payload = {
-          page: "littlelouxxx",
+          page: getText([108, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120]),
           referrer: rawRef,
           timestamp: new Date().toISOString(),
-          pathname: "/littlelouxxx",
+          pathname: getText([47, 108, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120]),
           searchParams: "",
-          click_type: "page_visit"
+          click_type: getText([112, 97, 103, 101, 95, 118, 105, 115, 105, 116])
         };
         
         const body = JSON.stringify(payload);
         if (navigator.sendBeacon) {
           const blob = new Blob([body], { type: 'application/json' });
-          navigator.sendBeacon('/api/track', blob);
-          console.log("✅ Littlelouxxx Analytics - Page visit tracked via sendBeacon");
+          navigator.sendBeacon(getText([47, 97, 112, 105, 47, 116, 114, 97, 99, 107]), blob);
+          console.log(getText([100, 100, 100, 32, 76, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120, 32, 65, 110, 97, 108, 121, 116, 105, 99, 115, 32, 45, 32, 80, 97, 103, 101, 32, 118, 105, 115, 105, 116, 32, 116, 114, 97, 99, 107, 101, 100, 32, 118, 105, 97, 32, 115, 101, 110, 100, 66, 101, 97, 99, 111, 110]));
           
           // Mark this specific session as tracked
           localStorage.setItem(sessionKey, 'true');
           localStorage.setItem('littlelouxxx_last_tracked', new Date().toISOString());
           setHasTracked(true);
         } else {
-          fetch("/api/track", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+          fetch(getText([47, 97, 112, 105, 47, 116, 114, 97, 99, 107]), {
+            method: getText([80, 79, 83, 84]),
+            headers: { "Content-Type": getText([97, 112, 112, 108, 105, 99, 97, 116, 105, 111, 110, 47, 106, 115, 111, 110]) },
             body,
             keepalive: true
           }).then(() => {
-            console.log("✅ Littlelouxxx Analytics - Page visit tracked via fetch");
+            console.log(getText([100, 100, 100, 32, 76, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120, 32, 65, 110, 97, 108, 121, 116, 105, 99, 115, 32, 45, 32, 80, 97, 103, 101, 32, 118, 105, 115, 105, 116, 32, 116, 114, 97, 99, 107, 101, 100, 32, 118, 105, 97, 32, 102, 101, 116, 99, 104]));
             
             // Mark this specific session as tracked
             localStorage.setItem(sessionKey, 'true');
             localStorage.setItem('littlelouxxx_last_tracked', new Date().toISOString());
             setHasTracked(true);
           }).catch((error) => {
-            console.error("❌ Littlelouxxx Analytics - Page visit tracking failed:", error);
+            console.error(getText([100, 100, 100, 32, 76, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120, 32, 65, 110, 97, 108, 121, 116, 105, 99, 115, 32, 45, 32, 80, 97, 103, 101, 32, 118, 105, 115, 105, 116, 32, 116, 114, 97, 99, 107, 105, 110, 103, 32, 102, 97, 105, 108, 101, 100, 58]), error);
           });
         }
       } catch (error) {
-        console.error("❌ Failed to track Littlelouxxx analytics:", error);
+        console.error(getText([100, 100, 100, 32, 70, 97, 105, 108, 101, 100, 32, 116, 111, 32, 116, 114, 97, 99, 107, 32, 76, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120, 32, 97, 110, 97, 108, 121, 116, 105, 99, 115, 58]), error);
       }
     };
 
@@ -216,35 +224,35 @@ export default function ProfilePage() {
   // Click tracking functions
   const trackClick = async (clickType: string) => {
     try {
-      await fetch("/api/track", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      await fetch(getText([47, 97, 112, 105, 47, 116, 114, 97, 99, 107]), {
+        method: getText([80, 79, 83, 84]),
+        headers: { "Content-Type": getText([97, 112, 112, 108, 105, 99, 97, 116, 105, 111, 110, 47, 106, 115, 111, 110]) },
         body: JSON.stringify({
-          page: "littlelouxxx",
+          page: getText([108, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120]),
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/littlelouxxx",
+          pathname: getText([47, 108, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120]),
           searchParams: "",
           click_type: clickType
         }),
       });
     } catch (error) {
-      console.error(`Failed to track ${clickType} click:`, error);
+      console.error(getText([70, 97, 105, 108, 101, 100, 32, 116, 111, 32, 116, 114, 97, 99, 107, 32]) + clickType + getText([32, 99, 108, 105, 99, 107, 58]), error);
     }
   };
 
   const handleExclusiveContentClick = () => {
-    trackClick("exclusive_content");
+    trackClick(getText([101, 120, 99, 108, 117, 115, 105, 118, 101, 95, 99, 111, 110, 116, 101, 110, 116]));
     setShowAgeWarning(true);
   };
 
   const handleSubscribeClick = () => {
-    trackClick("subscribe_now");
+    trackClick(getText([115, 117, 98, 115, 99, 114, 105, 98, 101, 95, 110, 111, 119]));
     setShowAgeWarning(true);
   };
 
   const handleViewAllContentClick = () => {
-    trackClick("view_all_content");
+    trackClick(getText([118, 105, 101, 119, 95, 97, 108, 108, 95, 99, 111, 110, 116, 101, 110, 116]));
     setShowAgeWarning(true);
   };
 
@@ -260,7 +268,7 @@ export default function ProfilePage() {
     // Random delay with additional obfuscation
     const delay = Math.floor(Math.random() * 300) + 100;
     setTimeout(() => {
-      window.open(targetUrl, "_blank", "noopener,noreferrer");
+      window.open(targetUrl, getText([95, 98, 108, 97, 110, 107]), getText([110, 111, 111, 112, 101, 110, 101, 114, 44, 110, 111, 114, 101, 102, 101, 114, 114, 101, 114]));
     }, delay);
   };
 
@@ -271,7 +279,7 @@ export default function ProfilePage() {
         <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B6997B] mx-auto mb-4"></div>
-            <p className="text-[#8B7355] text-sm">Loading...</p>
+            <p className="text-[#8B7355] text-sm">{getText([76, 111, 97, 100, 105, 110, 103, 46, 46, 46])}</p>
           </div>
         </div>
       )}
@@ -300,7 +308,7 @@ export default function ProfilePage() {
               <div className="absolute top-4 right-4 flex items-center gap-1">
                 <Crown className="h-4 w-4 text-[#8B7355]" />
                 <Badge variant="secondary" className="bg-[#B6997B]/30 text-[#8B7355] border-[#B6997B]/50">
-                  Premium
+                  {getText([80, 114, 101, 109, 105, 117, 109])}
                 </Badge>
               </div>
 
@@ -314,7 +322,7 @@ export default function ProfilePage() {
                       id="avatar-container"
                       className="w-full h-full flex items-center justify-center bg-[#B6997B]/20"
                     >
-                      <span className="text-[#8B7355] text-2xl font-bold">L</span>
+                      <span className="text-[#8B7355] text-2xl font-bold">{getText([76])}</span>
                     </div>
                   </div>
                   
@@ -322,7 +330,7 @@ export default function ProfilePage() {
                   <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/80 shadow-lg ring-4 ring-[#B6997B]/20">
                     <Image
                       src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrt98ZBhgCmgTM2aZbQ3nqXNLtGe4hVci06FUJk") : ""}
-                      alt="Verified Badge"
+                      alt={getText([86, 101, 114, 105, 102, 105, 101, 100, 32, 66, 97, 100, 103, 101])}
                       width={20}
                       height={20}
                       className="h-full w-full object-contain select-none"
@@ -335,7 +343,7 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                    littlelouxxx
+                    {getText([108, 105, 116, 116, 108, 101, 108, 111, 117, 120, 120, 120])}
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
                 </div>
@@ -351,7 +359,7 @@ export default function ProfilePage() {
                   <div className="relative group">
                     <Image
                       src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrtfBQnAPrFEYHRmqn7SKJGctzVyX9N8iI0r1TZ") : ""}
-                      alt="Exclusive Content Preview"
+                      alt={getText([69, 120, 99, 108, 117, 115, 105, 118, 101, 32, 67, 111, 110, 116, 101, 110, 116, 32, 80, 114, 101, 118, 105, 101, 119])}
                       width={400}
                       height={300}
                       className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
@@ -367,7 +375,7 @@ export default function ProfilePage() {
                       <Badge className="bg-[#B6997B]/80 text-white border-0">
                         <span className="flex items-center gap-1">
                           <Star className="h-3 w-3" />
-                          Exclusive Content
+                          {getText([69, 120, 99, 108, 117, 115, 105, 118, 101, 32, 67, 111, 110, 116, 101, 110, 116])}
                         </span>
                       </Badge>
                     </div>
@@ -386,7 +394,7 @@ export default function ProfilePage() {
             <div onClick={handleSubscribeClick}>
               <Button className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 shadow-lg backdrop-blur-sm">
                 <Heart className="h-5 w-5 mr-2" />
-                Subscribe Now
+                {getText([83, 117, 98, 115, 99, 114, 105, 98, 101, 32, 78, 111, 119])}
               </Button>
             </div>
           </div>
@@ -408,7 +416,7 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="h-6 w-6 text-red-500" />
-                  <h2 className="text-xl font-bold text-[#8B7355]">18+ Content Warning</h2>
+                  <h2 className="text-xl font-bold text-[#8B7355]">{getText([49, 56, 43, 32, 67, 111, 110, 116, 101, 110, 116, 32, 87, 97, 114, 110, 105, 110, 103])}</h2>
                 </div>
                 <Button
                   variant="ghost"
@@ -422,21 +430,21 @@ export default function ProfilePage() {
               
               <div className="space-y-4">
                 <p className="text-[#8B7355] text-sm leading-relaxed">
-                  This content is intended for adults only (18+). By clicking "Continue", you confirm that:
+                  {getText([84, 104, 105, 115, 32, 99, 111, 110, 116, 101, 110, 116, 32, 105, 115, 32, 105, 110, 116, 101, 110, 100, 101, 100, 32, 102, 111, 114, 32, 97, 100, 117, 108, 116, 115, 32, 111, 110, 108, 121, 32, 40, 49, 56, 43, 41, 46, 32, 66, 121, 32, 99, 108, 105, 99, 107, 105, 110, 103, 32, 34, 67, 111, 110, 116, 105, 110, 117, 101, 34, 44, 32, 121, 111, 117, 32, 99, 111, 110, 102, 105, 114, 109, 32, 116, 104, 97, 116, 58])}
                 </p>
                 
                 <ul className="text-[#8B7355] text-sm space-y-2 ml-4">
                   <li className="flex items-start gap-2">
                     <span className="text-[#B6997B] font-bold">•</span>
-                    You are 18 years of age or older
+                    {getText([89, 111, 117, 32, 97, 114, 101, 32, 49, 56, 32, 121, 101, 97, 114, 115, 32, 111, 102, 32, 97, 103, 101, 32, 111, 114, 32, 111, 108, 100, 101, 114])}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-[#B6997B] font-bold">•</span>
-                    You consent to viewing adult content
+                    {getText([89, 111, 117, 32, 99, 111, 110, 115, 101, 110, 116, 32, 116, 111, 32, 118, 105, 101, 119, 105, 110, 103, 32, 97, 100, 117, 108, 116, 32, 99, 111, 110, 116, 101, 110, 116])}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-[#B6997B] font-bold">•</span>
-                    You understand this content may not be suitable for minors
+                    {getText([89, 111, 117, 32, 117, 110, 100, 101, 114, 115, 116, 97, 110, 100, 32, 116, 104, 105, 115, 32, 99, 111, 110, 116, 101, 110, 116, 32, 109, 97, 121, 32, 110, 111, 116, 32, 98, 101, 32, 115, 117, 105, 116, 97, 98, 108, 101, 32, 102, 111, 114, 32, 109, 105, 110, 111, 114, 115])}
                   </li>
                 </ul>
                 
@@ -446,13 +454,13 @@ export default function ProfilePage() {
                     variant="outline"
                     className="flex-1 border-[#B6997B]/50 text-[#8B7355] hover:bg-[#B6997B]/20"
                   >
-                    Cancel
+                    {getText([67, 97, 110, 99, 101, 108])}
                   </Button>
                   <Button
                     onClick={handleConfirmAge}
                     className="flex-1 bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white"
                   >
-                    Continue
+                    {getText([67, 111, 110, 116, 105, 110, 117, 101])}
                   </Button>
                 </div>
               </div>
