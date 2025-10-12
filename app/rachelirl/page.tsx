@@ -26,7 +26,6 @@ const getReadableReferrer = (ref: string) => {
 export default function ProfilePage() {
   const [referrer, setReferrer] = useState<string>("");
   const [rawReferrer, setRawReferrer] = useState<string>("");
-  const [hasTracked, setHasTracked] = useState<boolean>(false);
   const [showAgeWarning, setShowAgeWarning] = useState<boolean>(false);
   const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
   const [botDetectionComplete, setBotDetectionComplete] = useState<boolean>(false);
@@ -139,24 +138,10 @@ export default function ProfilePage() {
       }
     }, 100);
 
-    // Create a unique session ID for this page load
-    const sessionId = `rachelirl_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const sessionKey = `rachelirl_visit_tracked_${sessionId}`;
-
-    // Check if we've already tracked this session
-    if (localStorage.getItem(sessionKey)) {
-      setHasTracked(true);
-      return;
-    }
-
-    // Send analytics to Supabase with sendBeacon (only once per session)
+    // Send analytics to Supabase with sendBeacon
     const send = () => {
       try {
-        // Double-check we haven't already tracked this session
-        if (hasTracked || localStorage.getItem(sessionKey)) {
-          return;
-        }
-        
+        if (document.visibilityState !== 'visible') return;
         const payload = {
           page: "rachelirl",
           referrer: rawRef,
@@ -165,36 +150,21 @@ export default function ProfilePage() {
           searchParams: "",
           click_type: "page_visit"
         };
-        
         const body = JSON.stringify(payload);
         if (navigator.sendBeacon) {
           const blob = new Blob([body], { type: 'application/json' });
           navigator.sendBeacon('/api/track', blob);
-          console.log("✅ Rachelirl Analytics - Page visit tracked via sendBeacon");
-          
-          // Mark this specific session as tracked
-          localStorage.setItem(sessionKey, 'true');
-          localStorage.setItem('rachelirl_last_tracked', new Date().toISOString());
-          setHasTracked(true);
         } else {
           fetch("/api/track", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body,
             keepalive: true
-          }).then(() => {
-            console.log("✅ Rachelirl Analytics - Page visit tracked via fetch");
-            
-            // Mark this specific session as tracked
-            localStorage.setItem(sessionKey, 'true');
-            localStorage.setItem('rachelirl_last_tracked', new Date().toISOString());
-            setHasTracked(true);
-          }).catch((error) => {
-            console.error("❌ Rachelirl Analytics - Page visit tracking failed:", error);
-          });
+          }).catch(() => {});
         }
+
       } catch (error) {
-        console.error("❌ Failed to track Rachelirl analytics:", error);
+        console.error("Failed to track Rachelirl analytics:", error);
       }
     };
 
@@ -240,10 +210,6 @@ export default function ProfilePage() {
     setShowAgeWarning(true);
   };
 
-  const handleViewAllContentClick = () => {
-    trackClick("view_all_content");
-    setShowAgeWarning(true);
-  };
 
   const handleCancelAge = () => {
     setShowAgeWarning(false);
