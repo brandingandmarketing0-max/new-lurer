@@ -124,3 +124,4 @@ GRANT USAGE ON SEQUENCE bellapetitie_analytics_id_seq TO service_role;
 -- SELECT COUNT(*) as littlelouxxx_count FROM littlelouxxx_analytics;
 -- SELECT COUNT(*) as bellapetitie_count FROM bellapetitie_analytics;
 
+

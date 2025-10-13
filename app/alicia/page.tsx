@@ -31,7 +31,7 @@ export default function ProfilePage() {
   
   // Obfuscation helper functions
   const decodeUrl = () => {
-    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 97, 108, 105, 99, 105, 97, 120, 120, 120];
+    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 97, 108, 105, 99, 105, 97, 101, 120, 99, 108, 117, 115, 105, 118, 101];
     return chars.map(c => String.fromCharCode(c)).join("");
   };
   
@@ -122,7 +122,7 @@ export default function ProfilePage() {
       const avatarContainer = document.getElementById('avatar-container');
       if (avatarContainer) {
         const img = document.createElement('img');
-        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtWz9l68g5gbqUvXNlhmPadO3GES8j964o2Ft7");
+        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtYWaHxnqXMOoU9cVptWZ6DQaeglBGAuhbf5dR");
         img.alt = "Alicia";
         img.className = "w-full h-full object-cover select-none";
         img.draggable = false;
@@ -301,21 +301,7 @@ export default function ProfilePage() {
                   </h1>
                 </div>
 
-                {/* Platform Badge */}
-                <div className="flex items-center gap-2 bg-[#B6997B]/10 rounded-full px-4 py-2 border border-[#B6997B]/30">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/20 p-1">
-                    <Image
-                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrtzPJGHA9qCSay35uLTDJ0d4jn8xMZUczPtBrR") : ""}
-                      alt="OnlyFans Logo"
-                      width={24}
-                      height={24}
-                      className="h-full w-full object-contain select-none"
-                      draggable={false}
-                      onDragStart={(e) => e.preventDefault()}
-                    />
-                  </div>
-                  <span className="text-[#8B7355] font-medium">OnlyFans Creator</span>
-                </div>
+                {/* Platform Badge removed */}
               </div>
             </CardContent>
           </Card>

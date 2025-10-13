@@ -34,3 +34,4 @@ GRANT SELECT ON littlelouxxx_analytics TO authenticated;
 GRANT INSERT ON littlelouxxx_analytics TO service_role;
 GRANT USAGE ON SEQUENCE littlelouxxx_analytics_id_seq TO service_role;
 
+

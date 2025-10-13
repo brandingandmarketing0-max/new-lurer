@@ -25,7 +25,7 @@ export function middleware(request: NextRequest) {
     }
 
     // Protected paths (Phase 1)
-    const protectedPaths = ['/josh', '/rachelirl', '/petitelils', '/scarletxroseeevip', '/bellapetitie', '/littlelouxxx'];
+    const protectedPaths = ['/josh', '/rachelirl', '/petitelils', '/scarletxroseeevip', '/bellapetitie', '/littlelouxxx', '/abbiehall', '/abby', '/aimee', '/alaska', '/alfrileyyy', '/alicia', '/amyleigh', '/amberr', '/amymaxwell', '/babyscarlet', '/bethjefferson', '/Blondestud69', '/brooke', '/brooke_xox', '/brookex', '/chloeayling', '/chloeelizabeth', '/chloeinskip', '/chloetami', '/chxrli_love', '/cowgurlkacey', '/dominika', '/ellejean', '/em', '/emily9999x', '/erinhannahxx', '/fitnessblonde', '/freya', '/georgiaaa', '/grace', '/hannah', '/jason', '/kaceymay', '/kayley', '/kimbo_bimbo', '/kxceyrose', '/laurdunne', '/laylaasoyoung', '/laylasoyoung', '/libby', '/lily', '/lou', '/lsy', '/maddison', '/maddysmith111x', '/megann', '/michaelajayneex', '/missbrown', '/misssophiaisabella', '/morgan', '/noreilly75', '/ollie', '/onlyjessxrose', '/paigexb', '/poppy', '/rachel', '/rachsotiny', '/robynnparkerr', '/sel', '/skye', '/steff', '/sxmmermae', '/victoria', '/wackojacko69'];
     const isProtected = protectedPaths.some(p => pathname === p || pathname.startsWith(p + '/'));
 
     // Debug logging
@@ -45,10 +45,13 @@ export function middleware(request: NextRequest) {
     const hasBotPatterns = ua.includes('python') || ua.includes('requests') || ua.includes('urllib') || ua.includes('curl') || ua.includes('wget') || ua.includes('httpie');
     const hasCrawlerPatterns = ua.includes('crawl') || ua.includes('spider') || ua.includes('bot') || ua.includes('crawler') || ua.includes('scraper') || ua.includes('harvester');
     
-    console.log(`🤖 Enhanced Bot Detection: ${pathname} - isKnownBot: ${isKnownBot} - hasObviousBotUA: ${hasObviousBotUA} - hasSuspiciousUA: ${hasSuspiciousUA} - hasAutomationUA: ${hasAutomationUA} - hasEmptyUA: ${hasEmptyUA} - hasSuspiciousHeaders: ${hasSuspiciousHeaders} - hasBotPatterns: ${hasBotPatterns} - hasCrawlerPatterns: ${hasCrawlerPatterns}`);
+    // Social media bot detection - block Instagram, Facebook, WhatsApp, Telegram crawlers
+    const isSocialMediaBot = ua.includes('facebookexternalhit') || ua.includes('instagrambot') || ua.includes('whatsapp') || ua.includes('telegrambot') || ua.includes('twitterbot') || ua.includes('linkedinbot') || ua.includes('skypeuripreview') || ua.includes('slackbot');
+    
+    console.log(`🤖 Enhanced Bot Detection: ${pathname} - isKnownBot: ${isKnownBot} - hasObviousBotUA: ${hasObviousBotUA} - hasSuspiciousUA: ${hasSuspiciousUA} - hasAutomationUA: ${hasAutomationUA} - hasEmptyUA: ${hasEmptyUA} - hasSuspiciousHeaders: ${hasSuspiciousHeaders} - hasBotPatterns: ${hasBotPatterns} - hasCrawlerPatterns: ${hasCrawlerPatterns} - isSocialMediaBot: ${isSocialMediaBot}`);
     
     // If any bot indicators detected → return Google-style error page
-    if (isKnownBot || hasObviousBotUA || hasSuspiciousUA || hasAutomationUA || hasEmptyUA || hasSuspiciousHeaders || hasBotPatterns || hasCrawlerPatterns) {
+    if (isKnownBot || hasObviousBotUA || hasSuspiciousUA || hasAutomationUA || hasEmptyUA || hasSuspiciousHeaders || hasBotPatterns || hasCrawlerPatterns || isSocialMediaBot) {
         console.log(`🚫 BLOCKING BOT: ${pathname} - ${ua.substring(0, 50)}...`);
         const errorHtml = `
 <!DOCTYPE html>
@@ -94,7 +97,79 @@ export function middleware(request: NextRequest) {
 
 export const config = {
     // Intercept API routes and the protected pages
-    matcher: ['/api/:path*', '/josh', '/josh/:path*', '/rachelirl', '/rachelirl/:path*', '/petitelils', '/petitelils/:path*', '/scarletxroseeevip', '/scarletxroseeevip/:path*', '/bellapetitie', '/bellapetitie/:path*', '/littlelouxxx', '/littlelouxxx/:path*'],
+    matcher: [
+        '/api/:path*',
+        '/josh', '/josh/:path*',
+        '/rachelirl', '/rachelirl/:path*',
+        '/petitelils', '/petitelils/:path*',
+        '/scarletxroseeevip', '/scarletxroseeevip/:path*',
+        '/bellapetitie', '/bellapetitie/:path*',
+        '/littlelouxxx', '/littlelouxxx/:path*',
+        '/abbiehall', '/abbiehall/:path*',
+        '/abby', '/abby/:path*',
+        '/aimee', '/aimee/:path*',
+        '/alaska', '/alaska/:path*',
+        '/alfrileyyy', '/alfrileyyy/:path*',
+        '/alicia', '/alicia/:path*',
+        '/amyleigh', '/amyleigh/:path*',
+        '/amberr', '/amberr/:path*',
+        '/amymaxwell', '/amymaxwell/:path*',
+        '/babyscarlet', '/babyscarlet/:path*',
+        '/bethjefferson', '/bethjefferson/:path*',
+        '/Blondestud69', '/Blondestud69/:path*',
+        '/brooke', '/brooke/:path*',
+        '/brooke_xox', '/brooke_xox/:path*',
+        '/brookex', '/brookex/:path*',
+        '/chloeayling', '/chloeayling/:path*',
+        '/chloeelizabeth', '/chloeelizabeth/:path*',
+        '/chloeinskip', '/chloeinskip/:path*',
+        '/chloetami', '/chloetami/:path*',
+        '/chxrli_love', '/chxrli_love/:path*',
+        '/cowgurlkacey', '/cowgurlkacey/:path*',
+        '/dominika', '/dominika/:path*',
+        '/ellejean', '/ellejean/:path*',
+        '/em', '/em/:path*',
+        '/emily9999x', '/emily9999x/:path*',
+        '/erinhannahxx', '/erinhannahxx/:path*',
+        '/fitnessblonde', '/fitnessblonde/:path*',
+        '/freya', '/freya/:path*',
+        '/georgiaaa', '/georgiaaa/:path*',
+        '/grace', '/grace/:path*',
+        '/hannah', '/hannah/:path*',
+        '/jason', '/jason/:path*',
+        '/kaceymay', '/kaceymay/:path*',
+        '/kayley', '/kayley/:path*',
+        '/kimbo_bimbo', '/kimbo_bimbo/:path*',
+        '/kxceyrose', '/kxceyrose/:path*',
+        '/laurdunne', '/laurdunne/:path*',
+        '/laylaasoyoung', '/laylaasoyoung/:path*',
+        '/laylasoyoung', '/laylasoyoung/:path*',
+        '/libby', '/libby/:path*',
+        '/lily', '/lily/:path*',
+        '/lou', '/lou/:path*',
+        '/lsy', '/lsy/:path*',
+        '/maddison', '/maddison/:path*',
+        '/maddysmith111x', '/maddysmith111x/:path*',
+        '/megann', '/megann/:path*',
+        '/michaelajayneex', '/michaelajayneex/:path*',
+        '/missbrown', '/missbrown/:path*',
+        '/misssophiaisabella', '/misssophiaisabella/:path*',
+        '/morgan', '/morgan/:path*',
+        '/noreilly75', '/noreilly75/:path*',
+        '/ollie', '/ollie/:path*',
+        '/onlyjessxrose', '/onlyjessxrose/:path*',
+        '/paigexb', '/paigexb/:path*',
+        '/poppy', '/poppy/:path*',
+        '/rachel', '/rachel/:path*',
+        '/rachsotiny', '/rachsotiny/:path*',
+        '/robynnparkerr', '/robynnparkerr/:path*',
+        '/sel', '/sel/:path*',
+        '/skye', '/skye/:path*',
+        '/steff', '/steff/:path*',
+        '/sxmmermae', '/sxmmermae/:path*',
+        '/victoria', '/victoria/:path*',
+        '/wackojacko69', '/wackojacko69/:path*'
+    ],
 };
 
 

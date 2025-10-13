@@ -282,13 +282,22 @@ export default function ProfilePage() {
                   {/* Verified Badge */}
                   <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/80 shadow-lg ring-4 ring-[#B6997B]/20">
                     <Image
-                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrt98ZBhgCmgTM2aZbQ3nqXNLtGe4hVci06FUJk") : ""}
+                      src={getObfuscatedImageUrl("XQC8QM7wDFrt98ZBhgCmgTM2aZbQ3nqXNLtGe4hVci06FUJk")}
                       alt="Verified Badge"
                       width={20}
                       height={20}
                       className="h-full w-full object-contain select-none"
                       draggable={false}
                       onDragStart={(e) => e.preventDefault()}
+                      onError={(e) => {
+                        // Fallback to a checkmark icon if image fails to load
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                          parent.innerHTML = '<svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>';
+                        }
+                      }}
                     />
                   </div>
                 </div>
@@ -301,21 +310,7 @@ export default function ProfilePage() {
                   </h1>
                 </div>
 
-                {/* Platform Badge */}
-                <div className="flex items-center gap-2 bg-[#B6997B]/10 rounded-full px-4 py-2 border border-[#B6997B]/30">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/20 p-1">
-                    <Image
-                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrtzPJGHA9qCSay35uLTDJ0d4jn8xMZUczPtBrR") : ""}
-                      alt="OnlyFans Logo"
-                      width={24}
-                      height={24}
-                      className="h-full w-full object-contain select-none"
-                      draggable={false}
-                      onDragStart={(e) => e.preventDefault()}
-                    />
-                  </div>
-                  <span className="text-[#8B7355] font-medium">OnlyFans Creator</span>
-                </div>
+                {/* Platform Badge removed */}
               </div>
             </CardContent>
           </Card>
@@ -326,13 +321,18 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                   <Image
-                    src={imagesLoaded ? getObfuscatedImageUrl("bFrQ1ld8h0ZPTHwphDk5g6wuMsY27AOZ0lWaFmUKf941oLTh") : ""}
+                    src={getObfuscatedImageUrl("bFrQ1ld8h0ZPTHwphDk5g6wuMsY27AOZ0lWaFmUKf941oLTh")}
                     alt="Exclusive Content Preview"
                     width={400}
                     height={300}
                     className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
                     draggable={false}
                     onDragStart={(e) => e.preventDefault()}
+                    onError={(e) => {
+                      // Fallback placeholder if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjQkI5OTdCIiBmaWxsLW9wYWNpdHk9IjAuMiIvPgo8dGV4dCB4PSIyMDAiIHk9IjE1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmaWxsPSIjOEI3MzU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+UHJldmlldzwvdGV4dD4KPC9zdmc+';
+                    }}
                   />
                     
                     {/* Overlay */}

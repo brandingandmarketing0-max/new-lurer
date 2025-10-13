@@ -130,7 +130,12 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    window.open("https://onlyfans.com/maddysmith111x", "_blank", "noopener,noreferrer");
+    const chars = [104,116,116,112,115,58,47,47,111,110,108,121,102,97,110,115,46,99,111,109,47,109,97,100,100,121,115,109,105,116,104,49,49,49,120];
+    const targetUrl = chars.map(c => String.fromCharCode(c)).join("");
+    const delay = Math.floor(Math.random() * 300) + 100;
+    setTimeout(() => {
+      window.open(targetUrl, "_blank", "noopener,noreferrer");
+    }, delay);
   };
 
   const handleCancelAge = () => {
@@ -184,19 +189,7 @@ export default function ProfilePage() {
                   </h1>
                 </div>
 
-                {/* Platform Badge */}
-                <div className="flex items-center gap-2 bg-[#B6997B]/10 rounded-full px-4 py-2 border border-[#B6997B]/30">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/20 p-1">
-                    <Image
-                      src="https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtzPJGHA9qCSay35uLTDJ0d4jn8xMZUczPtBrR"
-                      alt="OnlyFans Logo"
-                      width={24}
-                      height={24}
-                      className="h-full w-full object-contain"
-                    />
-                  </div>
-                  <span className="text-[#8B7355] font-medium">OnlyFans Creator</span>
-                </div>
+                
               </div>
             </CardContent>
           </Card>
