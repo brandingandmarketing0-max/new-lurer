@@ -32,7 +32,7 @@ export default function ProfilePage() {
   
   // Obfuscation helper functions
   const decodeUrl = () => {
-    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 97, 108, 97, 115, 107, 97, 120, 120, 120];
+    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 97, 108, 97, 115, 107, 97, 99, 108, 97, 114, 107, 101];
     return chars.map(c => String.fromCharCode(c)).join("");
   };
   
