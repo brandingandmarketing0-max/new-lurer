@@ -39,7 +39,7 @@ export default function ProfilePage() {
   
   // Image URL obfuscation (mirrors josh)
   const getObfuscatedImageUrl = (imageId: string) => {
-    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 50, 101, 111, 118, 105, 57, 108, 50, 103, 99, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
+    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 112, 54, 116, 118, 107, 105, 54, 101, 116, 104, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
     return baseUrl + imageId;
   };
 
