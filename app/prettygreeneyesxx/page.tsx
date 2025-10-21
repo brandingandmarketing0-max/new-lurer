@@ -87,7 +87,7 @@ export default function ProfilePage() {
       const avatarContainer = document.getElementById('avatar-container');
       if (avatarContainer) {
         const img = document.createElement('img');
-        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtiLpV9tslATwoI4p5NLEYWZtg3UXS2BFR9Gdj");
+        img.src = getObfuscatedImageUrl("2q1SsKyUtXgRzAObad6YcJQs3Kb1Pe0CtDmMnAx5iEqa2wkT");
         img.alt = "prettygreeneyesxx";
         img.className = "w-full h-full object-cover select-none";
         img.draggable = false;
@@ -232,7 +232,7 @@ export default function ProfilePage() {
                   <CardContent className="p-0">
                     <div className="relative group">
                       <Image
-                        src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrthotKyHiEcfAFW435V1LnPm2vkgNqaxYtzRST") : ""}
+                        src={imagesLoaded ? getObfuscatedImageUrl("2q1SsKyUtXgRQiKLPwyAz8yeVGUY4OZIcXRto6T51s0HixW2") : ""}
                         alt="Exclusive Content Preview"
                         width={400}
                         height={300}
