@@ -39,21 +39,29 @@ export default function ChxrliLoveAnalyticsPage() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      const data = await response.json();
-      setAnalyticsData(data);
-      setError(null);
+      const result = await response.json();
+      
+      if (result.success && result.data) {
+        setAnalyticsData(result.data || []);
+        setError(null);
+      } else {
+        setAnalyticsData([]);
+        setError(result.error || 'Failed to fetch analytics data');
+      }
     } catch (err) {
       console.error('Error fetching chxrli_love analytics:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch analytics');
+      setAnalyticsData([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Calculate metrics
-  const totalVisits = analyticsData.length;
-  const uniqueReferrers = new Set(analyticsData.map(item => item.readable_referrer).filter(Boolean)).size;
-  const clickTypes = analyticsData.reduce((acc, item) => {
+  // Calculate metrics - ensure analyticsData is always an array
+  const safeAnalyticsData = Array.isArray(analyticsData) ? analyticsData : [];
+  const totalVisits = safeAnalyticsData.length;
+  const uniqueReferrers = new Set(safeAnalyticsData.map(item => item.readable_referrer).filter(Boolean)).size;
+  const clickTypes = safeAnalyticsData.reduce((acc, item) => {
     const type = item.click_type || 'page_visit';
     acc[type] = (acc[type] || 0) + 1;
     return acc;
@@ -65,7 +73,7 @@ export default function ChxrliLoveAnalyticsPage() {
   const viewAllContentClicks = clickTypes['view_all_content'] || 0;
 
   // Get top referrers
-  const referrerCounts = analyticsData.reduce((acc, item) => {
+  const referrerCounts = safeAnalyticsData.reduce((acc, item) => {
     const ref = item.readable_referrer || 'Direct or unknown';
     acc[ref] = (acc[ref] || 0) + 1;
     return acc;
@@ -76,7 +84,7 @@ export default function ChxrliLoveAnalyticsPage() {
     .slice(0, 5);
 
   // Get recent activity
-  const recentActivity = analyticsData
+  const recentActivity = safeAnalyticsData
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
     .slice(0, 10);
 

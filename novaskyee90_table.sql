@@ -1,7 +1,7 @@
--- Kimbo_bimbo Analytics Table with Click Tracking
+-- Novaskyee90 Analytics Table with Click Tracking
 -- Run this SQL command in your Supabase SQL editor
 
-CREATE TABLE IF NOT EXISTS kimbo_bimbo_analytics (
+CREATE TABLE IF NOT EXISTS novaskyee90_analytics (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     page VARCHAR(255) NOT NULL,
     referrer TEXT,
@@ -16,39 +16,26 @@ CREATE TABLE IF NOT EXISTS kimbo_bimbo_analytics (
 );
 
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_kimbo_bimbo_analytics_timestamp ON kimbo_bimbo_analytics(timestamp);
-CREATE INDEX IF NOT EXISTS idx_kimbo_bimbo_analytics_readable_referrer ON kimbo_bimbo_analytics(readable_referrer);
-CREATE INDEX IF NOT EXISTS idx_kimbo_bimbo_analytics_click_type ON kimbo_bimbo_analytics(click_type);
-CREATE INDEX IF NOT EXISTS idx_kimbo_bimbo_analytics_page ON kimbo_bimbo_analytics(page);
+CREATE INDEX IF NOT EXISTS idx_novaskyee90_analytics_timestamp ON novaskyee90_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_novaskyee90_analytics_readable_referrer ON novaskyee90_analytics(readable_referrer);
+CREATE INDEX IF NOT EXISTS idx_novaskyee90_analytics_click_type ON novaskyee90_analytics(click_type);
+CREATE INDEX IF NOT EXISTS idx_novaskyee90_analytics_page ON novaskyee90_analytics(page);
 
 -- Optional: Create a view for easier analytics queries
-CREATE OR REPLACE VIEW kimbo_bimbo_analytics_summary AS
+CREATE OR REPLACE VIEW novaskyee90_analytics_summary AS
 SELECT 
     DATE(timestamp) as date,
     click_type,
     readable_referrer,
     COUNT(*) as total_events,
     COUNT(DISTINCT ip_address) as unique_visitors
-FROM kimbo_bimbo_analytics 
+FROM novaskyee90_analytics 
 GROUP BY DATE(timestamp), click_type, readable_referrer
 ORDER BY date DESC, total_events DESC;
 
 -- Grant necessary permissions (adjust as needed for your setup)
--- GRANT SELECT, INSERT ON kimbo_bimbo_analytics TO authenticated;
--- GRANT SELECT ON kimbo_bimbo_analytics_summary TO authenticated;
-
-
-
-
-
-
-
-
-
-
-
-
-
+-- GRANT SELECT, INSERT ON novaskyee90_analytics TO authenticated;
+-- GRANT SELECT ON novaskyee90_analytics_summary TO authenticated;
 
 
 
