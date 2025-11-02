@@ -189,6 +189,9 @@ export default function ProfilePage() {
                     freya
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
+                  <p className="text-sm text-[#8B7355]">
+                    ngl, my OF bio will shock you 👹🤣
+                  </p>
                 </div>
 
                 {/* Platform Badge removed */}

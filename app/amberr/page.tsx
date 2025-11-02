@@ -294,9 +294,12 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                   Amber
+                  Amber
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
+                  <p className="text-sm text-[#8B7355]">
+                    ngl, my OF bio will shock you 👹🤣
+                  </p>
                 </div>
 
                 {/* Platform Badge removed */}

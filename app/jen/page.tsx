@@ -31,13 +31,13 @@ export default function ProfilePage() {
   
   // Obfuscation helper functions
   const decodeUrl = () => {
-    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 97, 108, 105, 99, 105, 97, 101, 120, 99, 108, 117, 115, 105, 118, 101];
+    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 106, 101, 110, 110, 110, 110, 105, 102, 101, 114, 116, 104, 111, 109, 115, 111, 110, 47, 99, 50];
     return chars.map(c => String.fromCharCode(c)).join("");
   };
   
   // Image URL obfuscation
   const getObfuscatedImageUrl = (imageId: string) => {
-    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 50, 101, 111, 118, 105, 57, 108, 50, 103, 99, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
+    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 55, 57, 115, 99, 121, 52, 102, 105, 103, 110, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
     return baseUrl + imageId;
   };
   
@@ -122,8 +122,8 @@ export default function ProfilePage() {
       const avatarContainer = document.getElementById('avatar-container');
       if (avatarContainer) {
         const img = document.createElement('img');
-        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtYWaHxnqXMOoU9cVptWZ6DQaeglBGAuhbf5dR");
-        img.alt = "Alicia";
+        img.src = getObfuscatedImageUrl("bFrQ1ld8h0ZPvUqRSoTbzEXnkHquPOZx1lC4Ya5W9ypDrhwU");
+        img.alt = "Jen";
         img.className = "w-full h-full object-cover select-none";
         img.draggable = false;
         img.addEventListener('dragstart', preventDragStart);
@@ -142,10 +142,10 @@ export default function ProfilePage() {
       try {
         if (document.visibilityState !== 'visible') return;
         const payload = {
-          page: "alicia",
+          page: "jen",
           referrer: rawRef,
           timestamp: new Date().toISOString(),
-          pathname: "/alicia",
+          pathname: "/jen",
           searchParams: "",
           click_type: "page_visit"
         };
@@ -163,7 +163,7 @@ export default function ProfilePage() {
         }
 
       } catch (error) {
-        console.error("Failed to track Alicia analytics:", error);
+        console.error("Failed to track Jen analytics:", error);
       }
     };
 
@@ -184,10 +184,10 @@ export default function ProfilePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          page: "alicia",
+          page: "jen",
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/alicia",
+          pathname: "/jen",
           searchParams: "",
           click_type: clickType
         }),
@@ -224,6 +224,7 @@ export default function ProfilePage() {
   const handleCancelAge = () => {
     setShowAgeWarning(false);
   };
+
 
   return (
     <>
@@ -275,7 +276,7 @@ export default function ProfilePage() {
                       id="avatar-container"
                       className="w-full h-full flex items-center justify-center bg-[#B6997B]/20"
                     >
-                      <span className="text-[#8B7355] text-2xl font-bold">A</span>
+                      <span className="text-[#8B7355] text-2xl font-bold">J</span>
                     </div>
                   </div>
                   
@@ -296,15 +297,11 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                    alicia
+                    jen
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
-                  <p className="text-sm text-[#8B7355]">
-                    ngl, my OF bio will shock you 👹🤣
-                  </p>
                 </div>
 
-                {/* Platform Badge removed */}
               </div>
             </CardContent>
           </Card>
@@ -315,7 +312,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrtOdnPN1YbEc3CFKOpsjJY8vNQR42gxVenWtiq") : ""}
+                      src={imagesLoaded ? getObfuscatedImageUrl("bFrQ1ld8h0ZPMhWmCAOYTZx24slqorJg5vMbUD3hGHdBuXN1") : ""}
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
@@ -355,8 +352,6 @@ export default function ProfilePage() {
               </Button>
             </div>
           </div>
-
-          {/* Footer Info */}
           <div className="mt-6 text-center">
             <p className="text-gray-500 text-sm">
                
@@ -431,15 +426,6 @@ export default function ProfilePage() {
     </>
   )
 } 
-
-
-
-
-
-
-
-
-
 
 
 
