@@ -283,13 +283,14 @@ export default function ProfilePage() {
                   {/* Verified Badge */}
                   <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-[#B6997B]/80 shadow-lg ring-4 ring-[#B6997B]/20">
                     <Image
-                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrt98ZBhgCmgTM2aZbQ3nqXNLtGe4hVci06FUJk") : ""}
+                      src={getObfuscatedImageUrl("XQC8QM7wDFrt98ZBhgCmgTM2aZbQ3nqXNLtGe4hVci06FUJk")}
                       alt="Verified Badge"
                       width={20}
                       height={20}
                       className="h-full w-full object-contain select-none"
                       draggable={false}
                       onDragStart={(e) => e.preventDefault()}
+                      unoptimized
                     />
                   </div>
                 </div>
