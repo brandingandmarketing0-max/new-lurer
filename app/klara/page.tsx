@@ -31,7 +31,7 @@ export default function ProfilePage() {
   
   // Obfuscation helper functions
   const decodeUrl = () => {
-    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 106, 101, 110, 110, 110, 110, 105, 102, 101, 114, 116, 104, 111, 109, 115, 111, 110, 47, 99, 51];
+    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 107, 97, 114, 105, 115, 103, 117, 110, 110, 101, 114];
     return chars.map(c => String.fromCharCode(c)).join("");
   };
   
@@ -122,8 +122,8 @@ export default function ProfilePage() {
       const avatarContainer = document.getElementById('avatar-container');
       if (avatarContainer) {
         const img = document.createElement('img');
-        img.src = getObfuscatedImageUrl("bFrQ1ld8h0ZPvUqRSoTbzEXnkHquPOZx1lC4Ya5W9ypDrhwU");
-        img.alt = "Jen";
+        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtFWPlWRcf5QeZo76jBcMzg2DEVPJRlL80I1qm");
+        img.alt = "Klara";
         img.className = "w-full h-full object-cover select-none";
         img.draggable = false;
         img.addEventListener('dragstart', preventDragStart);
@@ -316,7 +316,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src={imagesLoaded ? getObfuscatedImageUrl("bFrQ1ld8h0ZPMhWmCAOYTZx24slqorJg5vMbUD3hGHdBuXN1") : ""}
+                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrth3RFCSiEcfAFW435V1LnPm2vkgNqaxYtzRST") : ""}
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
@@ -429,7 +429,9 @@ export default function ProfilePage() {
       )}
     </>
   )
-} 
+}
+
+
 
 
 

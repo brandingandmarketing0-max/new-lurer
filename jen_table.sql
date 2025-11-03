@@ -50,3 +50,5 @@ ORDER BY date DESC, total_events DESC;
 -- Grant select on view
 GRANT SELECT ON jen_analytics_summary TO authenticated;
 
+
+
