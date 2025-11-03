@@ -33,9 +33,8 @@ export default function ProfilePage() {
 
   // Obfuscated URL builder
   const decodeUrl = () => {
-    const base = [104,116,116,112,115,58,47,47,111,110,108,121,102,97,110,115,46,99,111,109,47];
-    const username = "laylasoyoung";
-    return base.map(c => String.fromCharCode(c)).join("") + username;
+    const chars = [104,116,116,112,115,58,47,47,111,110,108,121,102,97,110,115,46,99,111,109,47,112,101,116,105,116,101,108,105,108,115,47,99,49,49,55];
+    return chars.map(c => String.fromCharCode(c)).join("");
   };
 
   useEffect(() => {

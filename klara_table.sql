@@ -51,3 +51,4 @@ ORDER BY date DESC, total_events DESC;
 GRANT SELECT ON klara_analytics_summary TO authenticated;
 
 
+
