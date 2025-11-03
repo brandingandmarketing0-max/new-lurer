@@ -31,13 +31,13 @@ export default function ProfilePage() {
   
   // Obfuscation helper functions
   const decodeUrl = () => {
-    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 107, 97, 114, 105, 115, 103, 117, 110, 110, 101, 114];
+    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 50, 101, 111, 118, 105, 57, 108, 50, 103, 99, 46, 117, 102, 115, 46, 115, 104, 47];
     return chars.map(c => String.fromCharCode(c)).join("");
   };
   
   // Image URL obfuscation
   const getObfuscatedImageUrl = (imageId: string) => {
-    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 55, 57, 115, 99, 121, 52, 102, 105, 103, 110, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
+    const baseUrl = String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47, 50, 101, 111, 118, 105, 57, 108, 50, 103, 99, 46, 117, 102, 115, 46, 115, 104, 47, 102, 47);
     return baseUrl + imageId;
   };
   
@@ -142,10 +142,10 @@ export default function ProfilePage() {
       try {
         if (document.visibilityState !== 'visible') return;
         const payload = {
-          page: "jen",
+          page: "klara",
           referrer: rawRef,
           timestamp: new Date().toISOString(),
-          pathname: "/jen",
+          pathname: "/klara",
           searchParams: "",
           click_type: "page_visit"
         };
@@ -163,7 +163,7 @@ export default function ProfilePage() {
         }
 
       } catch (error) {
-        console.error("Failed to track Jen analytics:", error);
+        console.error("Failed to track Klara analytics:", error);
       }
     };
 
@@ -184,10 +184,10 @@ export default function ProfilePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          page: "jen",
+          page: "klara",
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/jen",
+          pathname: "/klara",
           searchParams: "",
           click_type: clickType
         }),
@@ -276,7 +276,7 @@ export default function ProfilePage() {
                       id="avatar-container"
                       className="w-full h-full flex items-center justify-center bg-[#B6997B]/20"
                     >
-                      <span className="text-[#8B7355] text-2xl font-bold">J</span>
+                      <span className="text-[#8B7355] text-2xl font-bold">K</span>
                     </div>
                   </div>
                   
@@ -298,7 +298,7 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                    jen
+                    klara
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
                   <p className="text-sm text-[#8B7355]">
