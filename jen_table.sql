@@ -52,3 +52,4 @@ GRANT SELECT ON jen_analytics_summary TO authenticated;
 
 
 
+

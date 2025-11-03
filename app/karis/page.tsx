@@ -122,7 +122,7 @@ export default function ProfilePage() {
       if (avatarContainer) {
         const img = document.createElement('img');
         img.src = getObfuscatedImageUrl("XQC8QM7wDFrtFWPlWRcf5QeZo76jBcMzg2DEVPJRlL80I1qm");
-        img.alt = "Klara";
+        img.alt = "Karis";
         img.className = "w-full h-full object-cover select-none";
         img.draggable = false;
         img.addEventListener('dragstart', preventDragStart);
@@ -141,10 +141,10 @@ export default function ProfilePage() {
       try {
         if (document.visibilityState !== 'visible') return;
         const payload = {
-          page: "klara",
+          page: "karis",
           referrer: rawRef,
           timestamp: new Date().toISOString(),
-          pathname: "/klara",
+          pathname: "/karis",
           searchParams: "",
           click_type: "page_visit"
         };
@@ -162,7 +162,7 @@ export default function ProfilePage() {
         }
 
       } catch (error) {
-        console.error("Failed to track Klara analytics:", error);
+        console.error("Failed to track Karis analytics:", error);
       }
     };
 
@@ -183,10 +183,10 @@ export default function ProfilePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          page: "klara",
+          page: "karis",
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/klara",
+          pathname: "/karis",
           searchParams: "",
           click_type: clickType
         }),
@@ -297,7 +297,7 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                    klara
+                    karis
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
                   <p className="text-sm text-[#8B7355]">
