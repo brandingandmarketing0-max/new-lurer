@@ -30,12 +30,7 @@ export default function ProfilePage() {
   const [showAgeWarning, setShowAgeWarning] = useState<boolean>(false);
   const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
   const [botDetectionComplete, setBotDetectionComplete] = useState<boolean>(false);
-
-  // Obfuscated URL builder
-  const decodeUrl = () => {
-    const chars = [104,116,116,112,115,58,47,47,111,110,108,121,102,97,110,115,46,99,111,109,47,112,101,116,105,116,101,108,105,108,115,47,99,49,49,55];
-    return chars.map(c => String.fromCharCode(c)).join("");
-  };
+  const [pendingTargetUrl, setPendingTargetUrl] = useState<string>("");
 
   useEffect(() => {
     // BotD check - IMMEDIATE, before any content renders
@@ -152,11 +147,13 @@ export default function ProfilePage() {
 
   const handleExclusiveContentClick = () => {
     trackClick("exclusive_content");
+    setPendingTargetUrl("https://onlyfans.com/laylasoyoung/c5");
     setShowAgeWarning(true);
   };
 
   const handleSubscribeClick = () => {
     trackClick("subscribe_now");
+    setPendingTargetUrl("https://onlyfans.com/laylasoyoung/c6");
     setShowAgeWarning(true);
   };
 
@@ -171,7 +168,7 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    const targetUrl = decodeUrl();
+    const targetUrl = pendingTargetUrl || "https://onlyfans.com/laylasoyoung/c5";
     const delay = Math.floor(Math.random() * 300) + 100;
     setTimeout(() => {
       window.open(targetUrl, "_blank", "noopener,noreferrer");
@@ -351,20 +348,3 @@ export default function ProfilePage() {
     </div>
   )
 } 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
