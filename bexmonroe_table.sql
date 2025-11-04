@@ -38,3 +38,4 @@ ORDER BY date DESC, total_events DESC;
 -- GRANT SELECT ON bexmonroe_analytics_summary TO authenticated;
 
 
+
