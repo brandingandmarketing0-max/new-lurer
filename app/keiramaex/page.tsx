@@ -31,7 +31,7 @@ export default function ProfilePage() {
   
   // Obfuscation helper functions
   const decodeUrl = () => {
-    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 107, 101, 105, 114, 97, 109, 97, 121, 120];
+    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 107, 101, 105, 114, 97, 109, 97, 101, 120];
     return chars.map(c => String.fromCharCode(c)).join("");
   };
   
@@ -123,7 +123,7 @@ export default function ProfilePage() {
       if (avatarContainer) {
         const img = document.createElement('img');
         img.src = getObfuscatedImageUrl("XQC8QM7wDFrtTTyv0Kh9Yzfg0lUknoqNstLC42Ke8PwxrXQH");
-        img.alt = "Keiramayx";
+        img.alt = "Keiramaex";
         img.className = "w-full h-full object-cover select-none";
         img.draggable = false;
         img.addEventListener('dragstart', preventDragStart);
@@ -142,10 +142,10 @@ export default function ProfilePage() {
       try {
         if (document.visibilityState !== 'visible') return;
         const payload = {
-          page: "keiramayx",
+          page: "keiramaex",
           referrer: rawRef,
           timestamp: new Date().toISOString(),
-          pathname: "/keiramayx",
+          pathname: "/keiramaex",
           searchParams: "",
           click_type: "page_visit"
         };
@@ -163,7 +163,7 @@ export default function ProfilePage() {
         }
 
       } catch (error) {
-        console.error("Failed to track Keiramayx analytics:", error);
+        console.error("Failed to track Keiramaex analytics:", error);
       }
     };
 
@@ -184,10 +184,10 @@ export default function ProfilePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          page: "keiramayx",
+          page: "keiramaex",
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/keiramayx",
+          pathname: "/keiramaex",
           searchParams: "",
           click_type: clickType
         }),
@@ -297,7 +297,7 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                    keiramayx
+                    keiramaex
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
                 </div>
