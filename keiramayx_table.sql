@@ -51,3 +51,6 @@ GRANT SELECT ON keiramayx_analytics_summary TO authenticated;
 
 
 
+
+
+
