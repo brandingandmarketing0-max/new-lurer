@@ -56,3 +56,4 @@ GRANT SELECT ON klara_analytics_summary TO authenticated;
 
 
 
+

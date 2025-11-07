@@ -50,3 +50,4 @@ GRANT INSERT ON keiramayx_analytics TO service_role;
 GRANT SELECT ON keiramayx_analytics_summary TO authenticated;
 
 
+
