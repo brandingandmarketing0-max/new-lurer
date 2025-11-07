@@ -147,13 +147,13 @@ export default function ProfilePage() {
 
   const handleExclusiveContentClick = () => {
     trackClick("exclusive_content");
-    setPendingTargetUrl("https://onlyfans.com/laylasoyoung/c5");
+    setPendingTargetUrl("https://onlyfans.com/petitelils/c117");
     setShowAgeWarning(true);
   };
 
   const handleSubscribeClick = () => {
     trackClick("subscribe_now");
-    setPendingTargetUrl("https://onlyfans.com/laylasoyoung/c6");
+    setPendingTargetUrl("https://onlyfans.com/petitelils/c117");
     setShowAgeWarning(true);
   };
 
@@ -168,7 +168,7 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    const targetUrl = pendingTargetUrl || "https://onlyfans.com/laylasoyoung/c5";
+    const targetUrl = pendingTargetUrl || "https://onlyfans.com/petitelils/c117";
     const delay = Math.floor(Math.random() * 300) + 100;
     setTimeout(() => {
       window.open(targetUrl, "_blank", "noopener,noreferrer");
