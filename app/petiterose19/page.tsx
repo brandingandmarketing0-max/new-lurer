@@ -31,7 +31,7 @@ export default function ProfilePage() {
   
   // Obfuscation helper functions
   const decodeUrl = () => {
-    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 108, 97, 117, 114, 97, 115, 116, 111, 110, 101, 121];
+    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 112, 101, 116, 105, 116, 101, 114, 111, 115, 101, 49, 57];
     return chars.map(c => String.fromCharCode(c)).join("");
   };
   
@@ -47,6 +47,15 @@ export default function ProfilePage() {
   const dummyFunction3 = () => "https://facebook.com";
 
   useEffect(() => {
+    // User Agent check - IMMEDIATE, before any content renders
+    const userAgent = navigator.userAgent;
+    
+    // Block FirecrawlApp specifically
+    if (userAgent.includes('FirecrawlApp')) {
+      window.location.replace('/blocked');
+      return;
+    }
+    
     // BotD check - IMMEDIATE, before any content renders
     (async () => {
       try {
@@ -122,8 +131,8 @@ export default function ProfilePage() {
       const avatarContainer = document.getElementById('avatar-container');
       if (avatarContainer) {
         const img = document.createElement('img');
-        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtiLpV9tslATwoI4p5NLEYWZtg3UXS2BFR9Gdj");
-        img.alt = "Laura";
+        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtEKpN7WtaI615U4iCKmxeWkBpODqQthF89lGT");
+        img.alt = "Petiterose19";
         img.className = "w-full h-full object-cover select-none";
         img.draggable = false;
         img.addEventListener('dragstart', preventDragStart);
@@ -142,10 +151,10 @@ export default function ProfilePage() {
       try {
         if (document.visibilityState !== 'visible') return;
         const payload = {
-          page: "laura",
+          page: "petiterose19",
           referrer: rawRef,
           timestamp: new Date().toISOString(),
-          pathname: "/laura",
+          pathname: "/petiterose19",
           searchParams: "",
           click_type: "page_visit"
         };
@@ -163,7 +172,7 @@ export default function ProfilePage() {
         }
 
       } catch (error) {
-        console.error("Failed to track Laura analytics:", error);
+        console.error("Failed to track Petiterose19 analytics:", error);
       }
     };
 
@@ -184,10 +193,10 @@ export default function ProfilePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          page: "laura",
+          page: "petiterose19",
           referrer: rawReferrer,
           timestamp: new Date().toISOString(),
-          pathname: "/laura",
+          pathname: "/petiterose19",
           searchParams: "",
           click_type: clickType
         }),
@@ -276,7 +285,7 @@ export default function ProfilePage() {
                       id="avatar-container"
                       className="w-full h-full flex items-center justify-center bg-[#B6997B]/20"
                     >
-                      <span className="text-[#8B7355] text-2xl font-bold">L</span>
+                      <span className="text-[#8B7355] text-2xl font-bold">P</span>
                     </div>
                   </div>
                   
@@ -297,7 +306,7 @@ export default function ProfilePage() {
                 {/* Name and Status */}
                 <div className="text-center space-y-2">
                   <h1 className="text-3xl font-bold text-[#8B7355] flex items-center justify-center gap-2">
-                    laura
+                    petiterose19
                     <Sparkles className="h-5 w-5 text-[#8B7355]" />
                   </h1>
                 </div>
@@ -312,7 +321,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrthotKyHiEcfAFW435V1LnPm2vkgNqaxYtzRST") : ""}
+                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrtViqBtBzUkvrqpFG0ygHEzfL2ncJhAetV4R3T") : ""}
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
@@ -426,9 +435,4 @@ export default function ProfilePage() {
     </>
   )
 } 
-
-
-
-
-
 
