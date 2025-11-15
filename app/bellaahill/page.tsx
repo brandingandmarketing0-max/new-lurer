@@ -131,7 +131,7 @@ export default function ProfilePage() {
       const avatarContainer = document.getElementById('avatar-container');
       if (avatarContainer) {
         const img = document.createElement('img');
-        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtiLpV9tslATwoI4p5NLEYWZtg3UXS2BFR9Gdj");
+        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtEKpN7WtaI615U4iCKmxeWkBpODqQthF89lGT");
         img.alt = "Bellaahill";
         img.className = "w-full h-full object-cover select-none";
         img.draggable = false;
@@ -321,7 +321,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrthotKyHiEcfAFW435V1LnPm2vkgNqaxYtzRST") : ""}
+                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrtViqBtBzUkvrqpFG0ygHEzfL2ncJhAetV4R3T") : ""}
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}

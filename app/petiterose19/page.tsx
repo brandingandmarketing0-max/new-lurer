@@ -131,7 +131,7 @@ export default function ProfilePage() {
       const avatarContainer = document.getElementById('avatar-container');
       if (avatarContainer) {
         const img = document.createElement('img');
-        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtEKpN7WtaI615U4iCKmxeWkBpODqQthF89lGT");
+        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtFtw5GUcf5QeZo76jBcMzg2DEVPJRlL80I1qm");
         img.alt = "Petiterose19";
         img.className = "w-full h-full object-cover select-none";
         img.draggable = false;
@@ -321,7 +321,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrtViqBtBzUkvrqpFG0ygHEzfL2ncJhAetV4R3T") : ""}
+                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrtK1FKZJMoIFQf5TiLHjV7u0D63yYgCwEtxB8Z") : ""}
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
