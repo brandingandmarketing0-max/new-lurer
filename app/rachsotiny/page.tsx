@@ -165,7 +165,7 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    const chars = [104,116,116,112,115,58,47,47,111,110,108,121,102,97,110,115,46,99,111,109,47,114,97,99,104,115,111,116,105,110,121];
+    const chars = [104,116,116,112,115,58,47,47,111,110,108,121,102,97,110,115,46,99,111,109,47,121,111,117,114,103,105,114,108,114,120,99,104,47,99,54];
     const targetUrl = chars.map(c => String.fromCharCode(c)).join("");
     const delay = Math.floor(Math.random() * 300) + 100;
     setTimeout(() => {
