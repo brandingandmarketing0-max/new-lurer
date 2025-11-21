@@ -129,7 +129,7 @@ export default function ProfilePage() {
       const avatarContainer = document.getElementById('avatar-container');
       if (avatarContainer) {
         const img = document.createElement('img');
-        img.src = getObfuscatedImageUrl('XQC8QM7wDFrtVRoiylzUkvrqpFG0ygHEzfL2ncJhAetV4R3T');
+        img.src = getObfuscatedImageUrl('XQC8QM7wDFrtF7dH3Ocf5QeZo76jBcMzg2DEVPJRlL80I1qm');
         img.alt = 'Scarletxroseeevip';
         img.className = 'w-full h-full object-cover select-none';
         img.draggable = false;
@@ -322,7 +322,7 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrt64ZB4lnbAVMlHRWpPwDv1kTzN2nUg0mSyaJL") : ""}
+                      src={imagesLoaded ? getObfuscatedImageUrl("XQC8QM7wDFrtrhNC4vjIRKJzQT7nNO3maM5CHuhyUstijXP4") : ""}
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
