@@ -1,7 +1,7 @@
--- Petiterose19 Analytics Table with Click Tracking
+-- Caitlinteex Analytics Table with Click Tracking
 -- Run this SQL command in your Supabase SQL editor
 
-CREATE TABLE IF NOT EXISTS petiterose19_analytics (
+CREATE TABLE IF NOT EXISTS caitlinteex_analytics (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     page VARCHAR(255) NOT NULL,
     referrer TEXT,
@@ -16,26 +16,24 @@ CREATE TABLE IF NOT EXISTS petiterose19_analytics (
 );
 
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_petiterose19_analytics_timestamp ON petiterose19_analytics(timestamp);
-CREATE INDEX IF NOT EXISTS idx_petiterose19_analytics_readable_referrer ON petiterose19_analytics(readable_referrer);
-CREATE INDEX IF NOT EXISTS idx_petiterose19_analytics_click_type ON petiterose19_analytics(click_type);
-CREATE INDEX IF NOT EXISTS idx_petiterose19_analytics_page ON petiterose19_analytics(page);
+CREATE INDEX IF NOT EXISTS idx_caitlinteex_analytics_timestamp ON caitlinteex_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_caitlinteex_analytics_readable_referrer ON caitlinteex_analytics(readable_referrer);
+CREATE INDEX IF NOT EXISTS idx_caitlinteex_analytics_click_type ON caitlinteex_analytics(click_type);
+CREATE INDEX IF NOT EXISTS idx_caitlinteex_analytics_page ON caitlinteex_analytics(page);
 
 -- Optional: Create a view for easier analytics queries
-CREATE OR REPLACE VIEW petiterose19_analytics_summary AS
+CREATE OR REPLACE VIEW caitlinteex_analytics_summary AS
 SELECT 
     DATE(timestamp) as date,
     click_type,
     readable_referrer,
     COUNT(*) as total_events,
     COUNT(DISTINCT ip_address) as unique_visitors
-FROM petiterose19_analytics 
+FROM caitlinteex_analytics 
 GROUP BY DATE(timestamp), click_type, readable_referrer
 ORDER BY date DESC, total_events DESC;
 
 -- Grant necessary permissions (adjust as needed for your setup)
--- GRANT SELECT, INSERT ON petiterose19_analytics TO authenticated;
--- GRANT SELECT ON petiterose19_analytics_summary TO authenticated;
-
-
+-- GRANT SELECT, INSERT ON caitlinteex_analytics TO authenticated;
+-- GRANT SELECT ON caitlinteex_analytics_summary TO authenticated;
 
