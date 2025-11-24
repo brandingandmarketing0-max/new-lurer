@@ -1,7 +1,7 @@
--- Kimbo_bimbo Analytics Table with Click Tracking
+-- Laylaaasoyoungg Analytics Table with Click Tracking
 -- Run this SQL command in your Supabase SQL editor
 
-CREATE TABLE IF NOT EXISTS kimbo_bimbo_analytics (
+CREATE TABLE IF NOT EXISTS laylaaasoyoungg_analytics (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     page VARCHAR(255) NOT NULL,
     referrer TEXT,
@@ -15,71 +15,28 @@ CREATE TABLE IF NOT EXISTS kimbo_bimbo_analytics (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Drop incorrect index if it exists (fix typo)
+DROP INDEX IF EXISTS idx_laylaaasoyoungg_analytics_readable_rerer;
+
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_kimbo_bimbo_analytics_timestamp ON kimbo_bimbo_analytics(timestamp);
-CREATE INDEX IF NOT EXISTS idx_kimbo_bimbo_analytics_readable_referrer ON kimbo_bimbo_analytics(readable_referrer);
-CREATE INDEX IF NOT EXISTS idx_kimbo_bimbo_analytics_click_type ON kimbo_bimbo_analytics(click_type);
-CREATE INDEX IF NOT EXISTS idx_kimbo_bimbo_analytics_page ON kimbo_bimbo_analytics(page);
+CREATE INDEX IF NOT EXISTS idx_laylaaasoyoungg_analytics_timestamp ON laylaaasoyoungg_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_laylaaasoyoungg_analytics_readable_referrer ON laylaaasoyoungg_analytics(readable_referrer);
+CREATE INDEX IF NOT EXISTS idx_laylaaasoyoungg_analytics_click_type ON laylaaasoyoungg_analytics(click_type);
+CREATE INDEX IF NOT EXISTS idx_laylaaasoyoungg_analytics_page ON laylaaasoyoungg_analytics(page);
 
 -- Optional: Create a view for easier analytics queries
-CREATE OR REPLACE VIEW kimbo_bimbo_analytics_summary AS
+CREATE OR REPLACE VIEW laylaaasoyoungg_analytics_summary AS
 SELECT 
     DATE(timestamp) as date,
     click_type,
     readable_referrer,
     COUNT(*) as total_events,
     COUNT(DISTINCT ip_address) as unique_visitors
-FROM kimbo_bimbo_analytics 
+FROM laylaaasoyoungg_analytics 
 GROUP BY DATE(timestamp), click_type, readable_referrer
 ORDER BY date DESC, total_events DESC;
 
 -- Grant necessary permissions (adjust as needed for your setup)
--- GRANT SELECT, INSERT ON kimbo_bimbo_analytics TO authenticated;
--- GRANT SELECT ON kimbo_bimbo_analytics_summary TO authenticated;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-- GRANT SELECT, INSERT ON laylaaasoyoungg_analytics TO authenticated;
+-- GRANT SELECT ON laylaaasoyoungg_analytics_summary TO authenticated;
 
