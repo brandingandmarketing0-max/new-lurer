@@ -131,7 +131,7 @@ export default function ProfilePage() {
       const avatarContainer = document.getElementById('avatar-container');
       if (avatarContainer) {
         const img = document.createElement('img');
-        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtEFEWioaI615U4iCKmxeWkBpODqQthF89lGTR");
+        img.src = getObfuscatedImageUrl("XQC8QM7wDFrtfhCA3ZrFEYHRmqn7SKJGctzVyX9N8iI0r1TZ");
         img.alt = "DaddyBearVlc";
         img.className = "w-full h-full object-cover select-none";
         img.draggable = false;
