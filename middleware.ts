@@ -25,7 +25,7 @@ export function middleware(request: NextRequest) {
     }
 
     // Protected paths (Phase 1)
-    const protectedPaths = ['/josh', '/rachelirl', '/petitelils', '/scarletxroseeevip', '/bellapetitie', '/littlelouxxx', '/abbiehall', '/abby', '/aimee', '/alaska', '/alfrileyyy', '/alicia', '/amyleigh', '/amberr', '/amymaxwell', '/babyscarlet', '/bethjefferson', '/Blondestud69', '/brooke', '/brooke_xox', '/brookex', '/caitlinteex', '/chloeayling', '/chloeelizabeth', '/chloeinskip', '/chloetami', '/chxrli_love', '/cowgurlkacey', '/dominika', '/ellejean', '/em', '/emily9999x', '/erinhannahxx', '/fitnessblonde', '/freya', '/georgiaaa', '/grace', '/hannah', '/jason', '/jen', '/kaceymay', '/katerina', '/kayley', '/keiramaex', '/kimbo_bimbo', '/kxceyrose', '/laurdunne', '/laylaasoyoung', '/laylasoyoung', '/libby', '/lily', '/lou', '/lsy', '/maddison', '/maddysmith111x', '/megann', '/michaelajayneex', '/missbrown', '/misssophiaisabella', '/morgan', '/noreilly75', '/novaskyee90', '/ollie', '/onlyjessxrose', '/paigexb', '/poppy', '/rachel', '/rachsotiny', '/robynnparkerr', '/sel', '/skye', '/steff', '/sxmmermae', '/victoria', '/wackojacko69', '/petiteirishprincessxxx', '/prettygreeneyesxx'];
+    const protectedPaths = ['/josh', '/rachelirl', '/petitelils', '/scarletxroseeevip', '/bellapetitie', '/littlelouxxx', '/abbiehall', '/abby', '/aimee', '/alaska', '/alfrileyyy', '/alicia', '/amyleigh', '/amberr', '/amymaxwell', '/babyscarlet', '/bethjefferson', '/Blondestud69', '/brooke', '/brooke_xox', '/brookex', '/caitlinteex', '/chloeayling', '/chloeelizabeth', '/chloeinskip', '/chloetami', '/chxrli_love', '/cowgurlkacey', '/dominika', '/ellejean', '/em', '/emily9999x', '/erinhannahxx', '/fitnessblonde', '/freya', '/georgiaaa', '/grace', '/hannah', '/jason', '/jen', '/kaceymay', '/katerina', '/kayley', '/keiramaex', '/kimbo_bimbo', '/kxceyrose', '/laurdunne', '/laylaasoyoung', '/laylasoyoung', '/libby', '/lily', '/lou', '/lsy', '/maddison', '/maddysmith111x', '/megann', '/michaelajayneex', '/missbrown', '/misssophiaisabella', '/morgan', '/noreilly75', '/novaskyee90', '/ollie', '/onlyjessxrose', '/paigexb', '/poppy', '/rachel', '/rachsotiny', '/robynnparkerr', '/sel', '/simplesimon8', '/skye', '/steff', '/sxmmermae', '/victoria', '/wackojacko69', '/petiteirishprincessxxx', '/prettygreeneyesxx', '/daddybearvlc', '/shellyhunterxo', '/tashacatton17'];
     const isProtected = protectedPaths.some(p => pathname === p || pathname.startsWith(p + '/'));
 
     // Debug logging
@@ -169,12 +169,16 @@ export const config = {
         '/rachel', '/rachel/:path*',
         '/rachsotiny', '/rachsotiny/:path*',
         '/robynnparkerr', '/robynnparkerr/:path*',
+        '/simplesimon8', '/simplesimon8/:path*',
         '/sel', '/sel/:path*',
         '/skye', '/skye/:path*',
         '/steff', '/steff/:path*',
         '/sxmmermae', '/sxmmermae/:path*',
         '/victoria', '/victoria/:path*',
-        '/wackojacko69', '/wackojacko69/:path*'
+        '/wackojacko69', '/wackojacko69/:path*',
+        '/daddybearvlc', '/daddybearvlc/:path*',
+        '/shellyhunterxo', '/shellyhunterxo/:path*',
+        '/tashacatton17', '/tashacatton17/:path*'
     ],
 };
 

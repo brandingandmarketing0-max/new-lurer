@@ -49,3 +49,4 @@ GRANT SELECT ON simplesimon8_analytics TO authenticated;
 GRANT INSERT ON simplesimon8_analytics TO service_role;
 GRANT SELECT ON simplesimon8_analytics_summary TO authenticated;
 
+

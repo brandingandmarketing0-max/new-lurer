@@ -8,7 +8,7 @@ import { BarChart3, Eye, Users, TrendingUp, Globe, Clock, ArrowLeft, RefreshCw, 
 import Link from "next/link";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 
-interface Clarkeyyy144AnalyticsData {
+interface ShellyHunterXOAnalyticsData {
   id: number;
   page: string;
   referrer: string;
@@ -22,27 +22,27 @@ interface Clarkeyyy144AnalyticsData {
   click_type?: string; // Added for click tracking
 }
 
-export default function Clarkeyyy144AnalyticsPage() {
+export default function ShellyHunterXOAnalyticsPage() {
   return (
     <ProtectedRoute>
-      <Clarkeyyy144AnalyticsContent />
+      <ShellyHunterXOAnalyticsContent />
     </ProtectedRoute>
   );
 }
 
-function Clarkeyyy144AnalyticsContent() {
-  const [analyticsData, setAnalyticsData] = useState<Clarkeyyy144AnalyticsData[]>([]);
+function ShellyHunterXOAnalyticsContent() {
+  const [analyticsData, setAnalyticsData] = useState<ShellyHunterXOAnalyticsData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchClarkeyyy144Analytics();
+    fetchShellyHunterXOAnalytics();
   }, []);
 
-  const fetchClarkeyyy144Analytics = async () => {
+  const fetchShellyHunterXOAnalytics = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/track?page=clarkeyyy144');
+      const response = await fetch('/api/track?page=shellyhunterxo');
       if (!response.ok) {
         throw new Error('Failed to fetch analytics data');
       }
@@ -101,7 +101,7 @@ if (loading) {
         <div className="max-w-6xl mx-auto">
           <div className="text-gray-800 text-center py-20">
             <BarChart3 className="h-12 w-12 mx-auto mb-4 animate-spin text-[#B19272]" />
-            <h1 className="text-2xl font-bold">Loading Clarkeyyy144 Analytics...</h1>
+            <h1 className="text-2xl font-bold">Loading ShellyHunterXO Analytics...</h1>
           </div>
         </div>
       </div>
@@ -115,7 +115,7 @@ if (loading) {
           <div className="text-gray-800 text-center py-20">
             <h1 className="text-2xl font-bold mb-4">Error Loading Analytics</h1>
             <p className="text-red-600 mb-4">{error}</p>
-            <Button onClick={fetchClarkeyyy144Analytics} className="bg-[#B19272] hover:bg-[#9A7B5F]">Retry</Button>
+            <Button onClick={fetchShellyHunterXOAnalytics} className="bg-[#B19272] hover:bg-[#9A7B5F]">Retry</Button>
           </div>
         </div>
       </div>
@@ -128,19 +128,19 @@ if (loading) {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for Clarkeyyy144</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics for ShellyHunterXO</h1>
             <p className="text-gray-600">Track your page performance and visitor insights</p>
           </div>
           <div className="flex items-center gap-3">
             <Button 
-              onClick={fetchClarkeyyy144Analytics}
+              onClick={fetchShellyHunterXOAnalytics}
               variant="outline" 
               className="border-[#B19272] text-[#B19272] hover:bg-[#B19272] hover:text-white"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
-            <Link href="/clarkeyyy144">
+            <Link href="/shellyhunterxo">
               <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Profile
@@ -162,13 +162,13 @@ if (loading) {
             </div>
             <div className="flex items-center gap-2 mb-4">
               <LinkIcon className="h-4 w-4 text-[#B19272]" />
-              <span className="text-[#B19272] font-medium">viewit.bio/clarkeyyy144</span>
+              <span className="text-[#B19272] font-medium">viewit.bio/shellyhunterxo</span>
             </div>
             <div className="flex items-center gap-2 mb-4">
               <Eye className="h-4 w-4 text-gray-500" />
               <span className="text-gray-700">{totalVisits} All-Time Visitors</span>
             </div>
-            <div className="text-sm text-gray-500">Created on Aug 05, 2025</div>
+            <div className="text-sm text-gray-500">Created on Nov 26, 2025</div>
           </CardContent>
         </Card>
 
@@ -313,8 +313,6 @@ if (loading) {
     </div>
   );
 }
-
-
 
 
 

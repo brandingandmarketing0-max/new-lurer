@@ -1,9 +1,9 @@
--- Daddybearvlc Analytics Table with Click Tracking
+-- Clarkeyyy144 Analytics Table with Click Tracking
 -- Run this SQL command in your Supabase SQL editor
 
-CREATE TABLE IF NOT EXISTS daddybearvlc_analytics (
+CREATE TABLE IF NOT EXISTS clarkeyyy144_analytics (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    page VARCHAR(255) NOT NULL DEFAULT 'daddybearvlc',
+    page VARCHAR(255) NOT NULL DEFAULT 'clarkeyyy144',
     referrer TEXT,
     readable_referrer VARCHAR(255),
     user_agent TEXT,
@@ -16,37 +16,37 @@ CREATE TABLE IF NOT EXISTS daddybearvlc_analytics (
 );
 
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_daddybearvlc_analytics_timestamp ON daddybearvlc_analytics(timestamp);
-CREATE INDEX IF NOT EXISTS idx_daddybearvlc_analytics_readable_referrer ON daddybearvlc_analytics(readable_referrer);
-CREATE INDEX IF NOT EXISTS idx_daddybearvlc_analytics_click_type ON daddybearvlc_analytics(click_type);
-CREATE INDEX IF NOT EXISTS idx_daddybearvlc_analytics_page ON daddybearvlc_analytics(page);
+CREATE INDEX IF NOT EXISTS idx_clarkeyyy144_analytics_timestamp ON clarkeyyy144_analytics(timestamp);
+CREATE INDEX IF NOT EXISTS idx_clarkeyyy144_analytics_readable_referrer ON clarkeyyy144_analytics(readable_referrer);
+CREATE INDEX IF NOT EXISTS idx_clarkeyyy144_analytics_click_type ON clarkeyyy144_analytics(click_type);
+CREATE INDEX IF NOT EXISTS idx_clarkeyyy144_analytics_page ON clarkeyyy144_analytics(page);
 
 -- Optional: Create a view for easier analytics queries
-CREATE OR REPLACE VIEW daddybearvlc_analytics_summary AS
+CREATE OR REPLACE VIEW clarkeyyy144_analytics_summary AS
 SELECT 
     DATE(timestamp) as date,
     click_type,
     readable_referrer,
     COUNT(*) as total_events,
     COUNT(DISTINCT ip_address) as unique_visitors
-FROM daddybearvlc_analytics 
+FROM clarkeyyy144_analytics 
 GROUP BY DATE(timestamp), click_type, readable_referrer
 ORDER BY date DESC, total_events DESC;
 
 -- Add RLS (Row Level Security) policies
-ALTER TABLE daddybearvlc_analytics ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clarkeyyy144_analytics ENABLE ROW LEVEL SECURITY;
 
 -- Policy to allow authenticated users to read data
-CREATE POLICY "Allow authenticated users to read daddybearvlc analytics" ON daddybearvlc_analytics
+CREATE POLICY "Allow authenticated users to read clarkeyyy144 analytics" ON clarkeyyy144_analytics
     FOR SELECT USING (auth.role() = 'authenticated');
 
 -- Policy to allow service role to insert data (for API tracking)
-CREATE POLICY "Allow service role to insert daddybearvlc analytics" ON daddybearvlc_analytics
+CREATE POLICY "Allow service role to insert clarkeyyy144 analytics" ON clarkeyyy144_analytics
     FOR INSERT WITH CHECK (true);
 
 -- Grant necessary permissions
-GRANT SELECT ON daddybearvlc_analytics TO authenticated;
-GRANT INSERT ON daddybearvlc_analytics TO service_role;
-GRANT SELECT ON daddybearvlc_analytics_summary TO authenticated;
+GRANT SELECT ON clarkeyyy144_analytics TO authenticated;
+GRANT INSERT ON clarkeyyy144_analytics TO service_role;
+GRANT SELECT ON clarkeyyy144_analytics_summary TO authenticated;
 
 
