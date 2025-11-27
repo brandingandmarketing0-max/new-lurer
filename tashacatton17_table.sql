@@ -50,3 +50,4 @@ GRANT INSERT ON tashacatton17_analytics TO service_role;
 GRANT SELECT ON tashacatton17_analytics_summary TO authenticated;
 
 
+

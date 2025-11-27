@@ -50,3 +50,4 @@ GRANT INSERT ON clarkeyyy144_analytics TO service_role;
 GRANT SELECT ON clarkeyyy144_analytics_summary TO authenticated;
 
 
+

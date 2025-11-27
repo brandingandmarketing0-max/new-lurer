@@ -50,3 +50,4 @@ GRANT INSERT ON shellyhunterxo_analytics TO service_role;
 GRANT SELECT ON shellyhunterxo_analytics_summary TO authenticated;
 
 
+

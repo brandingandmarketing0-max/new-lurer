@@ -50,3 +50,4 @@ GRANT INSERT ON daddybearvlc_analytics TO service_role;
 GRANT SELECT ON daddybearvlc_analytics_summary TO authenticated;
 
 
+
