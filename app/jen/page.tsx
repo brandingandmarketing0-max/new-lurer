@@ -122,7 +122,7 @@ export default function ProfilePage() {
       const avatarContainer = document.getElementById('avatar-container');
       if (avatarContainer) {
         const img = document.createElement('img');
-        img.src = getObfuscatedImageUrl("bFrQ1ld8h0ZPvUqRSoTbzEXnkHquPOZx1lC4Ya5W9ypDrhwU");
+        img.src = "https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrthOOeN7JiEcfAFW435V1LnPm2vkgNqaxYtzRS";
         img.alt = "Jen";
         img.className = "w-full h-full object-cover select-none";
         img.draggable = false;
@@ -316,11 +316,11 @@ export default function ProfilePage() {
                 <CardContent className="p-0">
                   <div className="relative group">
                     <Image
-                      src={imagesLoaded ? getObfuscatedImageUrl("bFrQ1ld8h0ZPMhWmCAOYTZx24slqorJg5vMbUD3hGHdBuXN1") : ""}
+                      src={imagesLoaded ? "https://2eovi9l2gc.ufs.sh/f/XQC8QM7wDFrtWAFMwh5gbqUvXNlhmPadO3GES8j964o2Ft7T" : ""}
                       alt="Exclusive Content Preview"
                       width={400}
                       height={300}
-                      className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
+                      className="aspect-video w-full object-contain transition-transform duration-300 group-hover:scale-105 select-none"
                       draggable={false}
                       onDragStart={(e) => e.preventDefault()}
                     />
