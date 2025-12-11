@@ -28,6 +28,7 @@ export default function ProfilePage() {
   const [showAgeWarning, setShowAgeWarning] = useState<boolean>(false);
   const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
   const [botDetectionComplete, setBotDetectionComplete] = useState<boolean>(false);
+  const [isInstagramBrowser, setIsInstagramBrowser] = useState<boolean>(false);
   
   // Obfuscation helper functions
   const decodeUrl = () => {
@@ -72,76 +73,110 @@ export default function ProfilePage() {
     setRawReferrer(rawRef);
     setReferrer(getReadableReferrer(rawRef));
 
-    // Detect and force external browser for Instagram in-app browser
+    // Detect and force external browser for Instagram in-app browser - IMMEDIATE REDIRECT
     const detectAndForceExternalBrowser = () => {
       const ua = navigator.userAgent.toLowerCase();
       const ref = rawRef.toLowerCase();
-      const isInstagramInApp = (ua.includes('instagram') || ref.includes('instagram.com')) && 
-                               (ua.includes('iphone') || ua.includes('ipad') || ua.includes('android'));
+      // More aggressive detection - check for Instagram in-app browser
+      const isInstagramInApp = ua.includes('instagram') || 
+                               (ref.includes('instagram.com') && (ua.includes('iphone') || ua.includes('ipad') || ua.includes('android')));
+      
+      setIsInstagramBrowser(isInstagramInApp);
       
       if (isInstagramInApp) {
         const currentUrl = window.location.href;
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const isAndroid = /Android/.test(navigator.userAgent);
         
-        // Try multiple methods to force external browser
-        const forceOpen = () => {
-          if (isIOS) {
-            // Method 1: Create a link and click it (most reliable for iOS)
+        if (isIOS) {
+          // For iOS - IMMEDIATELY try to open in Safari
+          // Method 1: Use location.href to force redirect (most aggressive)
+          try {
+            window.location.href = currentUrl;
+          } catch (e) {
+            // Fallback methods
+          }
+          
+          // Method 2: Create and click link immediately (runs in parallel)
+          setTimeout(() => {
             const link = document.createElement('a');
             link.href = currentUrl;
             link.target = '_blank';
             link.rel = 'noopener noreferrer';
-            link.style.display = 'none';
+            // Make it more visible to trigger Safari
+            link.style.position = 'fixed';
+            link.style.top = '0';
+            link.style.left = '0';
+            link.style.width = '100%';
+            link.style.height = '100%';
+            link.style.zIndex = '999999';
+            link.style.opacity = '0';
+            document.body.appendChild(link);
+            
+            // Trigger click multiple times
+            link.click();
+            setTimeout(() => link.click(), 10);
+            setTimeout(() => link.click(), 50);
+            
+            // Remove after attempts
+            setTimeout(() => {
+              if (link.parentNode) {
+                link.parentNode.removeChild(link);
+              }
+            }, 200);
+          }, 0);
+          
+          // Method 3: window.open with multiple attempts
+          setTimeout(() => {
+            window.open(currentUrl, '_blank', 'noopener,noreferrer');
+          }, 100);
+          
+          setTimeout(() => {
+            window.open(currentUrl, '_blank', 'noopener,noreferrer');
+          }, 300);
+          
+          // Method 4: Try location.replace
+          setTimeout(() => {
+            try {
+              window.location.replace(currentUrl);
+            } catch (e) {}
+          }, 150);
+          
+        } else if (isAndroid) {
+          // For Android - prompt to open in Chrome
+          const newWindow = window.open(currentUrl, '_blank', 'noopener,noreferrer');
+          
+          if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+            // Try link method
+            const link = document.createElement('a');
+            link.href = currentUrl;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.style.position = 'fixed';
+            link.style.top = '0';
+            link.style.left = '0';
+            link.style.width = '100%';
+            link.style.height = '100%';
+            link.style.zIndex = '999999';
+            link.style.opacity = '0';
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
-            
-            // Method 2: window.open as fallback
             setTimeout(() => {
-              window.open(currentUrl, '_blank', 'noopener,noreferrer');
-            }, 50);
-            
-            // Method 3: Try again after a short delay
-            setTimeout(() => {
-              const link2 = document.createElement('a');
-              link2.href = currentUrl;
-              link2.target = '_blank';
-              link2.rel = 'noopener noreferrer';
-              link2.style.display = 'none';
-              document.body.appendChild(link2);
-              link2.click();
-              document.body.removeChild(link2);
-            }, 200);
-          } else if (isAndroid) {
-            // Method 1: window.open (should prompt for Chrome on Android)
-            const newWindow = window.open(currentUrl, '_blank', 'noopener,noreferrer');
-            
-            // Method 2: If blocked, try link click
-            if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-              const link = document.createElement('a');
-              link.href = currentUrl;
-              link.target = '_blank';
-              link.rel = 'noopener noreferrer';
-              link.style.display = 'none';
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-            }
-            
-            // Method 3: Try again after delay
-            setTimeout(() => {
-              window.open(currentUrl, '_blank', 'noopener,noreferrer');
+              if (link.parentNode) {
+                link.parentNode.removeChild(link);
+              }
             }, 200);
           }
-        };
-        
-        // Execute immediately
-        forceOpen();
+          
+          // Multiple attempts
+          setTimeout(() => {
+            window.open(currentUrl, '_blank', 'noopener,noreferrer');
+          }, 200);
+        }
       }
     };
 
-    // Force external browser immediately if in Instagram (run before other code)
+    // Force external browser IMMEDIATELY - run this FIRST before anything else
     detectAndForceExternalBrowser();
 
     // Image protection handlers
@@ -362,6 +397,62 @@ export default function ProfilePage() {
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B6997B] mx-auto mb-4"></div>
             <p className="text-[#8B7355] text-sm">Loading...</p>
+          </div>
+        </div>
+      )}
+      
+      {/* Instagram Browser Overlay - Force Safari Open */}
+      {botDetectionComplete && isInstagramBrowser && (
+        <div 
+          className="fixed inset-0 bg-black/95 z-[60] flex items-center justify-center p-4"
+          onClick={() => {
+            const currentUrl = window.location.href;
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            
+            if (isIOS) {
+              // Try to open in Safari immediately
+              window.location.href = currentUrl;
+              // Also try link method
+              setTimeout(() => {
+                const link = document.createElement('a');
+                link.href = currentUrl;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.style.position = 'fixed';
+                link.style.top = '0';
+                link.style.left = '0';
+                link.style.width = '100%';
+                link.style.height = '100%';
+                link.style.zIndex = '999999';
+                link.style.opacity = '0';
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(() => {
+                  if (link.parentNode) {
+                    link.parentNode.removeChild(link);
+                  }
+                }, 100);
+              }, 50);
+            }
+          }}
+        >
+          <div className="text-center max-w-md mx-auto">
+            <div className="bg-[#B6997B]/20 border border-[#B6997B]/50 rounded-lg p-6 backdrop-blur-sm">
+              <h2 className="text-2xl font-bold text-white mb-4">Open in Safari</h2>
+              <p className="text-[#8B7355] mb-6">
+                Tap anywhere to open this page in Safari for the best experience
+              </p>
+              <button 
+                className="bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const currentUrl = window.location.href;
+                  window.location.href = currentUrl;
+                }}
+              >
+                Open in Safari
+              </button>
+            </div>
           </div>
         </div>
       )}
