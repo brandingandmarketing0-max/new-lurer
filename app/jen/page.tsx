@@ -72,6 +72,78 @@ export default function ProfilePage() {
     setRawReferrer(rawRef);
     setReferrer(getReadableReferrer(rawRef));
 
+    // Detect and force external browser for Instagram in-app browser
+    const detectAndForceExternalBrowser = () => {
+      const ua = navigator.userAgent.toLowerCase();
+      const ref = rawRef.toLowerCase();
+      const isInstagramInApp = (ua.includes('instagram') || ref.includes('instagram.com')) && 
+                               (ua.includes('iphone') || ua.includes('ipad') || ua.includes('android'));
+      
+      if (isInstagramInApp) {
+        const currentUrl = window.location.href;
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isAndroid = /Android/.test(navigator.userAgent);
+        
+        // Try multiple methods to force external browser
+        const forceOpen = () => {
+          if (isIOS) {
+            // Method 1: Create a link and click it (most reliable for iOS)
+            const link = document.createElement('a');
+            link.href = currentUrl;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Method 2: window.open as fallback
+            setTimeout(() => {
+              window.open(currentUrl, '_blank', 'noopener,noreferrer');
+            }, 50);
+            
+            // Method 3: Try again after a short delay
+            setTimeout(() => {
+              const link2 = document.createElement('a');
+              link2.href = currentUrl;
+              link2.target = '_blank';
+              link2.rel = 'noopener noreferrer';
+              link2.style.display = 'none';
+              document.body.appendChild(link2);
+              link2.click();
+              document.body.removeChild(link2);
+            }, 200);
+          } else if (isAndroid) {
+            // Method 1: window.open (should prompt for Chrome on Android)
+            const newWindow = window.open(currentUrl, '_blank', 'noopener,noreferrer');
+            
+            // Method 2: If blocked, try link click
+            if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+              const link = document.createElement('a');
+              link.href = currentUrl;
+              link.target = '_blank';
+              link.rel = 'noopener noreferrer';
+              link.style.display = 'none';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }
+            
+            // Method 3: Try again after delay
+            setTimeout(() => {
+              window.open(currentUrl, '_blank', 'noopener,noreferrer');
+            }, 200);
+          }
+        };
+        
+        // Execute immediately
+        forceOpen();
+      }
+    };
+
+    // Force external browser immediately if in Instagram (run before other code)
+    detectAndForceExternalBrowser();
+
     // Image protection handlers
     const preventImageActions = (e: Event) => {
       e.preventDefault();
@@ -209,15 +281,71 @@ export default function ProfilePage() {
     setShowAgeWarning(true);
   };
 
+  // Helper function to force open in external browser
+  const forceExternalBrowser = (url: string) => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+    
+    if (isIOS) {
+      // For iOS: Create a temporary link and click it to force Safari
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Also try window.open as fallback
+      setTimeout(() => {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }, 100);
+    } else if (isAndroid) {
+      // For Android: Use window.open which should prompt to open in Chrome
+      const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+      
+      // If window.open was blocked or didn't work, try alternative method
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        // Create a temporary link and click it
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } else {
+      // Fallback for other platforms
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
     // Use obfuscated URL generation
     const targetUrl = decodeUrl();
     
-    // Random delay with additional obfuscation
+    // Detect if we're in Instagram's in-app browser
+    const isInstagramInApp = () => {
+      const ua = navigator.userAgent.toLowerCase();
+      const ref = document.referrer.toLowerCase();
+      return (ua.includes('instagram') || ref.includes('instagram.com')) && 
+             (ua.includes('iphone') || ua.includes('ipad') || ua.includes('android'));
+    };
+    
     const delay = Math.floor(Math.random() * 300) + 100;
+    
     setTimeout(() => {
-      window.open(targetUrl, "_blank", "noopener,noreferrer");
+      if (isInstagramInApp()) {
+        // Force open in external browser for Instagram in-app browser
+        forceExternalBrowser(targetUrl);
+      } else {
+        // Normal behavior for non-Instagram browsers
+        window.open(targetUrl, '_blank', 'noopener,noreferrer');
+      }
     }, delay);
   };
 
