@@ -83,12 +83,20 @@ function detectInAppBrowser(): DetectResult {
 }
 
 // Enhanced browser opening function that tries multiple methods
+// Returns true if it successfully initiated an external browser open
 function openInDefaultBrowser(finalUrl: string, detection: DetectResult): boolean {
   // 1) Best-effort: try window.open('_blank') — some IG webviews spawn an external browser for that
   try {
     const newWin = window.open(finalUrl, '_blank', 'noopener,noreferrer');
-    if (newWin) {
-      return true; // Successfully opened
+    if (newWin && !newWin.closed) {
+      // Check if window was actually opened (not blocked)
+      setTimeout(() => {
+        if (!newWin.closed) {
+          // Window opened successfully, we can close this tab
+          return true;
+        }
+      }, 100);
+      return true;
     }
   } catch (e) {
     // fall through
@@ -101,34 +109,27 @@ function openInDefaultBrowser(finalUrl: string, detection: DetectResult): boolea
         'intent://' +
         finalUrl.replace(/^https?:\/\//, '') +
         `#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(finalUrl)};end`;
-      window.location.href = intentUrl;
+      // Use window.location.replace to prevent back button issues
+      window.location.replace(intentUrl);
       return true;
     } catch (e) {
       // continue
     }
   }
 
-  // 3) iOS: nudge Chrome (if installed) then fallback to final URL
+  // 3) iOS: Try Safari scheme (more reliable than Chrome)
   if (detection.isiOS) {
     try {
-      const chromeScheme = 'googlechrome://' + finalUrl.replace(/^https?:\/\//, '');
-      window.location.href = chromeScheme;
-      setTimeout(() => {
-        window.location.href = finalUrl;
-      }, 500);
-      return true;
+      // For iOS, we'll show a message instead of auto-redirecting
+      // because iOS is very restrictive about programmatic browser switching
+      return false; // Return false so we show the manual fallback
     } catch (e) {
       // continue
     }
   }
 
-  // 4) Last resort: direct navigation
-  try {
-    window.location.href = finalUrl;
-    return true;
-  } catch (e) {
-    return false;
-  }
+  // Return false to show manual fallback
+  return false;
 }
 
 // Beacon helper: tries navigator.sendBeacon, falls back to fetch
@@ -155,6 +156,7 @@ export default function ProfilePage() {
   const [botDetectionComplete, setBotDetectionComplete] = useState<boolean>(false);
   const [browserDetection, setBrowserDetection] = useState<DetectResult | null>(null);
   const [showBrowserFallback, setShowBrowserFallback] = useState<boolean>(false);
+  const [hasAttemptedRedirect, setHasAttemptedRedirect] = useState<boolean>(false);
   
   // Obfuscation helper functions
   const decodeUrl = () => {
@@ -193,19 +195,34 @@ export default function ProfilePage() {
       page: "test123",
     });
 
-    // IMMEDIATE: If in Instagram's in-app browser, try to open in default browser RIGHT AWAY
+    // IMMEDIATE: If in Instagram's in-app browser, show message to open in default browser
+    // Use sessionStorage to prevent multiple attempts across re-renders
+    const redirectKey = 'instagram_redirect_attempted';
+    const hasTriedRedirect = sessionStorage.getItem(redirectKey);
+    
     if (browserDet.isInAppBrowser && browserDet.isMobile) {
-      const currentUrl = window.location.href;
-      
-      // Try to open current page in default browser immediately
-      const opened = openInDefaultBrowser(currentUrl, browserDet);
-      
-      if (!opened) {
-        // If automatic opening fails, show fallback after a short delay
-        setTimeout(() => setShowBrowserFallback(true), 1500);
+      if (!hasTriedRedirect) {
+        sessionStorage.setItem(redirectKey, 'true');
+        setHasAttemptedRedirect(true);
+        
+        // For Instagram specifically, show message immediately (auto-redirect causes loops)
+        if (browserDet.isInstagram) {
+          // Show fallback UI immediately for Instagram
+          setTimeout(() => setShowBrowserFallback(true), 300);
+        } else {
+          // For other in-app browsers, try automatic redirect
+          const currentUrl = window.location.href;
+          setTimeout(() => {
+            const opened = openInDefaultBrowser(currentUrl, browserDet);
+            if (!opened) {
+              setShowBrowserFallback(true);
+            }
+          }, 200);
+        }
+      } else {
+        // Already tried, just show the fallback UI
+        setShowBrowserFallback(true);
       }
-      
-      // Still continue with the rest of the page load, but user should be redirected
     }
 
     // User Agent check - IMMEDIATE, before any content renders
@@ -402,11 +419,15 @@ export default function ProfilePage() {
   const handleManualOpen = () => {
     // Open the current page URL in default browser
     const currentUrl = window.location.href;
-    if (browserDetection) {
+    
+    // Try window.open first (most reliable)
+    const newWin = window.open(currentUrl, "_blank", "noopener,noreferrer");
+    
+    if (!newWin && browserDetection) {
+      // If window.open was blocked, try the enhanced method
       openInDefaultBrowser(currentUrl, browserDetection);
-    } else {
-      window.open(currentUrl, "_blank", "noopener,noreferrer");
     }
+    
     beaconVisit({
       ts: Date.now(),
       event: 'user_clicked_manual_open',
@@ -566,18 +587,35 @@ export default function ProfilePage() {
               </div>
               
               <div className="space-y-4">
-                <p className="text-[#8B7355] text-sm leading-relaxed">
+                <p className="text-[#8B7355] text-sm leading-relaxed font-medium">
                   {browserDetection?.isInstagram 
-                    ? "If this opened inside Instagram, tap the ⋯ menu (top-right) → Open in Browser, then tap the button below."
+                    ? "📱 To open in Safari/Chrome: Tap the ⋯ menu (top-right) → 'Open in Browser' → Then tap the button below"
+                    : browserDetection?.isiOS
+                    ? "📱 Tap the button below to copy the link, then paste it in Safari"
                     : "Please tap the button below to open in your default browser."}
                 </p>
                 
-                <Button
-                  onClick={handleManualOpen}
-                  className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3"
-                >
-                  Open in Browser
-                </Button>
+                <div className="space-y-2">
+                  <Button
+                    onClick={handleManualOpen}
+                    className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3"
+                  >
+                    Open in Browser
+                  </Button>
+                  
+                  {browserDetection?.isiOS && (
+                    <Button
+                      onClick={() => {
+                        navigator.clipboard.writeText(window.location.href);
+                        alert('Link copied! Paste it in Safari.');
+                      }}
+                      variant="outline"
+                      className="w-full border-[#B6997B]/50 text-[#8B7355] hover:bg-[#B6997B]/20"
+                    >
+                      Copy Link
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
