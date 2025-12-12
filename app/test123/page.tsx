@@ -591,11 +591,13 @@ export default function ProfilePage() {
   const [botDetectionComplete, setBotDetectionComplete] = useState<boolean>(false);
   const [browserDetection, setBrowserDetection] = useState<DetectResult | null>(null);
   const [hasAttemptedRedirect, setHasAttemptedRedirect] = useState<boolean>(false);
+  const [isStillInInstagram, setIsStillInInstagram] = useState<boolean>(false);
+  const [showLinkMeLoading, setShowLinkMeLoading] = useState<boolean>(false);
   
   // Obfuscation helper functions
   const decodeUrl = () => {
-    const chars = [104, 116, 116, 112, 115, 58, 47, 47, 111, 110, 108, 121, 102, 97, 110, 115, 46, 99, 111, 109, 47, 116, 101, 115, 116, 49, 50, 51];
-    return chars.map(c => String.fromCharCode(c)).join("");
+    // Return current page URL instead of external link
+    return window.location.href;
   };
   
   // Image URL obfuscation
@@ -629,42 +631,92 @@ export default function ProfilePage() {
       page: "test123",
     });
 
-    // Link.me style: Wait 2 seconds then redirect to TARGET URL (opens Safari)
-    // Use sessionStorage to prevent multiple attempts across re-renders
-    const redirectKey = 'instagram_redirect_attempted';
-    const hasTriedRedirect = sessionStorage.getItem(redirectKey);
-    
-    if (browserDet.isInAppBrowser && browserDet.isMobile && !hasTriedRedirect) {
-      sessionStorage.setItem(redirectKey, 'true');
-      setHasAttemptedRedirect(true);
+    // Check if still in Instagram - keep trying to redirect until Safari opens
+    // DO NOT load the page content until Safari opens
+    if (browserDet.isInAppBrowser && browserDet.isMobile && browserDet.isInstagram) {
+      setIsStillInInstagram(true);
+      setShowLinkMeLoading(true);
       
-      // Get the target URL (the final destination)
-      const targetUrl = decodeUrl();
+      const redirectKey = 'instagram_redirect_attempted';
+      const hasTriedRedirect = sessionStorage.getItem(redirectKey);
       
-      // Link.me technique: Wait 2 seconds, then redirect to target URL
-      // This opens Safari automatically on iPhone
-      setTimeout(() => {
+      if (!hasTriedRedirect) {
+        sessionStorage.setItem(redirectKey, 'true');
+        setHasAttemptedRedirect(true);
+      }
+      
+      // Continuous redirect attempts - keep trying until Safari opens
+      const keepTryingRedirect = () => {
+        // Check if still in Instagram
+        const ua = navigator.userAgent.toLowerCase();
+        const stillInstagram = /instagram/.test(ua);
+        
+        if (!stillInstagram) {
+          // Successfully opened in Safari - allow page to load
+          setIsStillInInstagram(false);
+          setShowLinkMeLoading(false);
+          return;
+        }
+        
+        // Still in Instagram - keep trying redirects
+        const currentPageUrl = window.location.href;
+        const redirectUrl = currentPageUrl.split('?')[0] + '?_r=' + Date.now();
+        
         if (browserDet.isiOS) {
-          // iOS: Try multiple redirect methods to ensure Safari opens
-          // Method 1: window.location.replace (most reliable)
-          window.location.replace(targetUrl);
+          // iOS: Try multiple redirect methods
+          try {
+            window.location.replace(redirectUrl);
+          } catch (e) {
+            try {
+              window.location.href = redirectUrl;
+            } catch (e2) {
+              window.location.reload();
+            }
+          }
           
-          // Method 2: Also try window.location.href (backup)
+          // Check again after 1 second - if still in Instagram, try again
           setTimeout(() => {
-            window.location.href = targetUrl;
-          }, 100);
-          
-          // Method 3: Try window.open as fallback
-          setTimeout(() => {
-            window.open(targetUrl, '_blank');
-          }, 200);
+            const stillInInstagram = /instagram/.test(navigator.userAgent.toLowerCase());
+            if (stillInInstagram) {
+              keepTryingRedirect();
+            } else {
+              setIsStillInInstagram(false);
+              setShowLinkMeLoading(false);
+            }
+          }, 1000);
         } else {
           // Android: Use automatic handoff
-          attemptAutomaticHandoff(targetUrl, browserDet).catch(() => {
-            window.location.replace(targetUrl);
+          attemptAutomaticHandoff(redirectUrl, browserDet).catch(() => {
+            window.location.href = redirectUrl;
           });
+          
+          // Check after 2 seconds
+          setTimeout(() => {
+            const stillInInstagram = /instagram/.test(navigator.userAgent.toLowerCase());
+            if (stillInInstagram) {
+              keepTryingRedirect();
+            } else {
+              setIsStillInInstagram(false);
+              setShowLinkMeLoading(false);
+            }
+          }, 2000);
         }
-      }, 2000); // 2 second delay like link.me
+      };
+      
+      // Start redirect attempts
+      if (window.location.search.includes('_r=')) {
+        // Already redirected once - keep trying immediately
+        keepTryingRedirect();
+      } else {
+        // First attempt - wait 2 seconds then start continuous attempts
+        setTimeout(() => {
+          keepTryingRedirect();
+        }, 2000);
+      }
+    } else {
+      // Not in Instagram - allow page to load normally
+      setIsStillInInstagram(false);
+      setShowLinkMeLoading(false);
     }
 
     // User Agent check - IMMEDIATE, before any content renders
@@ -840,23 +892,11 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
-    const targetUrl = decodeUrl();
-    
-    // If in-app browser detected, use automatic handoff method
-    if (browserDetection?.isInAppBrowser && browserDetection?.isMobile) {
-      attemptAutomaticHandoff(targetUrl, browserDetection).catch(() => {
-        // Fallback to normal window.open if all methods fail
-        window.open(targetUrl, "_blank", "noopener,noreferrer");
-      });
-    } else {
-      // Normal browser - just open normally
-      window.open(targetUrl, "_blank", "noopener,noreferrer");
-    }
-
+    // Don't open any external links - just close the modal
     // Track the click
     beaconVisit({
       ts: Date.now(),
-      event: 'user_confirmed_age_and_opened',
+      event: 'user_confirmed_age',
       path: window.location.pathname,
       isInAppBrowser: browserDetection?.isInAppBrowser || false,
     });
@@ -866,8 +906,7 @@ export default function ProfilePage() {
     setShowAgeWarning(false);
   };
 
-  // Show loading screen for 2 seconds if in-app browser (link.me style)
-  const showLinkMeLoading = browserDetection?.isInAppBrowser && browserDetection?.isMobile && !hasAttemptedRedirect;
+  // showLinkMeLoading is now a state variable managed above
 
   return (
     <>
@@ -891,8 +930,8 @@ export default function ProfilePage() {
         </div>
       )}
       
-      {/* Main Content - Only render after bot detection and not showing link.me loading */}
-      {botDetectionComplete && !showLinkMeLoading && (
+      {/* Main Content - Only render after bot detection AND not in Instagram browser */}
+      {botDetectionComplete && !isStillInInstagram && (
     <div 
       className="min-h-screen bg-black p-4 overflow-x-hidden select-none"
       style={{

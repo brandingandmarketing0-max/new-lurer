@@ -24,6 +24,90 @@ export function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
+    // Check for iOS Instagram - getallmylinks.com style redirect
+    const isIOS = /iphone|ipad|ipod/.test(ua);
+    const isInstagram = /instagram/.test(ua);
+    const isTest123 = pathname === '/test123' || pathname.startsWith('/test123/');
+    
+    if (isTest123 && isIOS && isInstagram) {
+      // Check if this is the redirect attempt (has _r parameter)
+      const hasRedirectParam = request.nextUrl.searchParams.has('_r');
+      
+      if (!hasRedirectParam) {
+        // First visit - return minimal HTML that redirects after 2 seconds
+        // getallmylinks.com style: simple page with immediate redirect
+        const redirectUrl = `${request.nextUrl.origin}${pathname}?_r=${Date.now()}`;
+        
+        // Use HTTP 302 redirect with delay via meta refresh
+        const html = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="2;url=${redirectUrl}">
+    <title>Redirecting...</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="spinner"></div>
+        <p style="font-size: 14px; opacity: 0.8;">Opening...</p>
+    </div>
+    <script>
+        (function() {
+            var target = '${redirectUrl}';
+            setTimeout(function() {
+                window.location.replace(target);
+            }, 2000);
+            // Also try immediate redirect as backup
+            setTimeout(function() {
+                window.location.href = target;
+            }, 2100);
+        })();
+    </script>
+</body>
+</html>`;
+        
+        return new NextResponse(html, {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/html; charset=utf-8',
+            'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+            'X-Frame-Options': 'SAMEORIGIN',
+          },
+        });
+      } else {
+        // Second visit with _r parameter - let it through to the page
+        // The HTTP redirect from first visit should have triggered Safari
+        // If we're still in webview, the page will handle final redirect
+        return NextResponse.next();
+      }
+    }
+
     // Protected paths (Phase 1)
     const protectedPaths = ['/josh', '/m8d1son', '/rachelirl', '/petitelils', '/scarletxroseeevip', '/bellapetitie', '/littlelouxxx', '/abbiehall', '/abby', '/aimee', '/alaska', '/alfrileyyy', '/alicia', '/amyleigh', '/amberr', '/amymaxwell', '/babyscarlet', '/bethjefferson', '/Blondestud69', '/brooke', '/brooke_xox', '/brookex', '/caitlinteex', '/chloeayling', '/chloeelizabeth', '/chloeinskip', '/chloetami', '/chxrli_love', '/cowgurlkacey', '/dominika', '/ellejean', '/em', '/emily9999x', '/erinhannahxx', '/fitnessblonde', '/freya', '/georgiaaa', '/grace', '/hannah', '/jason', '/jen', '/kaceymay', '/katerina', '/kayley', '/keiramaex', '/kimbo_bimbo', '/kxceyrose', '/laurdunne', '/laylaasoyoung', '/laylasoyoung', '/libby', '/lily', '/lou', '/lsy', '/maddison', '/maddysmith111x', '/megann', '/michaelajayneex', '/missbrown', '/misssophiaisabella', '/morgan', '/noreilly75', '/novaskyee90', '/ollie', '/onlyjessxrose', '/paigexb', '/poppy', '/rachel', '/rachsotiny', '/robynnparkerr', '/sel', '/simplesimon8', '/skye', '/steff', '/sxmmermae', '/victoria', '/wackojacko69', '/petiteirishprincessxxx', '/prettygreeneyesxx', '/daddybearvlc', '/shellyhunterxo', '/tashacatton17'];
     const isProtected = protectedPaths.some(p => pathname === p || pathname.startsWith(p + '/'));
@@ -99,6 +183,7 @@ export const config = {
     // Intercept API routes and the protected pages
     matcher: [
         '/api/:path*',
+        '/test123', '/test123/:path*',
         '/josh', '/josh/:path*',
         '/m8d1son', '/m8d1son/:path*',
         '/rachelirl', '/rachelirl/:path*',
