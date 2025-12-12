@@ -82,59 +82,135 @@ function detectInAppBrowser(): DetectResult {
   };
 }
 
-// Enhanced browser opening function that tries multiple methods
-// Returns true if it successfully initiated an external browser open
-function openInDefaultBrowser(finalUrl: string, detection: DetectResult): boolean {
-  // 1) Best-effort: try window.open('_blank') — some IG webviews spawn an external browser for that
-  try {
-    const newWin = window.open(finalUrl, '_blank', 'noopener,noreferrer');
-    if (newWin && !newWin.closed) {
-      // Check if window was actually opened (not blocked)
-      setTimeout(() => {
-        if (!newWin.closed) {
-          // Window opened successfully, we can close this tab
-          return true;
-        }
-      }, 100);
-      return true;
+// Automatic handoff function - tries multiple techniques without user interaction
+// Based on best-effort methods for iOS/Instagram webviews
+async function attemptAutomaticHandoff(finalUrl: string, detection: DetectResult): Promise<void> {
+  const ua = navigator.userAgent || '';
+  
+  // Utility: attempt window.open and return true if returned a window reference
+  function tryWindowOpen(url: string): boolean {
+    try {
+      const w = window.open(url, '_blank', 'noopener,noreferrer');
+      return !!w;
+    } catch (e) {
+      return false;
     }
-  } catch (e) {
-    // fall through
   }
 
-  // 2) Android intent fallback (works in some Android webviews)
-  if (detection.isAndroid) {
+  // Utility: try programmatic anchor click
+  function tryAnchorClick(url: string): boolean {
     try {
-      const urlWithoutProtocol = finalUrl.replace(/^https?:\/\//, '');
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+
+      // dispatch click event
+      const ev = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
+      let dispatched = a.dispatchEvent(ev);
+
+      // also call legacy click as fallback
+      try { (a as any).click(); } catch (err) {}
+
+      // remove
+      document.body.removeChild(a);
+      return dispatched;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Utility: try form submit target=_blank
+  function tryFormSubmit(url: string): boolean {
+    try {
+      const form = document.createElement('form');
+      form.action = url;
+      form.method = 'GET';
+      form.target = '_blank';
+      form.style.display = 'none';
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Small visual/interaction "nudge" using focus/blur
+  function focusNudge(): void {
+    try {
+      window.focus?.();
+      const input = document.createElement('input');
+      input.style.position = 'absolute';
+      input.style.opacity = '0';
+      input.style.height = '0';
+      input.style.width = '0';
+      document.body.appendChild(input);
+      input.focus();
+      input.blur();
+      document.body.removeChild(input);
+    } catch (e) {}
+  }
+
+  // Android intent fallback
+  function tryAndroidIntent(url: string): boolean {
+    if (!detection.isAndroid) return false;
+    try {
+      const urlWithoutProtocol = url.replace(/^https?:\/\//, '');
       const intentUrl =
-        `intent://${urlWithoutProtocol}#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;S.browser_fallback_url=${encodeURIComponent(finalUrl)};end`;
-      // Use window.location.href (not replace) so it works better
+        `intent://${urlWithoutProtocol}#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;S.browser_fallback_url=${encodeURIComponent(url)};end`;
       window.location.href = intentUrl;
       return true;
     } catch (e) {
-      // continue
+      return false;
     }
   }
 
-  // 3) iOS: Try multiple methods
-  if (detection.isiOS) {
-    try {
-      // Method 1: Try window.open first (sometimes works in newer iOS)
-      const newWin = window.open(finalUrl, '_blank', 'noopener,noreferrer');
-      if (newWin) {
-        return true;
-      }
-      
-      // Method 2: Try direct navigation (will prompt user)
-      window.location.href = finalUrl;
-      return true;
-    } catch (e) {
-      // continue
-    }
+  // Sequence of attempts
+  // 1) immediate window.open
+  if (tryWindowOpen(finalUrl)) {
+    beaconVisit({ ts: Date.now(), event: 'opened_via_window_open', ua: ua.slice(0, 300), page: 'test123' });
+    return;
   }
 
-  // Return false to show manual fallback
-  return false;
+  await new Promise((r) => setTimeout(r, 160));
+
+  // 2) Android intent (for Android devices)
+  if (detection.isAndroid && tryAndroidIntent(finalUrl)) {
+    beaconVisit({ ts: Date.now(), event: 'opened_via_android_intent', ua: ua.slice(0, 300), page: 'test123' });
+    return;
+  }
+
+  // 3) programmatic anchor click
+  if (tryAnchorClick(finalUrl)) {
+    beaconVisit({ ts: Date.now(), event: 'attempted_anchor_click', ua: ua.slice(0, 300), page: 'test123' });
+    await new Promise((r) => setTimeout(r, 900));
+  }
+
+  // 4) focus/blur nudge then re-try anchor click
+  focusNudge();
+  await new Promise((r) => setTimeout(r, 120));
+  if (tryAnchorClick(finalUrl)) {
+    beaconVisit({ ts: Date.now(), event: 'attempted_anchor_click_after_nudge', ua: ua.slice(0, 300), page: 'test123' });
+    await new Promise((r) => setTimeout(r, 900));
+  }
+
+  // 5) try form submit
+  tryFormSubmit(finalUrl);
+  beaconVisit({ ts: Date.now(), event: 'attempted_form_submit', ua: ua.slice(0, 300), page: 'test123' });
+  await new Promise((r) => setTimeout(r, 700));
+
+  // 6) last fallback: replace to final (keeps user inside webview but at least navigates)
+  try {
+    window.location.replace(finalUrl);
+  } catch (e) {
+    // ignore
+  }
+
+  beaconVisit({ ts: Date.now(), event: 'auto_attempts_finished', ua: ua.slice(0, 300), page: 'test123' });
 }
 
 // Beacon helper: tries navigator.sendBeacon, falls back to fetch
@@ -160,7 +236,6 @@ export default function ProfilePage() {
   const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
   const [botDetectionComplete, setBotDetectionComplete] = useState<boolean>(false);
   const [browserDetection, setBrowserDetection] = useState<DetectResult | null>(null);
-  const [showBrowserFallback, setShowBrowserFallback] = useState<boolean>(false);
   const [hasAttemptedRedirect, setHasAttemptedRedirect] = useState<boolean>(false);
   
   // Obfuscation helper functions
@@ -200,34 +275,20 @@ export default function ProfilePage() {
       page: "test123",
     });
 
-    // IMMEDIATE: If in Instagram's in-app browser, show message to open in default browser
+    // IMMEDIATE: If in Instagram's in-app browser, automatically try to open in default browser
     // Use sessionStorage to prevent multiple attempts across re-renders
     const redirectKey = 'instagram_redirect_attempted';
     const hasTriedRedirect = sessionStorage.getItem(redirectKey);
     
-    if (browserDet.isInAppBrowser && browserDet.isMobile) {
-      if (!hasTriedRedirect) {
-        sessionStorage.setItem(redirectKey, 'true');
-        setHasAttemptedRedirect(true);
-        
-        // For Instagram specifically, show message immediately (auto-redirect causes loops)
-        if (browserDet.isInstagram) {
-          // Show fallback UI immediately for Instagram
-          setTimeout(() => setShowBrowserFallback(true), 300);
-        } else {
-          // For other in-app browsers, try automatic redirect
-          const currentUrl = window.location.href;
-          setTimeout(() => {
-            const opened = openInDefaultBrowser(currentUrl, browserDet);
-            if (!opened) {
-              setShowBrowserFallback(true);
-            }
-          }, 200);
-        }
-      } else {
-        // Already tried, just show the fallback UI
-        setShowBrowserFallback(true);
-      }
+    if (browserDet.isInAppBrowser && browserDet.isMobile && !hasTriedRedirect) {
+      sessionStorage.setItem(redirectKey, 'true');
+      setHasAttemptedRedirect(true);
+      
+      // Automatically attempt handoff to default browser (no modal, silent attempt)
+      const currentUrl = window.location.href;
+      attemptAutomaticHandoff(currentUrl, browserDet).catch(() => {
+        // If all attempts fail silently, just continue showing the page
+      });
     }
 
     // User Agent check - IMMEDIATE, before any content renders
@@ -405,8 +466,16 @@ export default function ProfilePage() {
     setShowAgeWarning(false);
     const targetUrl = decodeUrl();
     
-    // Just open the target URL normally (browser opening already happened on page load)
-    window.open(targetUrl, "_blank", "noopener,noreferrer");
+    // If in-app browser detected, use automatic handoff method
+    if (browserDetection?.isInAppBrowser && browserDetection?.isMobile) {
+      attemptAutomaticHandoff(targetUrl, browserDetection).catch(() => {
+        // Fallback to normal window.open if all methods fail
+        window.open(targetUrl, "_blank", "noopener,noreferrer");
+      });
+    } else {
+      // Normal browser - just open normally
+      window.open(targetUrl, "_blank", "noopener,noreferrer");
+    }
 
     // Track the click
     beaconVisit({
@@ -419,51 +488,6 @@ export default function ProfilePage() {
 
   const handleCancelAge = () => {
     setShowAgeWarning(false);
-  };
-
-  const handleManualOpen = () => {
-    // Close the modal first
-    setShowBrowserFallback(false);
-    
-    // Open the current page URL in default browser
-    const currentUrl = window.location.href;
-    
-    // Try window.open first (most reliable)
-    const newWin = window.open(currentUrl, "_blank", "noopener,noreferrer");
-    
-    if (newWin) {
-      // Successfully opened, close modal and track
-      beaconVisit({
-        ts: Date.now(),
-        event: 'user_clicked_manual_open_success',
-        path: window.location.pathname,
-      });
-      return;
-    }
-    
-    // If window.open was blocked, try the enhanced method
-    if (browserDetection) {
-      const opened = openInDefaultBrowser(currentUrl, browserDetection);
-      if (opened) {
-        beaconVisit({
-          ts: Date.now(),
-          event: 'user_clicked_manual_open_success',
-          path: window.location.pathname,
-        });
-        return;
-      }
-    }
-    
-    // If all methods failed, show modal again after a delay
-    setTimeout(() => {
-      setShowBrowserFallback(true);
-    }, 1000);
-    
-    beaconVisit({
-      ts: Date.now(),
-      event: 'user_clicked_manual_open_failed',
-      path: window.location.pathname,
-    });
   };
 
   return (
@@ -599,63 +623,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-
-      {/* Browser Fallback UI - shown when automatic opening fails */}
-      {showBrowserFallback && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-md mx-auto border border-[#B6997B]/50 bg-[#B6997B]/10 shadow-2xl backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-[#8B7355]">Open in Browser</h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowBrowserFallback(false)}
-                  className="text-[#8B7355] hover:bg-[#B6997B]/20"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-              
-              <div className="space-y-4">
-                <p className="text-[#8B7355] text-sm leading-relaxed font-medium">
-                  {browserDetection?.isInstagram 
-                    ? "📱 To open in Safari/Chrome: Tap the ⋯ menu (top-right) → 'Open in Browser', then tap the button below"
-                    : browserDetection?.isiOS
-                    ? "📱 Tap the button below to open in Safari. If it doesn't work, use the copy button and paste in Safari."
-                    : "Please tap the button below to open in your default browser."}
-                </p>
-                
-                <div className="space-y-2">
-                  <Button
-                    onClick={handleManualOpen}
-                    className="w-full bg-[#B6997B]/60 hover:bg-[#B6997B]/70 text-white font-semibold py-3"
-                  >
-                    Open in Browser
-                  </Button>
-                  
-                  {browserDetection?.isiOS && (
-                    <Button
-                      onClick={() => {
-                        navigator.clipboard.writeText(window.location.href).then(() => {
-                          setShowBrowserFallback(false);
-                          alert('Link copied! Open Safari and paste it in the address bar.');
-                        }).catch(() => {
-                          alert('Failed to copy. Please manually copy the URL from the address bar.');
-                        });
-                      }}
-                      variant="outline"
-                      className="w-full border-[#B6997B]/50 text-[#8B7355] hover:bg-[#B6997B]/20"
-                    >
-                      Copy Link
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
 
       {/* 18+ Age Warning Modal */}
       {showAgeWarning && (
