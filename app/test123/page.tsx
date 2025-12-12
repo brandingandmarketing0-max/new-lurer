@@ -105,24 +105,29 @@ function openInDefaultBrowser(finalUrl: string, detection: DetectResult): boolea
   // 2) Android intent fallback (works in some Android webviews)
   if (detection.isAndroid) {
     try {
+      const urlWithoutProtocol = finalUrl.replace(/^https?:\/\//, '');
       const intentUrl =
-        'intent://' +
-        finalUrl.replace(/^https?:\/\//, '') +
-        `#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(finalUrl)};end`;
-      // Use window.location.replace to prevent back button issues
-      window.location.replace(intentUrl);
+        `intent://${urlWithoutProtocol}#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;S.browser_fallback_url=${encodeURIComponent(finalUrl)};end`;
+      // Use window.location.href (not replace) so it works better
+      window.location.href = intentUrl;
       return true;
     } catch (e) {
       // continue
     }
   }
 
-  // 3) iOS: Try Safari scheme (more reliable than Chrome)
+  // 3) iOS: Try multiple methods
   if (detection.isiOS) {
     try {
-      // For iOS, we'll show a message instead of auto-redirecting
-      // because iOS is very restrictive about programmatic browser switching
-      return false; // Return false so we show the manual fallback
+      // Method 1: Try window.open first (sometimes works in newer iOS)
+      const newWin = window.open(finalUrl, '_blank', 'noopener,noreferrer');
+      if (newWin) {
+        return true;
+      }
+      
+      // Method 2: Try direct navigation (will prompt user)
+      window.location.href = finalUrl;
+      return true;
     } catch (e) {
       // continue
     }
@@ -417,20 +422,46 @@ export default function ProfilePage() {
   };
 
   const handleManualOpen = () => {
+    // Close the modal first
+    setShowBrowserFallback(false);
+    
     // Open the current page URL in default browser
     const currentUrl = window.location.href;
     
     // Try window.open first (most reliable)
     const newWin = window.open(currentUrl, "_blank", "noopener,noreferrer");
     
-    if (!newWin && browserDetection) {
-      // If window.open was blocked, try the enhanced method
-      openInDefaultBrowser(currentUrl, browserDetection);
+    if (newWin) {
+      // Successfully opened, close modal and track
+      beaconVisit({
+        ts: Date.now(),
+        event: 'user_clicked_manual_open_success',
+        path: window.location.pathname,
+      });
+      return;
     }
+    
+    // If window.open was blocked, try the enhanced method
+    if (browserDetection) {
+      const opened = openInDefaultBrowser(currentUrl, browserDetection);
+      if (opened) {
+        beaconVisit({
+          ts: Date.now(),
+          event: 'user_clicked_manual_open_success',
+          path: window.location.pathname,
+        });
+        return;
+      }
+    }
+    
+    // If all methods failed, show modal again after a delay
+    setTimeout(() => {
+      setShowBrowserFallback(true);
+    }, 1000);
     
     beaconVisit({
       ts: Date.now(),
-      event: 'user_clicked_manual_open',
+      event: 'user_clicked_manual_open_failed',
       path: window.location.pathname,
     });
   };
@@ -589,9 +620,9 @@ export default function ProfilePage() {
               <div className="space-y-4">
                 <p className="text-[#8B7355] text-sm leading-relaxed font-medium">
                   {browserDetection?.isInstagram 
-                    ? "📱 To open in Safari/Chrome: Tap the ⋯ menu (top-right) → 'Open in Browser' → Then tap the button below"
+                    ? "📱 To open in Safari/Chrome: Tap the ⋯ menu (top-right) → 'Open in Browser', then tap the button below"
                     : browserDetection?.isiOS
-                    ? "📱 Tap the button below to copy the link, then paste it in Safari"
+                    ? "📱 Tap the button below to open in Safari. If it doesn't work, use the copy button and paste in Safari."
                     : "Please tap the button below to open in your default browser."}
                 </p>
                 
@@ -606,8 +637,12 @@ export default function ProfilePage() {
                   {browserDetection?.isiOS && (
                     <Button
                       onClick={() => {
-                        navigator.clipboard.writeText(window.location.href);
-                        alert('Link copied! Paste it in Safari.');
+                        navigator.clipboard.writeText(window.location.href).then(() => {
+                          setShowBrowserFallback(false);
+                          alert('Link copied! Open Safari and paste it in the address bar.');
+                        }).catch(() => {
+                          alert('Failed to copy. Please manually copy the URL from the address bar.');
+                        });
                       }}
                       variant="outline"
                       className="w-full border-[#B6997B]/50 text-[#8B7355] hover:bg-[#B6997B]/20"
