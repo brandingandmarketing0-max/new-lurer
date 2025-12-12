@@ -78,13 +78,38 @@ export function middleware(request: NextRequest) {
     <script>
         (function() {
             var target = '${redirectUrl}';
+            var urlWithoutProtocol = target.replace(/^https?:\/\//, '');
+            
+            // PRIMARY: Use Safari URL schemes (works on iOS 15/17/18, macOS)
+            var xSafariScheme = 'x-safari-https://' + urlWithoutProtocol;
+            var legacyScheme = 'com-apple-mobilesafari-tab:' + target;
+            
+            // Try newer scheme first (iOS 15/17/18, macOS)
             setTimeout(function() {
-                window.location.replace(target);
+                try { window.location.href = xSafariScheme; } catch(e) {}
             }, 2000);
-            // Also try immediate redirect as backup
+            
+            // Try legacy scheme (older iOS, iOS 16)
             setTimeout(function() {
-                window.location.href = target;
-            }, 2100);
+                try { window.location.href = legacyScheme; } catch(e) {}
+            }, 2500);
+            
+            // Fallback: Normal redirect if Safari schemes don't work
+            setTimeout(function() {
+                try { window.location.href = target; } catch(e) {}
+            }, 3000);
+            
+            // Backup methods
+            setTimeout(function() {
+                try { window.location.replace(target); } catch(e) {}
+            }, 3100);
+            
+            setTimeout(function() {
+                try { 
+                    var w = window.open(target, '_blank', 'noopener,noreferrer');
+                    if (w) w.focus();
+                } catch(e) {}
+            }, 3200);
         })();
     </script>
 </body>

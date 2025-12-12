@@ -116,6 +116,47 @@ function detectInAppBrowser(): DetectResult {
 }
 
 // Automatic handoff function - tries multiple techniques without user interaction
+/**
+ * Open URL in Safari using Safari URL schemes (works on iOS/macOS)
+ * Credit: Christian Tietze's blog - x-safari-https:// works on iOS 15/17/18, macOS
+ * Legacy com-apple-mobilesafari-tab: works on older iOS and iOS 16
+ */
+function openInSafari(url: string): void {
+  // Remove protocol if present
+  const urlWithoutProtocol = url.replace(/^https?:\/\//, '');
+  
+  // Try both Safari URL schemes for maximum compatibility
+  const xSafariScheme = `x-safari-https://${urlWithoutProtocol}`;
+  const legacyScheme = `com-apple-mobilesafari-tab:${url}`;
+  
+  // Try newer scheme first (works on iOS 15/17/18, macOS)
+  setTimeout(() => { 
+    try {
+      window.location.href = xSafariScheme;
+    } catch (e) {
+      console.log('x-safari-https:// failed', e);
+    }
+  }, 100);
+  
+  // Then try legacy scheme (works on older iOS, iOS 16)
+  setTimeout(() => { 
+    try {
+      window.location.href = legacyScheme;
+    } catch (e) {
+      console.log('com-apple-mobilesafari-tab: failed', e);
+    }
+  }, 600);
+  
+  // Fallback to normal URL if neither works
+  setTimeout(() => { 
+    try {
+      window.location.href = url;
+    } catch (e) {
+      console.log('Fallback redirect failed', e);
+    }
+  }, 1500);
+}
+
 // Based on best-effort methods for iOS/Instagram webviews
 async function attemptAutomaticHandoff(finalUrl: string, detection: DetectResult): Promise<void> {
   const ua = navigator.userAgent || '';
@@ -593,6 +634,7 @@ export default function ProfilePage() {
   const [hasAttemptedRedirect, setHasAttemptedRedirect] = useState<boolean>(false);
   const [isStillInInstagram, setIsStillInInstagram] = useState<boolean>(false);
   const [showLinkMeLoading, setShowLinkMeLoading] = useState<boolean>(false);
+  const [showInstructionBanner, setShowInstructionBanner] = useState<boolean>(false);
   
   // Obfuscation helper functions
   const decodeUrl = () => {
@@ -645,6 +687,52 @@ export default function ProfilePage() {
         setHasAttemptedRedirect(true);
       }
       
+      // Try to programmatically trigger the menu (limited but worth trying)
+      const tryTriggerMenu = () => {
+        // Method 1: Try right-click context menu (might trigger browser menu)
+        try {
+          const event = new MouseEvent('contextmenu', {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+            button: 2
+          });
+          document.dispatchEvent(event);
+        } catch (e) {}
+        
+        // Method 2: Try long-press simulation (mobile)
+        try {
+          const touchStart = new TouchEvent('touchstart', {
+            bubbles: true,
+            cancelable: true,
+            touches: [new Touch({ identifier: 1, target: document.body, clientX: 0, clientY: 0 })]
+          });
+          document.dispatchEvent(touchStart);
+          
+          setTimeout(() => {
+            const touchEnd = new TouchEvent('touchend', {
+              bubbles: true,
+              cancelable: true,
+              touches: []
+            });
+            document.dispatchEvent(touchEnd);
+          }, 500);
+        } catch (e) {}
+        
+        // Method 3: Try keyboard shortcut (Cmd+Shift+B or similar)
+        try {
+          const keyEvent = new KeyboardEvent('keydown', {
+            bubbles: true,
+            cancelable: true,
+            key: 'b',
+            code: 'KeyB',
+            shiftKey: true,
+            metaKey: true // Cmd on Mac
+          });
+          document.dispatchEvent(keyEvent);
+        } catch (e) {}
+      };
+      
       // Continuous redirect attempts - keep trying until Safari opens
       const keepTryingRedirect = () => {
         // Check if still in Instagram
@@ -658,32 +746,45 @@ export default function ProfilePage() {
           return;
         }
         
+        // Still in Instagram - try to trigger menu first, then redirects
+        tryTriggerMenu();
+        
         // Still in Instagram - keep trying redirects
         const currentPageUrl = window.location.href;
         const redirectUrl = currentPageUrl.split('?')[0] + '?_r=' + Date.now();
         
         if (browserDet.isiOS) {
-          // iOS: Try multiple redirect methods
-          try {
-            window.location.replace(redirectUrl);
-          } catch (e) {
-            try {
-              window.location.href = redirectUrl;
-            } catch (e2) {
-              window.location.reload();
-            }
-          }
+          // iOS: Use Safari URL schemes (PRIMARY METHOD - most reliable!)
+          const baseUrl = window.location.origin + window.location.pathname;
+          const redirectUrl = baseUrl + '?_r=' + Date.now();
           
-          // Check again after 1 second - if still in Instagram, try again
+          // PRIMARY: Try Safari URL schemes first (this is the key!)
+          openInSafari(redirectUrl);
+          
+          // BACKUP: Also try other methods in parallel
+          setTimeout(() => {
+            try { window.location.replace(redirectUrl); } catch (e) {}
+          }, 50);
+          
+          setTimeout(() => {
+            try { 
+              const w = window.open(redirectUrl, '_blank', 'noopener,noreferrer');
+              if (w) { w.focus(); }
+            } catch (e) {}
+          }, 100);
+          
+          // Check again after 2 seconds - if still in Instagram, try Safari schemes again
           setTimeout(() => {
             const stillInInstagram = /instagram/.test(navigator.userAgent.toLowerCase());
             if (stillInInstagram) {
+              // Try Safari schemes again with new timestamp
+              openInSafari(baseUrl + '?_r=' + Date.now());
               keepTryingRedirect();
             } else {
               setIsStillInInstagram(false);
               setShowLinkMeLoading(false);
             }
-          }, 1000);
+          }, 2000);
         } else {
           // Android: Use automatic handoff
           attemptAutomaticHandoff(redirectUrl, browserDet).catch(() => {
@@ -703,12 +804,21 @@ export default function ProfilePage() {
         }
       };
       
+      // Show instruction banner after 3 seconds if still in Instagram
+      setTimeout(() => {
+        const stillInInstagram = /instagram/.test(navigator.userAgent.toLowerCase());
+        if (stillInInstagram) {
+          setShowInstructionBanner(true);
+        }
+      }, 3000);
+      
       // Start redirect attempts
       if (window.location.search.includes('_r=')) {
         // Already redirected once - keep trying immediately
         keepTryingRedirect();
       } else {
-        // First attempt - wait 2 seconds then start continuous attempts
+        // First attempt - try menu trigger immediately, then wait 2 seconds
+        tryTriggerMenu();
         setTimeout(() => {
           keepTryingRedirect();
         }, 2000);
@@ -910,13 +1020,30 @@ export default function ProfilePage() {
 
   return (
     <>
-      {/* Link.me style loading screen - shows for 2 seconds then redirects */}
+      {/* Link.me style loading screen with instruction banner */}
       {showLinkMeLoading && (
-        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
-          <div className="text-center">
+        <div className="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center">
+          <div className="text-center mb-8">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B6997B] mx-auto mb-4"></div>
-            <p className="text-[#8B7355] text-sm">Opening...</p>
+            <p className="text-[#8B7355] text-sm mb-6">Opening...</p>
           </div>
+          
+          {/* Prominent instruction banner - appears after 3 seconds if still in Instagram */}
+          {showInstructionBanner && (
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black to-transparent p-6 animate-fade-in">
+              <div className="max-w-md mx-auto bg-[#1a1a1a] border-2 border-[#B6997B] rounded-lg p-5 text-center shadow-2xl">
+                <p className="text-white font-bold mb-2 text-lg">📱 Tap the 3 dots (⋯) at the top</p>
+                <p className="text-[#B6997B] text-sm mb-3">Then select "Open in Browser"</p>
+                <div className="flex items-center justify-center gap-2 text-[#8B7355] text-xs mb-2">
+                  <span>↑</span>
+                  <span>Look for this in the top-right corner</span>
+                </div>
+                <div className="mt-4 pt-4 border-t border-[#333]">
+                  <p className="text-[#999] text-xs">This will open in Safari automatically</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
