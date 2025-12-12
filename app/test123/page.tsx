@@ -155,14 +155,165 @@ async function attemptAutomaticHandoff(finalUrl: string, detection: DetectResult
     } catch (e) {}
   }
 
-  // Android intent fallback
+  // Android intent - Try multiple formats to open directly in Chrome
   function tryAndroidIntent(url: string): boolean {
     if (!detection.isAndroid) return false;
+    
+    const urlWithoutProtocol = url.replace(/^https?:\/\//, '');
+    
+    // Method 1: Direct Chrome intent (most likely to work without popup)
     try {
-      const urlWithoutProtocol = url.replace(/^https?:\/\//, '');
-      const intentUrl =
-        `intent://${urlWithoutProtocol}#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;S.browser_fallback_url=${encodeURIComponent(url)};end`;
+      const chromeIntent = `intent://${urlWithoutProtocol}#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;S.browser_fallback_url=${encodeURIComponent(url)};end`;
+      window.location.href = chromeIntent;
+      return true;
+    } catch (e) {
+      // Continue to next method
+    }
+    
+    // Method 2: Try with window.open (sometimes bypasses popup)
+    try {
+      const chromeIntent = `intent://${urlWithoutProtocol}#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;S.browser_fallback_url=${encodeURIComponent(url)};end`;
+      const win = window.open(chromeIntent, '_blank');
+      if (win) return true;
+    } catch (e) {
+      // Continue
+    }
+    
+    // Method 3: Standard intent (fallback)
+    try {
+      const intentUrl = `intent://${urlWithoutProtocol}#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;S.browser_fallback_url=${encodeURIComponent(url)};end`;
       window.location.href = intentUrl;
+      return true;
+    } catch (e) {
+      return false;
+    }
+    
+    return false;
+  }
+
+  // Android: Try direct Chrome scheme (alternative method)
+  function tryAndroidChromeScheme(url: string): boolean {
+    if (!detection.isAndroid) return false;
+    try {
+      // Try chrome:// URL scheme (if Chrome is set as default)
+      const chromeUrl = url.replace(/^https?:\/\//, 'chrome://');
+      window.location.href = chromeUrl;
+      // If that doesn't work, fallback happens automatically
+      setTimeout(() => {
+        // If still here after 500ms, try intent
+        tryAndroidIntent(url);
+      }, 500);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // iOS-specific: Try visible link click (sometimes works better than hidden)
+  function tryVisibleLinkClick(url: string): boolean {
+    if (!detection.isiOS) return false;
+    try {
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      // Make it visible but tiny and positioned off-screen
+      a.style.position = 'fixed';
+      a.style.top = '0';
+      a.style.left = '0';
+      a.style.width = '1px';
+      a.style.height = '1px';
+      a.style.opacity = '0.01';
+      a.style.pointerEvents = 'auto';
+      document.body.appendChild(a);
+      
+      // Force a layout recalculation
+      void a.offsetHeight;
+      
+      // Try multiple click methods
+      const ev1 = new MouseEvent('click', { bubbles: true, cancelable: true, view: window, button: 0 });
+      a.dispatchEvent(ev1);
+      
+      // Also try touch event (iOS specific)
+      const ev2 = new TouchEvent('touchstart', { bubbles: true, cancelable: true, view: window } as any);
+      try { a.dispatchEvent(ev2); } catch {}
+      
+      // Legacy click
+      try { (a as any).click(); } catch {}
+      
+      // Remove after a delay
+      setTimeout(() => {
+        try { document.body.removeChild(a); } catch {}
+      }, 100);
+      
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // iOS-specific: Aggressive location.href attempts with delays
+  async function tryIOSLocationHref(url: string): Promise<void> {
+    if (!detection.isiOS) return;
+    
+    // Try multiple times with increasing delays
+    const attempts = [100, 300, 600, 1000];
+    for (const delay of attempts) {
+      await new Promise((r) => setTimeout(r, delay));
+      try {
+        window.location.href = url;
+        // If this succeeds, we'll navigate away
+        return;
+      } catch (e) {
+        // Continue to next attempt
+      }
+    }
+  }
+
+  // iOS-specific: Create a full-screen invisible button that auto-clicks (simulates user tap)
+  function tryIOSFullScreenButton(url: string): boolean {
+    if (!detection.isiOS) return false;
+    try {
+      const button = document.createElement('button');
+      button.style.position = 'fixed';
+      button.style.top = '0';
+      button.style.left = '0';
+      button.style.width = '100%';
+      button.style.height = '100%';
+      button.style.opacity = '0';
+      button.style.zIndex = '999999';
+      button.style.cursor = 'pointer';
+      button.style.border = 'none';
+      button.style.background = 'transparent';
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.style.display = 'none';
+      
+      button.appendChild(link);
+      document.body.appendChild(button);
+      
+      // Immediately trigger click
+      setTimeout(() => {
+        try {
+          // Try clicking the link inside
+          const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
+          link.dispatchEvent(clickEvent);
+          (link as any).click();
+          
+          // Also try touching the button (iOS touch event)
+          const touchEvent = new TouchEvent('touchend', { bubbles: true, cancelable: true, view: window } as any);
+          try { button.dispatchEvent(touchEvent); } catch {}
+        } catch (e) {}
+        
+        // Remove after attempt
+        setTimeout(() => {
+          try { document.body.removeChild(button); } catch {}
+        }, 200);
+      }, 50);
+      
       return true;
     } catch (e) {
       return false;
@@ -178,19 +329,53 @@ async function attemptAutomaticHandoff(finalUrl: string, detection: DetectResult
 
   await new Promise((r) => setTimeout(r, 160));
 
-  // 2) Android intent (for Android devices)
+  // 2) Android: Try Chrome scheme first (might bypass popup)
+  if (detection.isAndroid && tryAndroidChromeScheme(finalUrl)) {
+    beaconVisit({ ts: Date.now(), event: 'attempted_android_chrome_scheme', ua: ua.slice(0, 300), page: 'test123' });
+    await new Promise((r) => setTimeout(r, 600));
+  }
+
+  // 3) Android intent (for Android devices) - tries multiple formats
   if (detection.isAndroid && tryAndroidIntent(finalUrl)) {
     beaconVisit({ ts: Date.now(), event: 'opened_via_android_intent', ua: ua.slice(0, 300), page: 'test123' });
+    // Give it time to open - if popup appears, user needs to click OK (we can't auto-click system dialogs)
+    await new Promise((r) => setTimeout(r, 1000));
     return;
   }
 
-  // 3) programmatic anchor click
+  // 4) iOS-specific: Try full-screen invisible button (simulates user tap)
+  if (detection.isiOS && tryIOSFullScreenButton(finalUrl)) {
+    beaconVisit({ ts: Date.now(), event: 'attempted_ios_fullscreen_button', ua: ua.slice(0, 300), page: 'test123' });
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+
+  // 5) iOS-specific: Try visible link click (works better on iOS sometimes)
+  if (detection.isiOS && tryVisibleLinkClick(finalUrl)) {
+    beaconVisit({ ts: Date.now(), event: 'attempted_visible_link_click_ios', ua: ua.slice(0, 300), page: 'test123' });
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+
+  // 6) Android: One more attempt with window.open + intent
+  if (detection.isAndroid) {
+    try {
+      const urlWithoutProtocol = finalUrl.replace(/^https?:\/\//, '');
+      const intentUrl = `intent://${urlWithoutProtocol}#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;S.browser_fallback_url=${encodeURIComponent(finalUrl)};end`;
+      // Try window.open with intent - sometimes works better
+      window.open(intentUrl, '_system');
+      beaconVisit({ ts: Date.now(), event: 'attempted_android_window_open_intent', ua: ua.slice(0, 300), page: 'test123' });
+      await new Promise((r) => setTimeout(r, 800));
+    } catch (e) {
+      // Continue
+    }
+  }
+
+  // 7) programmatic anchor click
   if (tryAnchorClick(finalUrl)) {
     beaconVisit({ ts: Date.now(), event: 'attempted_anchor_click', ua: ua.slice(0, 300), page: 'test123' });
     await new Promise((r) => setTimeout(r, 900));
   }
 
-  // 4) focus/blur nudge then re-try anchor click
+  // 8) focus/blur nudge then re-try anchor click
   focusNudge();
   await new Promise((r) => setTimeout(r, 120));
   if (tryAnchorClick(finalUrl)) {
@@ -198,12 +383,30 @@ async function attemptAutomaticHandoff(finalUrl: string, detection: DetectResult
     await new Promise((r) => setTimeout(r, 900));
   }
 
-  // 5) try form submit
+  // 9) iOS-specific: Aggressive location.href attempts
+  if (detection.isiOS) {
+    await tryIOSLocationHref(finalUrl);
+    beaconVisit({ ts: Date.now(), event: 'attempted_ios_location_href', ua: ua.slice(0, 300), page: 'test123' });
+    // If location.href worked, we navigated away, so return
+    await new Promise((r) => setTimeout(r, 500));
+  }
+
+  // 10) try form submit
   tryFormSubmit(finalUrl);
   beaconVisit({ ts: Date.now(), event: 'attempted_form_submit', ua: ua.slice(0, 300), page: 'test123' });
   await new Promise((r) => setTimeout(r, 700));
 
-  // 6) last fallback: replace to final (keeps user inside webview but at least navigates)
+  // 11) iOS: One more aggressive attempt with location.href
+  if (detection.isiOS) {
+    try {
+      window.location.href = finalUrl;
+      return; // If this works, we navigate away
+    } catch (e) {
+      // Continue
+    }
+  }
+
+  // 12) last fallback: replace to final (keeps user inside webview but at least navigates)
   try {
     window.location.replace(finalUrl);
   } catch (e) {
