@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Lock, Heart, Eye, Share2, Star, Crown, Sparkles, BarChart3, AlertTriangle, X } from "lucide-react"
+import { UAParser } from 'ua-parser-js';
 
 // BotD import (npm)
 import { load } from '@fingerprintjs/botd';
@@ -22,7 +23,7 @@ const getReadableReferrer = (ref: string) => {
   return ref;
 };
 
-// In-App Browser Detection
+// In-App Browser Detection using ua-parser-js
 type DetectResult = {
   isMobile: boolean;
   isAndroid: boolean;
@@ -32,26 +33,45 @@ type DetectResult = {
   isInAppBrowser: boolean;
   reasons: string;
   ua: string;
+  deviceType?: string;
+  osName?: string;
+  browserName?: string;
 };
 
 function detectInAppBrowser(): DetectResult {
-  const ua = (typeof navigator !== 'undefined' ? navigator.userAgent : '').toLowerCase();
-  const isAndroid = /android/.test(ua);
-  const isiOS = /iphone|ipad|ipod/.test(ua);
-  const isMobile = isAndroid || isiOS;
+  const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+  
+  // Use ua-parser-js for reliable device/browser detection
+  const parser = new UAParser(ua);
+  const device = parser.getDevice();
+  const os = parser.getOS();
+  const browser = parser.getBrowser();
+  
+  const isAndroid = os.name?.toLowerCase() === 'android';
+  const isiOS = os.name?.toLowerCase() === 'ios' || /iphone|ipad|ipod/.test(ua.toLowerCase());
+  const isMobile = device.type === 'mobile' || isAndroid || isiOS;
 
-  const isInstagram = /instagram/.test(ua);
-  const isFacebookInApp = /fbav|fban|facebook/.test(ua);
+  // Check for in-app browsers
+  const uaLower = ua.toLowerCase();
+  const isInstagram = /instagram/.test(uaLower);
+  const isFacebookInApp = /fbav|fban|facebook/.test(uaLower);
+  const isTwitter = /twitter/.test(uaLower);
+  const isTikTok = /tiktok/.test(uaLower);
+  const isSnapchat = /snapchat/.test(uaLower);
+  const isLinkedIn = /linkedinapp/.test(uaLower);
+  const isWhatsApp = /whatsapp/.test(uaLower);
+  
+  // Check referrer
+  const ref = typeof document !== 'undefined' ? document.referrer.toLowerCase() : '';
+  const refIsInstagram = /instagram\.com/.test(ref);
+  const refIsFacebook = /facebook\.com/.test(ref);
 
-  // iOS webview heuristic: UA lacks 'safari' on iOS
-  const hasSafari = /safari/.test(ua) && !/chrome/.test(ua);
+  // iOS webview detection
+  const hasSafari = /safari/.test(uaLower) && !/chrome/.test(uaLower);
   const isStandalone = typeof (window as any).navigator !== 'undefined' && !!(window as any).navigator.standalone;
   const isWebviewIOSSuspect = isiOS && !hasSafari && !isStandalone;
 
-  const ref = typeof document !== 'undefined' ? document.referrer.toLowerCase() : '';
-  const refIsInstagram = /instagram\.com/.test(ref);
-
-  // Test window.open behavior (many in-app webviews block it or return null)
+  // Test window.open behavior
   let windowOpenBlocked = false;
   try {
     const w = typeof window !== 'undefined' ? window.open('', '_blank') : null;
@@ -61,14 +81,24 @@ function detectInAppBrowser(): DetectResult {
     windowOpenBlocked = true;
   }
 
-  const isInAppBrowser = isInstagram || isFacebookInApp || isWebviewIOSSuspect || windowOpenBlocked || refIsInstagram;
+  // Determine if in-app browser
+  const isInAppBrowser = isInstagram || isFacebookInApp || isTwitter || isTikTok || 
+                        isSnapchat || isLinkedIn || isWhatsApp || 
+                        isWebviewIOSSuspect || windowOpenBlocked || 
+                        refIsInstagram || refIsFacebook;
 
   const reasons: string[] = [];
   if (isInstagram) reasons.push('ua:instagram');
   if (isFacebookInApp) reasons.push('ua:facebook');
+  if (isTwitter) reasons.push('ua:twitter');
+  if (isTikTok) reasons.push('ua:tiktok');
+  if (isSnapchat) reasons.push('ua:snapchat');
+  if (isLinkedIn) reasons.push('ua:linkedin');
+  if (isWhatsApp) reasons.push('ua:whatsapp');
   if (isWebviewIOSSuspect) reasons.push('ios-no-safari-in-ua');
   if (windowOpenBlocked) reasons.push('window.open-blocked');
   if (refIsInstagram) reasons.push('referrer-instagram');
+  if (refIsFacebook) reasons.push('referrer-facebook');
 
   return {
     isMobile,
@@ -79,6 +109,9 @@ function detectInAppBrowser(): DetectResult {
     isInAppBrowser,
     reasons: reasons.join('|') || 'none',
     ua,
+    deviceType: device.type || 'unknown',
+    osName: os.name || 'unknown',
+    browserName: browser.name || 'unknown',
   };
 }
 
