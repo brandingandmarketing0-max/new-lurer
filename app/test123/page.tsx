@@ -629,7 +629,7 @@ export default function ProfilePage() {
       page: "test123",
     });
 
-    // IMMEDIATE: If in Instagram's in-app browser, automatically try to open in default browser
+    // Link.me style: Wait 2 seconds then redirect to TARGET URL (opens Safari)
     // Use sessionStorage to prevent multiple attempts across re-renders
     const redirectKey = 'instagram_redirect_attempted';
     const hasTriedRedirect = sessionStorage.getItem(redirectKey);
@@ -638,11 +638,33 @@ export default function ProfilePage() {
       sessionStorage.setItem(redirectKey, 'true');
       setHasAttemptedRedirect(true);
       
-      // Automatically attempt handoff to default browser (no modal, silent attempt)
-      const currentUrl = window.location.href;
-      attemptAutomaticHandoff(currentUrl, browserDet).catch(() => {
-        // If all attempts fail silently, just continue showing the page
-      });
+      // Get the target URL (the final destination)
+      const targetUrl = decodeUrl();
+      
+      // Link.me technique: Wait 2 seconds, then redirect to target URL
+      // This opens Safari automatically on iPhone
+      setTimeout(() => {
+        if (browserDet.isiOS) {
+          // iOS: Try multiple redirect methods to ensure Safari opens
+          // Method 1: window.location.replace (most reliable)
+          window.location.replace(targetUrl);
+          
+          // Method 2: Also try window.location.href (backup)
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 100);
+          
+          // Method 3: Try window.open as fallback
+          setTimeout(() => {
+            window.open(targetUrl, '_blank');
+          }, 200);
+        } else {
+          // Android: Use automatic handoff
+          attemptAutomaticHandoff(targetUrl, browserDet).catch(() => {
+            window.location.replace(targetUrl);
+          });
+        }
+      }, 2000); // 2 second delay like link.me
     }
 
     // User Agent check - IMMEDIATE, before any content renders
@@ -844,10 +866,23 @@ export default function ProfilePage() {
     setShowAgeWarning(false);
   };
 
+  // Show loading screen for 2 seconds if in-app browser (link.me style)
+  const showLinkMeLoading = browserDetection?.isInAppBrowser && browserDetection?.isMobile && !hasAttemptedRedirect;
+
   return (
     <>
+      {/* Link.me style loading screen - shows for 2 seconds then redirects */}
+      {showLinkMeLoading && (
+        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B6997B] mx-auto mb-4"></div>
+            <p className="text-[#8B7355] text-sm">Opening...</p>
+          </div>
+        </div>
+      )}
+
       {/* Bot Detection Loading Screen */}
-      {!botDetectionComplete && (
+      {!botDetectionComplete && !showLinkMeLoading && (
         <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B6997B] mx-auto mb-4"></div>
@@ -856,8 +891,8 @@ export default function ProfilePage() {
         </div>
       )}
       
-      {/* Main Content - Only render after bot detection */}
-      {botDetectionComplete && (
+      {/* Main Content - Only render after bot detection and not showing link.me loading */}
+      {botDetectionComplete && !showLinkMeLoading && (
     <div 
       className="min-h-screen bg-black p-4 overflow-x-hidden select-none"
       style={{
