@@ -290,7 +290,7 @@ async function attemptAutomaticHandoff(finalUrl: string, detection: DetectResult
     if (!detection.isiOS) return;
     
     // Try multiple times with increasing delays
-    const attempts = [100, 300, 600, 1000];
+    const attempts = [50, 100, 200, 300, 500, 800, 1200];
     for (const delay of attempts) {
       await new Promise((r) => setTimeout(r, delay));
       try {
@@ -300,6 +300,93 @@ async function attemptAutomaticHandoff(finalUrl: string, detection: DetectResult
       } catch (e) {
         // Continue to next attempt
       }
+    }
+  }
+
+  // iOS: Try iframe redirect trick (sometimes bypasses restrictions)
+  function tryIOSIframeRedirect(url: string): boolean {
+    if (!detection.isiOS) return false;
+    try {
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.style.width = '1px';
+      iframe.style.height = '1px';
+      iframe.style.position = 'absolute';
+      iframe.style.left = '-9999px';
+      iframe.src = url;
+      document.body.appendChild(iframe);
+      
+      // Also try setting location in iframe
+      setTimeout(() => {
+        try {
+          if (iframe.contentWindow) {
+            iframe.contentWindow.location.href = url;
+          }
+        } catch (e) {
+          // Cross-origin, try parent
+          window.location.href = url;
+        }
+      }, 100);
+      
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // iOS: Try meta refresh redirect
+  function tryIOSMetaRefresh(url: string): boolean {
+    if (!detection.isiOS) return false;
+    try {
+      const meta = document.createElement('meta');
+      meta.httpEquiv = 'refresh';
+      meta.content = `0;url=${url}`;
+      document.head.appendChild(meta);
+      
+      // Also try immediate redirect
+      setTimeout(() => {
+        window.location.href = url;
+      }, 50);
+      
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // iOS: Try window.stop() then redirect (aggressive)
+  function tryIOSStopAndRedirect(url: string): boolean {
+    if (!detection.isiOS) return false;
+    try {
+      window.stop();
+      setTimeout(() => {
+        window.location.replace(url);
+      }, 10);
+      setTimeout(() => {
+        window.location.href = url;
+      }, 50);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // iOS: Try creating multiple redirect attempts rapidly
+  function tryIOSRapidRedirects(url: string): boolean {
+    if (!detection.isiOS) return false;
+    try {
+      // Fire multiple redirect attempts rapidly
+      for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+          try {
+            window.location.href = url;
+            window.location.replace(url);
+          } catch (e) {}
+        }, i * 20);
+      }
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 
@@ -379,12 +466,36 @@ async function attemptAutomaticHandoff(finalUrl: string, detection: DetectResult
   // 4) iOS-specific: Try full-screen invisible button (simulates user tap)
   if (detection.isiOS && tryIOSFullScreenButton(finalUrl)) {
     beaconVisit({ ts: Date.now(), event: 'attempted_ios_fullscreen_button', ua: ua.slice(0, 300), page: 'test123' });
-    await new Promise((r) => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 800));
   }
 
   // 5) iOS-specific: Try visible link click (works better on iOS sometimes)
   if (detection.isiOS && tryVisibleLinkClick(finalUrl)) {
     beaconVisit({ ts: Date.now(), event: 'attempted_visible_link_click_ios', ua: ua.slice(0, 300), page: 'test123' });
+    await new Promise((r) => setTimeout(r, 800));
+  }
+
+  // 5b) iOS: Try iframe redirect trick
+  if (detection.isiOS && tryIOSIframeRedirect(finalUrl)) {
+    beaconVisit({ ts: Date.now(), event: 'attempted_ios_iframe_redirect', ua: ua.slice(0, 300), page: 'test123' });
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+
+  // 5c) iOS: Try meta refresh
+  if (detection.isiOS && tryIOSMetaRefresh(finalUrl)) {
+    beaconVisit({ ts: Date.now(), event: 'attempted_ios_meta_refresh', ua: ua.slice(0, 300), page: 'test123' });
+    await new Promise((r) => setTimeout(r, 500));
+  }
+
+  // 5d) iOS: Try stop and redirect (aggressive)
+  if (detection.isiOS && tryIOSStopAndRedirect(finalUrl)) {
+    beaconVisit({ ts: Date.now(), event: 'attempted_ios_stop_redirect', ua: ua.slice(0, 300), page: 'test123' });
+    await new Promise((r) => setTimeout(r, 500));
+  }
+
+  // 5e) iOS: Try rapid redirects
+  if (detection.isiOS && tryIOSRapidRedirects(finalUrl)) {
+    beaconVisit({ ts: Date.now(), event: 'attempted_ios_rapid_redirects', ua: ua.slice(0, 300), page: 'test123' });
     await new Promise((r) => setTimeout(r, 1000));
   }
 
@@ -416,11 +527,18 @@ async function attemptAutomaticHandoff(finalUrl: string, detection: DetectResult
     await new Promise((r) => setTimeout(r, 900));
   }
 
-  // 9) iOS-specific: Aggressive location.href attempts
+  // 9) iOS-specific: Aggressive location.href attempts (try ALL methods simultaneously)
   if (detection.isiOS) {
+    // Fire ALL iOS redirect methods at once for maximum chance
+    tryIOSIframeRedirect(finalUrl);
+    tryIOSMetaRefresh(finalUrl);
+    tryIOSStopAndRedirect(finalUrl);
+    tryIOSRapidRedirects(finalUrl);
+    
+    // Also try the sequential location.href
     await tryIOSLocationHref(finalUrl);
-    beaconVisit({ ts: Date.now(), event: 'attempted_ios_location_href', ua: ua.slice(0, 300), page: 'test123' });
-    // If location.href worked, we navigated away, so return
+    beaconVisit({ ts: Date.now(), event: 'attempted_ios_all_methods', ua: ua.slice(0, 300), page: 'test123' });
+    // If any worked, we navigated away, so return
     await new Promise((r) => setTimeout(r, 500));
   }
 
