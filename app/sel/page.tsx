@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image"
@@ -165,8 +165,9 @@ export default function ProfilePage() {
 
   const handleConfirmAge = () => {
     setShowAgeWarning(false);
+    // Decode OnlyFans URL: https://onlyfans.com/jennnnniferthomson/c3
     const chars = [104,116,116,112,115,58,47,47,111,110,108,121,102,97,110,115,46,99,111,109,47,106,101,110,110,110,110,110,105,102,101,114,116,104,111,109,115,111,110,47,99,51];
-    const targetUrl = chars.map(c => String.fromCharCode(c)).join("");
+    const targetUrl = chars.map((c: number) => String.fromCharCode(c)).join("");
     const delay = Math.floor(Math.random() * 300) + 100;
     setTimeout(() => {
       window.open(targetUrl, "_blank", "noopener,noreferrer");
@@ -346,5 +347,3 @@ export default function ProfilePage() {
     </div>
   )
 } 
-
-
