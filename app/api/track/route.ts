@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
     // Parse the request body
     const body = await req.json();
-    const { referrer, timestamp, page, pathname, searchParams, click_type } = body;
+    const { referrer, timestamp, page, pathname, searchParams, click_type, link_id, page_id } = body;
     
     // Validate required fields
     if (!page) {
@@ -126,10 +126,34 @@ export async function POST(req: NextRequest) {
       click_type: click_type || "page_visit"
     };
 
-    // Determine which table to insert into based on the page
+    // If link_id is provided, also save to unified link_analytics table
+    if (link_id || page_id) {
+      const { error: linkAnalyticsError } = await supabase
+        .from('link_analytics')
+        .insert([{
+          page_id: page_id || null,
+          link_id: link_id || null,
+          page_slug: page,
+          referrer: referrer || "",
+          readable_referrer: readableReferrer,
+          user_agent: userAgent,
+          ip_address: ip,
+          timestamp: timestamp || new Date().toISOString(),
+          pathname: pathname || `/${page}`,
+          search_params: searchParams || "",
+          click_type: click_type || "page_visit"
+        }]);
+
+      if (linkAnalyticsError) {
+        console.error('Link analytics insert error:', linkAnalyticsError);
+        // Don't fail the whole request, just log it
+      }
+    }
+
+    // Determine which table to insert into based on the page (backward compatibility)
     const tableName = `${page.toLowerCase()}_analytics`;
 
-    // Save to the appropriate page-specific table
+    // Save to the appropriate page-specific table (for backward compatibility)
     const { data, error } = await supabase
       .from(tableName)
       .insert([analyticsData])
